@@ -1,0 +1,6 @@
+include wxpy_rofi_config/*.py
+include wxpy_rofi_config/VERSION
+include LICENSE
+include README.md
+include tox.ini
+include setup.cfg
