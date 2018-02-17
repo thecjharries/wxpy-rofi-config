@@ -322,9 +322,9 @@ class ResizeUnitTests(SettingsPanelTestCase):
     @patch.object(SettingsPanel, 'GetSizer')
     def test_calls(self, mock_sizer):
         mock_resize = MagicMock()
-        self.panel.man_texts = []
+        self.panel.resizable_texts = []
         for _ in range(0, self.MAN_TEXTS_COUNT):
-            self.panel.man_texts.append(MagicMock(resize=mock_resize))
+            self.panel.resizable_texts.append(MagicMock(resize=mock_resize))
         mock_layout = MagicMock()
         mock_sizer.return_value = MagicMock(Layout=mock_layout)
         self.panel.resize()
