@@ -2,7 +2,7 @@
 # coding=utf8
 
 from collections import OrderedDict
-from os.path import join
+from os.path import expanduser, join
 from re import compile as re_compile, DOTALL, finditer, MULTILINE, search, sub
 from subprocess import check_output
 
@@ -11,7 +11,7 @@ from wxpy_rofi_config.config import Entry
 
 class Rofi(object):
 
-    DEFAULT_PATH = join('~', '.config', 'rofi', 'config.rasi')
+    DEFAULT_PATH = expanduser(join('~', '.config', 'rofi', 'config.rasi'))
 
     PATTERNS = {
         'RASI_ENTRY': re_compile(
