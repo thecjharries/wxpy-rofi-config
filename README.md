@@ -1,5 +1,7 @@
 # `wxpy-rofi-config`
 
+[![Build Status](https://travis-ci.org/thecjharries/wxpy-rofi-config.svg?branch=master)](https://travis-ci.org/thecjharries/wxpy-rofi-config) [![Coverage Status](https://coveralls.io/repos/github/thecjharries/wxpy-rofi-config/badge.svg)](https://coveralls.io/github/thecjharries/wxpy-rofi-config)
+
 I've got a few goals with this project:
 
 1. Test out `wxPython >=4.0`
