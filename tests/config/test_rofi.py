@@ -70,3 +70,13 @@ class ParseRasiUnitTests(RofiTestCase):
                 mock_assign.call_count,
                 run[1]
             )
+
+
+class LoadDefaultConfigUnitTests(RofiTestCase):
+    OUTPUT = 'qqq'
+
+    @patch('wxpy_rofi_config.config.rofi.check_output', return_value=OUTPUT)
+    @patch.object(Rofi, 'parse_rasi')
+    def test_calls(self, mock_parse, mock_check):
+        self.rofi.load_default_config()
+        mock_parse.assert_called_once_with(self.OUTPUT, 'default')
