@@ -50,3 +50,42 @@ class SettingsNotebookTestCase(TestCase):
         self.notebook = SettingsNotebook(None)
         create_tabs_patcher.stop()
         bind_events_patcher.stop()
+
+
+class ConstructorUnitTests(SettingsNotebookTestCase):
+
+    def test_construction(self):
+        self.mock_create_tabs.assert_called_once()
+        self.mock_bind_events.assert_called_once()
+
+
+class GroupConfigUnitTests(SettingsNotebookTestCase):
+
+    CONFIG = {
+        'one': MagicMock(group='one'),
+        'two': MagicMock(group='two'),
+        'three': MagicMock(group='two')
+    }
+
+    RESULT = ['one', 'two']
+
+    def test_config_creation(self):
+        self.mock_rofi.assert_not_called()
+        self.notebook.group_config()
+        self.mock_rofi.assert_called_once()
+
+    def test_group_list(self):
+        self.mock_rofi.return_value = MagicMock(config=self.CONFIG)
+        self.notebook.group_config()
+        if hasattr(self, 'assertCountEqual'):
+            getattr(self, 'assertCountEqual')(
+                self.notebook.groups,
+                self.RESULT
+            )
+        elif hasattr(self, 'assertItemsEqual'):
+            getattr(self, 'assertItemsEqual')(
+                self.notebook.groups,
+                self.RESULT
+            )
+        else:
+            assert 0
