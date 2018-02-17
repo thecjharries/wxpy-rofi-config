@@ -107,6 +107,24 @@ class ForceVarTypeUnitTests(EntryTestCase):
                 self.assertEquals(self.RESULTS[default & current], var_type)
 
 
+class GetTypeFromHelpUnitTests(EntryTestCase):
+
+    def test_without_help(self):
+        var_type = self.entry.get_type_from_help()
+        self.assertEquals(
+            var_type,
+            Entry.DEFAULTS['var_type']
+        )
+
+    def test_with_help(self):
+        self.entry.help_type = 'string'
+        var_type = self.entry.get_type_from_help()
+        self.assertEquals(
+            var_type,
+            'string'
+        )
+
+
 class EnsureUsefulVarTypeUnitTests(EntryTestCase):
 
     @patch.object(
