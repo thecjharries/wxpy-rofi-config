@@ -1,5 +1,5 @@
 """This file provides the Entry class"""
-# pylint: disable=W,C,R
+
 # coding=utf8
 
 from re import compile as re_compile, IGNORECASE, match as re_match, sub
