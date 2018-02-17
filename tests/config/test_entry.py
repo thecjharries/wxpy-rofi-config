@@ -7,6 +7,7 @@ from __future__ import print_function
 from unittest import TestCase
 
 from mock import call, MagicMock, patch
+from pytest import mark
 
 from wxpy_rofi_config.config import Entry
 
@@ -333,7 +334,7 @@ class IsNumberUnitTests(EntryTestCase):
         self.assertFalse(Entry.is_number('qqq'))
 
 
-class GuessSomethingFromPatterns(EntryTestCase):
+class GuessSomethingFromPatternsUnitTests(EntryTestCase):
     RUNS = [
         [
             'kb-accept-entry',
@@ -359,3 +360,53 @@ class GuessSomethingFromPatterns(EntryTestCase):
                 ),
                 run[3]
             )
+
+
+@mark.parametrize(
+    'value,expected',
+    [
+        ['"qqq"', 'string'],
+        ["'qqq'", 'string'],
+        ['NULL', 'string'],
+        ['null', 'string'],
+        ['qqq', Entry.DEFAULTS['var_type']],
+        ['1', 'number'],
+        ['-1', 'number'],
+        ['.1', 'number'],
+        ['q.1', Entry.DEFAULTS['var_type']],
+        ['TRUE', 'boolean'],
+        ['true', 'boolean'],
+        ['FALSE', 'boolean'],
+        ['false', 'boolean']
+    ]
+)
+def test_guess_var_type_from_value(value, expected):
+    assert Entry.guess_var_type_from_value(value) == expected
+
+
+@mark.parametrize(
+    'value,expected',
+    [
+        ['kb-qqq', 'key'],
+        ['me-qqq', 'mouse'],
+        ['ml-qqq', 'mouse'],
+        ['display-qqq', 'string'],
+        ['whoops', Entry.DEFAULTS['var_type']]
+    ]
+)
+def test_guess_var_type_from_key(value, expected):
+    assert Entry.guess_var_type_from_key(value) == expected
+
+
+@mark.parametrize(
+    'value,expected',
+    [
+        ['kb-qqq', 'Keybindings'],
+        ['me-qqq', 'Mouse'],
+        ['ml-qqq', 'Mouse'],
+        ['display-qqq', 'Display'],
+        ['whoops', Entry.DEFAULTS['group']]
+    ]
+)
+def test_guess_group_from_key(value, expected):
+    assert Entry.guess_group_from_key(value) == expected
