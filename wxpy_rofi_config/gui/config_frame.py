@@ -59,14 +59,14 @@ class ConfigFrame(Frame):
         self.Bind(EVT_MENU, self.save, self.save_menu_item)
         self.Bind(EVT_MENU, self.exit, self.exit_menu_item)
 
-    def boot(self):
+    def boot(self, event=None):  # pylint:disable=unused-argument
         """Sends a resize request to app to coddle StaticTexts"""
         PostEvent(self.notebook, SizeEvent((-1, -1)))
 
-    def save(self, event=None):
+    def save(self, event=None):  # pylint:disable=unused-argument
         """Fires a save event"""
         self.notebook.save()
 
-    def exit(self, event=None):
+    def exit(self, event=None):  # pylint:disable=unused-argument
         """Exits the app"""
         self.Close()
