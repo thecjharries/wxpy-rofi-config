@@ -7,7 +7,7 @@ from __future__ import print_function
 
 from unittest import TestCase
 
-from mock import MagicMock, patch
+from mock import call, MagicMock, patch
 
 from wxpy_rofi_config.gui import SettingsPanel
 
@@ -43,6 +43,16 @@ class SettingsPanelTestCase(TestCase):
         )
         self.mock_font = font_patcher.start()
         self.addCleanup(font_patcher.stop)
+        intctrl_patcher = patch(
+            'wxpy_rofi_config.gui.settings_panel.IntCtrl'
+        )
+        self.mock_intctrl = intctrl_patcher.start()
+        self.addCleanup(intctrl_patcher.stop)
+        scrolledpanel_patcher = patch(
+            'wxpy_rofi_config.gui.settings_panel.ScrolledPanel'
+        )
+        self.mock_scrolledpanel = scrolledpanel_patcher.start()
+        self.addCleanup(scrolledpanel_patcher.stop)
         staticline_patcher = patch(
             'wxpy_rofi_config.gui.settings_panel.StaticLine'
         )
@@ -81,3 +91,26 @@ class ConstructorUnitTests(SettingsPanelTestCase):
 
     def test_construction(self):
         self.mock_create_main_grid.assert_called_once()
+
+
+class CreateMainGridUnitTests(SettingsPanelTestCase):
+
+    @patch.object(SettingsPanel, 'populate_entries')
+    @patch.object(SettingsPanel, 'SetSizer')
+    @patch.object(SettingsPanel, 'SetupScrolling')
+    def test_construction(self, mock_scroll, mock_sizer, mock_populate):
+        main_sizer = MagicMock()
+        self.mock_boxsizer.return_value = main_sizer
+        self.panel.config = None
+        mock_holder = MagicMock()
+        mock_holder.attach_mock(mock_populate, 'populate_entries')
+        mock_holder.attach_mock(mock_sizer, 'SetSizer')
+        mock_holder.attach_mock(mock_scroll, 'SetupScrolling')
+        mock_holder.assert_not_called()
+        self.panel.create_main_grid()
+        mock_holder.assert_has_calls([
+            call.populate_entries(None),
+            call.SetSizer(main_sizer),
+            call.SetupScrolling()
+
+        ])
