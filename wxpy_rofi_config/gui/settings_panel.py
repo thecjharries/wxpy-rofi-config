@@ -109,7 +109,7 @@ class SettingsPanel(ScrolledPanel):
             )
         self.grid_sizer.Add(control, proportion=-1, flag=EXPAND)
 
-    def create_entry_man(self, entry):
+    def create_entry_doc(self, entry, kind='help_value'):
         """Creates the documentation labels for an entry"""
         self.grid_sizer.Add(
             BoxSizer(HORIZONTAL),
@@ -118,7 +118,7 @@ class SettingsPanel(ScrolledPanel):
         )
         sizer = BoxSizer(HORIZONTAL)
         text = FittedStaticText(self)
-        text.set_label(entry.man)
+        text.set_label(getattr(entry, kind))
         self.man_texts.append(text)
         sizer.Add(text, proportion=-1, flag=EXPAND)
         self.grid_sizer.Add(sizer, proportion=-1, flag=EXPAND)
