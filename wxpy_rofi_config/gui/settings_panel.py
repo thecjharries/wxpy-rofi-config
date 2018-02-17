@@ -40,7 +40,7 @@ class SettingsPanel(ScrolledPanel):
         self.grid_sizer = FlexGridSizer(2, 10, 10)
         self.populate_entries(self.config)
         self.grid_sizer.AddGrowableCol(1, 1)
-        self.main_sizer.Add(self.grid_sizer, proportion=-1, flag=EXPAND)
+        self.main_sizer.Add(self.grid_sizer, proportion=1, flag=EXPAND)
         self.SetSizer(self.main_sizer)
         self.SetupScrolling()
 
@@ -54,7 +54,7 @@ class SettingsPanel(ScrolledPanel):
         sizer.Add((0, 0), proportion=1, flag=EXPAND)
         sizer.Add(text, proportion=0, flag=EXPAND)
         sizer.Add((0, 0), proportion=1, flag=EXPAND)
-        self.grid_sizer.Add(sizer, -1, flag=EXPAND)
+        self.grid_sizer.Add(sizer, proportion=1, flag=EXPAND)
 
     def create_entry_control(self, entry):
         if 'string' == entry.var_type:
@@ -88,12 +88,16 @@ class SettingsPanel(ScrolledPanel):
         self.grid_sizer.Add(control, proportion=-1, flag=EXPAND)
 
     def create_entry_man(self, entry):
-        self.grid_sizer.Add(BoxSizer(), proportion=1, flag=EXPAND)
+        self.grid_sizer.Add(
+            BoxSizer(HORIZONTAL),
+            proportion=1,
+            flag=EXPAND
+        )
         sizer = BoxSizer(HORIZONTAL)
         text = FittedStaticText(self)
         text.SetLabel(entry.man)
         self.man_texts.append(text)
-        sizer.Add(text, proportion=1, flag=EXPAND)
+        sizer.Add(text, proportion=-1, flag=EXPAND)
         self.grid_sizer.Add(sizer, proportion=-1, flag=EXPAND)
 
     def create_horizontal_rule(self):
@@ -110,6 +114,7 @@ class SettingsPanel(ScrolledPanel):
             self.create_horizontal_rule()
         self.create_entry_label(entry)
         self.create_entry_control(entry)
+        self.grid_sizer.Layout()
         if entry.man:
             self.create_entry_man(entry)
 
@@ -122,3 +127,4 @@ class SettingsPanel(ScrolledPanel):
     def resize(self):
         for man_text in self.man_texts:
             man_text.resize()
+        self.GetSizer().Layout()
