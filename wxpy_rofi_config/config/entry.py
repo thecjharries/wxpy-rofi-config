@@ -13,7 +13,9 @@ class Entry(object):
         'group': 'Miscellaneous',
         'default': None,
         'current': None,
-        'man': None
+        'help_value': None,
+        'help_type': None,
+        'man': None,
     }
 
     CLEAN_PATTERNS = {
@@ -45,6 +47,8 @@ class Entry(object):
     group = DEFAULTS['group']
     default = None
     current = None
+    help_value = None
+    help_type = None
     man = None
 
     def __init__(self, **kwargs):
@@ -80,10 +84,23 @@ class Entry(object):
             return 'number'
         return 'string'
 
+    def get_type_from_help(self, hint=None):  # pylint: disable=unused-argument
+        """
+        Attempts to set the type from the help option.
+
+        It seems like this would be a no-brainer, but I'd like to experiment
+        with some enums and the like before just giving in here. Especially
+        when it's an input binding. Something more than a string is useful.
+        """
+        if self.help_type:
+            return self.help_type
+        return self.var_type
+
     def ensure_useful_var_type(self):
         """Runs all available methods to determine the setting's type."""
         calls = [
             [self.force_var_type, None],
+            [self.get_type_from_help, None],
             [self.guess_var_type_from_value, self.current],
             [self.guess_var_type_from_value, self.default],
             [self.guess_var_type_from_key, self.key_name],

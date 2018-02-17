@@ -4,7 +4,16 @@
 
 from collections import OrderedDict
 from os.path import expanduser, join
-from re import compile as re_compile, DOTALL, finditer, MULTILINE, search, sub
+from re import (
+    compile as re_compile,
+    DOTALL,
+    finditer,
+    IGNORECASE,
+    MULTILINE,
+    search,
+    sub,
+    VERBOSE
+)
 from subprocess import check_output
 
 from wxpy_rofi_config.config import Entry
@@ -22,8 +31,8 @@ class Rofi(object):
         ),
         'RASI_COMMENT': re_compile(r"(\/\*.*?\*\/|\/\/.*?$)", MULTILINE),
         'MAN_CONFIG_BLOCK': re_compile(
-            r"\nCONFIGURATION(.*?)\n\w",
-            DOTALL
+            r"\nconfiguration(.*?)\n\w",
+            DOTALL | IGNORECASE
         ),
         'MAN_GROUP': re_compile(
             r"\n {3}(?P<group>\w.*?)\n(?P<contents>(.(?!\n {3}\w|$))*)",
@@ -47,7 +56,20 @@ class Rofi(object):
                 re_compile(r"(\w+)\n([^\s])"),
                 r"\1 \2"
             ]
-        ]
+        ],
+        'HELP_BLOCK': re_compile(
+            r"\n?global options:(?P<contents>.*?)(?:\n\n)",
+            DOTALL | IGNORECASE
+        ),
+        'HELP_ENTRY': re_compile(
+            r"""
+            ^\s+-(?:\[no-\])?               # Preface stuff; skip it
+            (?P<key>[a-z0-9-]+?)            # The entry key
+            (?:\s+\[(?P<help_type>\w+)\])?  # Type info is not always there
+            \s+(?P<help_value>.*?)$         # The short help string
+            """,
+            MULTILINE | VERBOSE
+        )
     }
 
     def __init__(self):
@@ -153,6 +175,31 @@ class Rofi(object):
         if possible_config:
             self.parse_man_config(possible_config.group())
 
+    def parse_help_entry(self, help_entry_match):
+        """Parses a single help entry"""
+        key = help_entry_match.group('key')
+        if key in self.config:
+            help_value = help_entry_match.group('help_value')
+            setattr(self.config[key], 'help_value', help_value)
+            help_type = help_entry_match.group('help_type')
+            if help_type:
+                setattr(self.config[key], 'help_type', help_type)
+
+    def parse_help_config(self, help_block_match):
+        """Parses the entire help config block"""
+        for discovered_entry in finditer(
+                self.PATTERNS['HELP_ENTRY'],
+                help_block_match.group('contents')
+        ):
+            self.parse_help_entry(discovered_entry)
+
+    def load_help(self):
+        """Loads rofi --help in an attempt to parse it"""
+        raw = check_output(['rofi', '--help'])
+        possible_config = search(self.PATTERNS['HELP_BLOCK'], raw)
+        if possible_config:
+            self.parse_help_config(possible_config)
+
     def build(self):
         """
         Loads defaults, adds current values, discovers available documentation,
@@ -160,6 +207,7 @@ class Rofi(object):
         """
         self.load_default_config()
         self.load_current_config()
+        self.load_help()
         self.load_man()
         self.process_config()
 

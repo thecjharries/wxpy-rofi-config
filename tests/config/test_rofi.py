@@ -247,22 +247,122 @@ q
         mock_parse.assert_not_called()
 
 
+class ParseHelpEntryUnitTests(RofiTestCase):
+
+    def get(self, key):
+        if hasattr(self.rofi.config['key'], key):
+            return getattr(self.rofi.config['key'], key)
+        return None
+
+    def setUp(self):
+        RofiTestCase.setUp(self)
+        self.match = MagicMock(
+            group=MagicMock(side_effect=self.get)
+        )
+
+    def test_missing_key(self):
+        self.rofi.config = MagicMock()
+        self.rofi.parse_help_entry(self.match)
+
+    def test_existing_key_without_type(self):
+        self.rofi.config['key'] = MagicMock(
+            key='key',
+            help_value='help_value',
+            spec=['key', 'help_value']
+        )
+        self.rofi.parse_help_entry(self.match)
+        self.assertEquals(
+            self.rofi.config['key'].help_value,
+            'help_value'
+        )
+
+    def test_existing_key_with_type(self):
+        self.rofi.config['key'] = MagicMock(
+            key='key',
+            help_value='help_value',
+            help_type='help_type',
+            spec=['key', 'help_value', 'help_type']
+        )
+        self.rofi.parse_help_entry(self.match)
+        self.assertEquals(
+            self.rofi.config['key'].help_value,
+            'help_value'
+        )
+        self.assertEquals(
+            self.rofi.config['key'].help_type,
+            'help_type'
+        )
+
+
+class ParseHelpConfigUnitTests(RofiTestCase):
+    INPUT = """
+   -one             one
+   -two [string]    two
+   -three           three
+"""
+
+    @patch.object(Rofi, 'parse_help_entry')
+    def test_construction(self, mock_parse):
+        match = MagicMock(group=lambda x: self.INPUT)
+        self.rofi.parse_help_config(match)
+        self.assertEquals(
+            mock_parse.call_count,
+            3
+        )
+
+
+class LoadHelpUnitTests(RofiTestCase):
+
+    @patch(
+        'wxpy_rofi_config.config.rofi.check_output',
+        return_value='''
+Global Options:
+    stuff
+
+Monitor
+'''
+    )
+    @patch.object(Rofi, 'parse_help_config')
+    def test_with_config(self, mock_parse, mock_output):
+        self.rofi.load_help()
+        mock_parse.assert_called_once()
+
+    @patch(
+        'wxpy_rofi_config.config.rofi.check_output',
+        return_value=''
+    )
+    @patch.object(Rofi, 'parse_help_config')
+    def test_without_config(self, mock_parse, mock_output):
+        self.rofi.load_help()
+        mock_parse.assert_not_called()
+
+
 class BuildUnitTests(RofiTestCase):
 
     @patch.object(Rofi, 'load_default_config')
     @patch.object(Rofi, 'load_current_config')
+    @patch.object(Rofi, 'load_help')
     @patch.object(Rofi, 'load_man')
     @patch.object(Rofi, 'process_config')
-    def test_call(self, mock_process, mock_man, mock_current, mock_default):
+    def test_call(  # pylint: disable=too-many-arguments
+            self,
+            mock_process,
+            mock_man,
+            mock_help,
+            mock_current,
+            mock_default
+    ):
         mock_holder = MagicMock()
         mock_holder.attach_mock(mock_default, 'load_default_config')
         mock_holder.attach_mock(mock_current, 'load_current_config')
+        mock_holder.attach_mock(mock_help, 'load_help')
         mock_holder.attach_mock(mock_man, 'load_man')
         mock_holder.attach_mock(mock_process, 'process_config')
         self.rofi.build()
         mock_holder.assert_has_calls([
             call.load_default_config(),
             call.load_current_config(),
+            call.load_help(),
             call.load_man(),
             call.process_config()
         ])
