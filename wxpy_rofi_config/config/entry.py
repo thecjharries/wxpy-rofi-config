@@ -130,7 +130,7 @@ class Entry(object):
             return "%s: %d;" % (self.key_name, self.current)
         elif 'boolean' == self.var_type:
             return ("%s: %s;" % (self.key_name, self.current)).lower()
-        elif 'string' == self.var_type:
+        elif self.var_type in ('string', 'mouse', 'key'):
             return '%s: "%s";' % (self.key_name, self.current)
         return "%s: %s;" % (self.key_name, self.current)
 
