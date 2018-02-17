@@ -180,5 +180,5 @@ class SettingsPanel(ScrolledPanel):
             action = 'Show'
         else:
             action = 'Hide'
-        for widget in self.groups_to_hide[kind]:
+        for widget in self.groups_to_hide[kind] and hasattr(widget, action):
             getattr(widget, action)()
