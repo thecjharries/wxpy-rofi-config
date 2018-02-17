@@ -285,3 +285,11 @@ class ToRasiUnitTests(RofiTestCase):
             self.rofi.to_rasi(),
             self.RESULT
         )
+
+
+@patch('wxpy_rofi_config.config.rofi.open', return_value=MagicMock())
+@patch.object(Rofi, 'to_rasi')
+def test_save(mock_rasi, mock_open):
+    rofi = Rofi()
+    rofi.save()
+    mock_rasi.assert_called_once_with()
