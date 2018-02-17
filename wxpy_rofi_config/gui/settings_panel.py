@@ -44,8 +44,13 @@ class SettingsPanel(ScrolledPanel):
         )
         self.config = config
         self.resizable_texts = []
-        self.font = Font(12, FONTFAMILY_DEFAULT,
-                         FONTSTYLE_NORMAL, FONTWEIGHT_BOLD)
+        self.font = Font(
+            12,
+            FONTFAMILY_DEFAULT,
+            FONTSTYLE_NORMAL,
+            FONTWEIGHT_BOLD
+        )
+
         self.create_main_grid()
 
     def create_main_grid(self):
