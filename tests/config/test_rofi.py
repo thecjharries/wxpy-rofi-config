@@ -29,3 +29,23 @@ def test_constructor():
     rofi = Rofi()
     assert not rofi.config
     assert not rofi.groups
+
+
+class AssignRasiEntryUnitTests(RofiTestCase):
+
+    @patch('wxpy_rofi_config.config.rofi.Entry')
+    def test_existing_key(self, mock_entry):
+        mock_match = MagicMock(group=lambda x: x)
+        self.rofi.config['key'] = MagicMock(default='not value')
+        self.rofi.assign_rasi_entry(mock_match)
+        self.assertEquals(mock_entry.call_count, 0)
+        self.assertEquals(self.rofi.config['key'].default, 'value')
+
+    @patch('wxpy_rofi_config.config.rofi.Entry')
+    def test_new_key(self, mock_entry):
+        mock_match = MagicMock(group=lambda x: x)
+        self.rofi.assign_rasi_entry(mock_match)
+        mock_entry.assert_called_once_with(
+            key_name='key',
+            default='value',
+        )
