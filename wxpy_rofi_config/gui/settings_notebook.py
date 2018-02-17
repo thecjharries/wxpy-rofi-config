@@ -1,5 +1,5 @@
 """This file provides the SettingsNotebook class"""
-
+# pylint: disable=too-many-ancestors
 
 from collections import OrderedDict
 from operator import attrgetter
