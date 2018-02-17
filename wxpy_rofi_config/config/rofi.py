@@ -28,7 +28,7 @@ class Rofi(object):
             DOTALL
         ),
         'MAN_ITEM': re_compile(
-            r"(?:^|\n\n) {7}-(?!no-)(?P<key>[\w-]+).*?\n\n(?P<man>(.(?!\n\n {7}-\w|$))*.(?!$))",
+            r"(?:^|\n\n) {7}-(?!no-)(?P<key>[\w-]+).*?\n\n(?P<man>(.(?!\n\n {7}-\w|$))*.?)",
             DOTALL
         ),
         'CLEAN_GROUP': re_compile(r" settings? ?"),
