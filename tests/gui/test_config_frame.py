@@ -7,7 +7,7 @@ from __future__ import print_function
 
 from unittest import TestCase
 
-from mock import call, MagicMock, patch
+from mock import MagicMock, patch
 
 from wxpy_rofi_config.gui import ConfigFrame
 
@@ -41,6 +41,14 @@ class ConfigFrameTestCase(TestCase):
         panel_patcher = patch('wxpy_rofi_config.gui.config_frame.Panel')
         self.mock_panel = panel_patcher.start()
         self.addCleanup(panel_patcher.stop)
+        postevent_patcher = patch(
+            'wxpy_rofi_config.gui.config_frame.PostEvent')
+        self.mock_postevent = postevent_patcher.start()
+        self.addCleanup(postevent_patcher.stop)
+        sizeevent_patcher = patch(
+            'wxpy_rofi_config.gui.config_frame.SizeEvent')
+        self.mock_sizeevent = sizeevent_patcher.start()
+        self.addCleanup(sizeevent_patcher.stop)
 
     def construct_frame(self):
         settings_notebook_patcher = patch(
@@ -91,3 +99,41 @@ class CreateMenuUnitTests(ConfigFrameTestCase):
         self.frame.create_menu()
         self.assertIsNotNone(self.frame.save_menu_item)
         self.assertIsNotNone(self.frame.exit_menu_item)
+
+
+class BindEventsUnitTests(ConfigFrameTestCase):
+
+    @patch.object(ConfigFrame, 'Bind')
+    def test_calls(self, mock_bind):
+        self.frame.save_menu_item = None
+        self.frame.exit_menu_item = None
+        mock_bind.assert_not_called()
+        self.frame.bind_events()
+        mock_bind.assert_called()
+
+
+class BootUnitTests(ConfigFrameTestCase):
+
+    def test_post(self):
+        self.frame.notebook = MagicMock()
+        self.mock_postevent.assert_not_called()
+        self.frame.boot()
+        self.mock_postevent.assert_called()
+
+
+class SaveUnitTests(ConfigFrameTestCase):
+
+    def test_post(self):
+        mock_save = MagicMock()
+        self.frame.notebook = MagicMock(save=mock_save)
+        mock_save.assert_not_called()
+        self.frame.save()
+        mock_save.assert_called()
+
+
+class ExitUnitTests(ConfigFrameTestCase):
+
+    @patch.object(ConfigFrame, 'Close')
+    def test_construction(self, mock_close):
+        self.frame.exit()
+        mock_close.assert_called_once()
