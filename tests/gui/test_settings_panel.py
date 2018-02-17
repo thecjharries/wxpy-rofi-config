@@ -128,6 +128,8 @@ class CreateEntryLabelUnitTests(SettingsPanelTestCase):
 class CreateEntryControlUnitTests(SettingsPanelTestCase):
     RUNS = [
         [MagicMock(var_type='string'), 'mock_textctrl'],
+        [MagicMock(var_type='key'), 'mock_textctrl'],
+        [MagicMock(var_type='mouse'), 'mock_textctrl'],
         [MagicMock(var_type='number'), 'mock_intctrl'],
         [MagicMock(var_type='boolean'), 'mock_checkbox'],
         [MagicMock(var_type='none'), 'mock_statictext']

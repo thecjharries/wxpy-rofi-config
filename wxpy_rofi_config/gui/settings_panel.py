@@ -79,7 +79,7 @@ class SettingsPanel(ScrolledPanel):
 
     def create_entry_control(self, entry):
         """Creates an accessible control for the entry"""
-        if 'string' == entry.var_type:
+        if entry.var_type in ('string', 'mouse', 'key'):
             control = TextCtrl(
                 self,
                 value=entry.current,
