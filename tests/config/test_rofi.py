@@ -247,6 +247,53 @@ q
         mock_parse.assert_not_called()
 
 
+class ParseHelpEntryUnitTests(RofiTestCase):
+
+    def get(self, key):
+        if hasattr(self.rofi.config['key'], key):
+            return getattr(self.rofi.config['key'], key)
+        return None
+
+    def setUp(self):
+        RofiTestCase.setUp(self)
+        self.match = MagicMock(
+            group=MagicMock(side_effect=self.get)
+        )
+
+    def test_missing_key(self):
+        self.rofi.config = MagicMock()
+        self.rofi.parse_help_entry(self.match)
+
+    def test_existing_key_without_type(self):
+        self.rofi.config['key'] = MagicMock(
+            key='key',
+            help_value='help_value',
+            spec=['key', 'help_value']
+        )
+        self.rofi.parse_help_entry(self.match)
+        self.assertEquals(
+            self.rofi.config['key'].help_value,
+            'help_value'
+        )
+
+    def test_existing_key_with_type(self):
+        self.rofi.config['key'] = MagicMock(
+            key='key',
+            help_value='help_value',
+            help_type='help_type',
+            spec=['key', 'help_value', 'help_type']
+        )
+        self.rofi.parse_help_entry(self.match)
+        self.assertEquals(
+            self.rofi.config['key'].help_value,
+            'help_value'
+        )
+        self.assertEquals(
+            self.rofi.config['key'].help_type,
+            'help_type'
+        )
+
+
 class BuildUnitTests(RofiTestCase):
 
     @patch.object(Rofi, 'load_default_config')
