@@ -172,3 +172,12 @@ class SettingsPanel(ScrolledPanel):
         for resizable_text in self.resizable_texts:
             resizable_text.resize()
         self.GetSizer().Layout()
+
+    def change_display_state(self, kind, show=True):
+        """Changes the display state of the provided kind of group"""
+        if show:
+            action = 'Show'
+        else:
+            action = 'Hide'
+        for widget in self.groups_to_hide[kind]:
+            getattr(widget, action)()
