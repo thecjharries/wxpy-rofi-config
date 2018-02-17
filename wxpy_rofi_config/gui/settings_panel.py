@@ -1,4 +1,7 @@
+# coding=utf8
+
 """This file provides the SettingsPanel class"""
+
 # pylint: disable=too-many-ancestors
 
 from wx import (

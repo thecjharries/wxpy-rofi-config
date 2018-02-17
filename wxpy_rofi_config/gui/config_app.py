@@ -1,12 +1,11 @@
-"""This file provides the ConfigApp class and cli access"""
+# coding=utf8
 
+"""This file provides the ConfigApp class and cli access"""
 
 from wx import (
     App
 )
 
-
-# from wxpy_rofi_config.config import Rofi
 from wxpy_rofi_config.gui import ConfigFrame
 
 

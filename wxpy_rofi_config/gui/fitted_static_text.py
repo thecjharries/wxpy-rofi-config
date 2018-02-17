@@ -1,3 +1,5 @@
+# coding=utf8
+
 """This file provides the FittedStaticText class"""
 
 from wx import (

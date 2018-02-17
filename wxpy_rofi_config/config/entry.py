@@ -1,6 +1,6 @@
-"""This file provides the Entry class"""
-
 # coding=utf8
+
+"""This file provides the Entry class"""
 
 from re import compile as re_compile, IGNORECASE, match as re_match, sub
 

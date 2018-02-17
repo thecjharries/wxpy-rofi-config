@@ -1,4 +1,7 @@
+# coding=utf8
+
 """This file provides the SettingsNotebook class"""
+
 # pylint: disable=too-many-ancestors
 
 from collections import OrderedDict

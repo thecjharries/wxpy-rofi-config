@@ -1,3 +1,5 @@
+# coding=utf8
+
 """This file provides the ConfigFrame class"""
 
 # pylint:disable=too-many-ancestors
