@@ -25,7 +25,8 @@ from wxpy_rofi_config.gui import SettingsNotebook
 class ConfigFrame(Frame):
 
     def __init__(self, parent):
-        super(ConfigFrame, self).__init__(
+        Frame.__init__(
+            self,
             parent=parent,
             id=-1,
             title='rofi Config',
