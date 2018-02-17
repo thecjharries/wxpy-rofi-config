@@ -148,7 +148,7 @@ class CreateEntryManUnitTests(SettingsPanelTestCase):
         self.panel.grid_sizer = MagicMock()
         self.mock_fittedstatictext.assert_not_called()
         self.mock_boxsizer.assert_not_called()
-        self.panel.create_entry_man(MagicMock())
+        self.panel.create_entry_doc(MagicMock())
         self.mock_boxsizer.assert_called()
         self.mock_fittedstatictext.assert_called()
 
@@ -175,7 +175,7 @@ class CreateEntryRowsUnitTests(SettingsPanelTestCase):
         control_patcher = patch.object(SettingsPanel, 'create_entry_control')
         self.mock_control = control_patcher.start()
         self.addCleanup(control_patcher.stop)
-        man_patcher = patch.object(SettingsPanel, 'create_entry_man')
+        man_patcher = patch.object(SettingsPanel, 'create_entry_doc')
         self.mock_man = man_patcher.start()
         self.addCleanup(man_patcher.stop)
         self.mock_layout = MagicMock()
@@ -186,7 +186,7 @@ class CreateEntryRowsUnitTests(SettingsPanelTestCase):
         self.mock_holder.attach_mock(self.mock_label, 'create_entry_label')
         self.mock_holder.attach_mock(self.mock_control, 'create_entry_control')
         self.mock_holder.attach_mock(self.mock_layout, 'Layout')
-        self.mock_holder.attach_mock(self.mock_man, 'create_entry_man')
+        self.mock_holder.attach_mock(self.mock_man, 'create_entry_doc')
 
     def test_first_with_man(self):
         entry = MagicMock(man='qqq')
@@ -195,7 +195,7 @@ class CreateEntryRowsUnitTests(SettingsPanelTestCase):
             call.create_entry_label(entry),
             call.create_entry_control(entry),
             call.Layout(),
-            call.create_entry_man(entry)
+            call.create_entry_doc(entry)
         ])
 
     def test_not_first_with_man(self):
@@ -207,7 +207,7 @@ class CreateEntryRowsUnitTests(SettingsPanelTestCase):
             call.create_entry_label(entry),
             call.create_entry_control(entry),
             call.Layout(),
-            call.create_entry_man(entry)
+            call.create_entry_doc(entry)
         ])
 
     def test_first_no_man(self):
