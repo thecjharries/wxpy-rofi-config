@@ -125,3 +125,20 @@ class CreateEntryLabelUnitTests(SettingsPanelTestCase):
         self.panel.create_entry_label(MagicMock())
         self.mock_boxsizer.assert_called()
         self.mock_statictext.assert_called()
+
+
+class CreateEntryControlUnitTests(SettingsPanelTestCase):
+    RUNS = [
+        [MagicMock(var_type='string'), 'mock_textctrl'],
+        [MagicMock(var_type='number'), 'mock_intctrl'],
+        [MagicMock(var_type='boolean'), 'mock_checkbox'],
+        [MagicMock(var_type='none'), 'mock_statictext']
+    ]
+
+    def test_creation(self):
+        self.panel.grid_sizer = MagicMock()
+        for run in self.RUNS:
+            self.panel.create_entry_control(run[0])
+            caller = getattr(self, run[1])
+            caller.assert_called_once()
+            caller.reset_mock()
