@@ -131,6 +131,7 @@ class SettingsPanel(ScrolledPanel):
         self.resizable_texts.append(text)
         sizer.Add(text, proportion=-1, flag=EXPAND)
         self.grid_sizer.Add(sizer, proportion=-1, flag=EXPAND)
+        self.groups_to_hide[kind].append(text)
 
     def create_horizontal_rule(self):
         """Creates a simple horizontal rule"""
