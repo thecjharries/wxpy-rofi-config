@@ -84,6 +84,17 @@ class ConfigFrame(Frame):
         """Sends a resize request to app to coddle StaticTexts"""
         PostEvent(self.notebook, SizeEvent((-1, -1)))
 
+    def change_display_state(self, event=None):
+        if self.show_help_menu_item.Id == event.Id:
+            target = 'help_value'
+        elif self.show_man_menu_item.Id == event.Id:
+            target = 'man'
+        else:
+            target = None
+            event.Skip()
+        if target:
+            self.notebook.change_display_state(target, event.IsChecked())
+
     def save(self, event=None):  # pylint:disable=unused-argument
         """Fires a save event"""
         self.notebook.save()
