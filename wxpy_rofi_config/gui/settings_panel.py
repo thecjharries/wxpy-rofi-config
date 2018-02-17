@@ -1,4 +1,5 @@
 """This file provides the SettingsPanel class"""
+# pylint: disable=too-many-ancestors
 
 from wx import (
     ALIGN_RIGHT,
@@ -27,6 +28,10 @@ from wxpy_rofi_config.gui import FittedStaticText
 
 
 class SettingsPanel(ScrolledPanel):
+    """
+    The SettingsPanel contains all of the settings entries for a given settings
+    group. It attempts to resize and scroll where possible
+    """
 
     def __init__(self, config, parent):
         ScrolledPanel.__init__(
