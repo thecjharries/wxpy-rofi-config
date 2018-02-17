@@ -311,6 +311,32 @@ class ParseHelpConfigUnitTests(RofiTestCase):
         )
 
 
+class LoadHelpUnitTests(RofiTestCase):
+
+    @patch(
+        'wxpy_rofi_config.config.rofi.check_output',
+        return_value='''
+Global Options:
+    stuff
+
+Monitor
+'''
+    )
+    @patch.object(Rofi, 'parse_help_config')
+    def test_with_config(self, mock_parse, mock_output):
+        self.rofi.load_help()
+        mock_parse.assert_called_once()
+
+    @patch(
+        'wxpy_rofi_config.config.rofi.check_output',
+        return_value=''
+    )
+    @patch.object(Rofi, 'parse_help_config')
+    def test_without_config(self, mock_parse, mock_output):
+        self.rofi.load_help()
+        mock_parse.assert_not_called()
+
+
 class BuildUnitTests(RofiTestCase):
 
     @patch.object(Rofi, 'load_default_config')
