@@ -19,4 +19,3 @@ def test_cli():
         with patch.object(config_app, "__name__", "__main__"):
             config_app.cli()
             mock_app.assert_called_once_with(False)
-            # assert mock_exit.call_args[0][0] == 42
