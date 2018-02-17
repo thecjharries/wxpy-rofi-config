@@ -89,3 +89,15 @@ class GroupConfigUnitTests(SettingsNotebookTestCase):
             )
         else:
             assert 0
+
+
+class CreateTabUnitTests(SettingsNotebookTestCase):
+
+    @patch.object(SettingsNotebook, 'AddPage')
+    def test_construction(self, mock_add):
+        self.notebook.groups = MagicMock()
+        self.mock_settings_panel.assert_not_called()
+        mock_add.assert_not_called()
+        self.notebook.create_tab('qqq')
+        self.mock_settings_panel.assert_called_once()
+        mock_add.assert_called_once()
