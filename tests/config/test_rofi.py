@@ -7,7 +7,6 @@ from __future__ import print_function
 from unittest import TestCase
 
 from mock import call, MagicMock, patch
-from pytest import mark
 
 from wxpy_rofi_config.config import Entry, Rofi
 
