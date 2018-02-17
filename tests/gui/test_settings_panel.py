@@ -231,3 +231,23 @@ class CreateEntryRowsUnitTests(SettingsPanelTestCase):
             call.create_entry_control(entry),
             call.Layout(),
         ])
+
+
+class PopulateEntriesUnitTests(SettingsPanelTestCase):
+    ''''''
+
+
+class ResizeUnitTests(SettingsPanelTestCase):
+    MAN_TEXTS_COUNT = 5
+
+    @patch.object(SettingsPanel, 'GetSizer')
+    def test_calls(self, mock_sizer):
+        mock_resize = MagicMock()
+        self.panel.man_texts = []
+        for _ in range(0, self.MAN_TEXTS_COUNT):
+            self.panel.man_texts.append(MagicMock(resize=mock_resize))
+        mock_layout = MagicMock()
+        mock_sizer.return_value = MagicMock(Layout=mock_layout)
+        self.panel.resize()
+        self.assertEquals(mock_resize.call_count, self.MAN_TEXTS_COUNT)
+        mock_layout.assert_called_once()
