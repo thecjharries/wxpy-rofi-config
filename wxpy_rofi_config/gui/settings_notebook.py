@@ -1,10 +1,12 @@
 # pylint: disable=W,C,R
 
 from collections import OrderedDict
+from operator import attrgetter
 # pylint: disable=no-name-in-module
 from wx import (
     EVT_NOTEBOOK_PAGE_CHANGED,
     EVT_SIZE,
+    FindWindowByName,
     NB_LEFT,
     Notebook,
 )
@@ -39,7 +41,8 @@ class SettingsNotebook(Notebook):
                 self.groups[entry.group] = [entry]
 
     def create_tab(self, group):
-        tab = SettingsPanel(self.groups[group], self)
+        sorted_list = sorted(self.groups[group], key=attrgetter('key_name'))
+        tab = SettingsPanel(sorted_list, self)
         self.tabs.append(tab)
         self.AddPage(tab, group)
 
@@ -54,3 +57,17 @@ class SettingsNotebook(Notebook):
 
     def resize(self, event=None):
         self.tabs[self.GetSelection()].resize()
+
+    def save(self, event=None):
+        for index, tab in enumerate(self.tabs):
+            group = self.groups.keys()[index]
+            for entry in self.groups[group]:
+                widget = FindWindowByName(entry.key_name)
+                if hasattr(widget, 'GetValue'):
+                    value = widget.GetValue()
+                elif hasattr(widget, 'GetLabel'):
+                    value = widget.GetLabel()
+                else:
+                    value = entry.current
+                self.config.config[entry.key_name].current = value
+        self.config.save()

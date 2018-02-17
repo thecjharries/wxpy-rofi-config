@@ -1,7 +1,7 @@
 # pylint: disable=W,C,R
 # coding=utf8
 
-from re import compile as re_compile, match as re_match, sub
+from re import compile as re_compile, IGNORECASE, match as re_match, sub
 
 
 class Entry(object):
@@ -15,15 +15,15 @@ class Entry(object):
     }
 
     CLEAN_PATTERNS = {
-        'key': re_compile(r"_"),
+        'config_key': re_compile(r"_"),
         'number': re_compile(r"[^\d\-\.]"),
         'string': re_compile(r"(^(\"|')|(\"|')$)")
     }
 
     VAR_TYPE_VALUE_PATTERNS = {
-        'string': re_compile(r"^(\"|'|NULL)"),
+        'string': re_compile(r"^(\"|'|null)", IGNORECASE),
         'number': re_compile(r"^[\d\-\.]+$"),
-        'boolean': re_compile(r"TRUE|FALSE")
+        'boolean': re_compile(r"(true|false)", IGNORECASE)
     }
 
     VAR_TYPE_KEY_PATTERNS = {
@@ -40,6 +40,7 @@ class Entry(object):
 
     key_name = None
     group = DEFAULTS['group']
+    var_type = DEFAULTS['var_type']
 
     def __init__(self, **kwargs):
         for key, value in self.DEFAULTS.iteritems():
@@ -63,20 +64,19 @@ class Entry(object):
 
     def force_var_type(self, hint=None):
         if self.is_number(self.default) and self.is_number(self.current):
-            self.var_type = 'number'
-        else:
-            self.var_type = 'string'
+            return 'number'
+        return 'string'
 
     def ensure_useful_var_type(self):
         calls = [
-            (self.force_var_type, None),
-            (self.guess_var_type_from_value, self.current),
-            (self.guess_var_type_from_value, self.default),
-            (self.guess_var_type_from_key, self.key_name),
+            [self.force_var_type, None],
+            [self.guess_var_type_from_value, self.current],
+            [self.guess_var_type_from_value, self.default],
+            [self.guess_var_type_from_key, self.key_name],
         ]
         while 'unknown' == self.var_type and calls:
             current_call = calls.pop()
-            current_call[0](current_call[1])
+            self.var_type = current_call[0](current_call[1])
 
     def look_for_useful_group(self):
         if self.DEFAULTS['group'] == self.group:
@@ -93,7 +93,9 @@ class Entry(object):
             return "%s: %d;" % (self.key_name, self.current)
         elif 'boolean' == self.var_type:
             return ("%s: %s;" % (self.key_name, self.current)).lower()
-        return '%s: "%s";' % (self.key_name, self.current)
+        elif 'string' == self.var_type:
+            return '%s: "%s";' % (self.key_name, self.current)
+        return "%s: %s;" % (self.key_name, self.current)
 
     @staticmethod
     def clean_config_key(key):

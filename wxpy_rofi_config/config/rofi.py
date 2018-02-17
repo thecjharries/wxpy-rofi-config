@@ -2,7 +2,7 @@
 # coding=utf8
 
 from collections import OrderedDict
-from os.path import join
+from os.path import expanduser, join
 from re import compile as re_compile, DOTALL, finditer, MULTILINE, search, sub
 from subprocess import check_output
 
@@ -11,11 +11,11 @@ from wxpy_rofi_config.config import Entry
 
 class Rofi(object):
 
-    DEFAULT_PATH = join('~', '.config', 'rofi', 'config.rasi')
+    DEFAULT_PATH = expanduser(join('~', '.config', 'rofi', 'config.rasi'))
 
     PATTERNS = {
         'RASI_ENTRY': re_compile(
-            r"^.*?(?P<key>[\w-]*):\s*(?P<value>.*?);.*?$",
+            r"^.*?(?:\s|\/|\*)(?P<key>[a-z][a-z0-9-]*):\s*(?P<value>.*?);.*?$",
             MULTILINE
         ),
         'RASI_COMMENT': re_compile(r"(\/\*.*?\*\/|\/\/.*?$)"),
@@ -28,7 +28,7 @@ class Rofi(object):
             DOTALL
         ),
         'MAN_ITEM': re_compile(
-            r"(?:^|\n\n) {7}-(?!no-)(?P<key>[\w-]+).*?\n\n(?P<man>(.(?!\n\n {7}-\w|$))*.(?!$))",
+            r"(?:^|\n\n) {7}-(?!no-)(?P<key>[\w-]+).*?\n\n(?P<man>(.(?!\n\n {7}-\w|$))*.?)",
             DOTALL
         ),
         'CLEAN_GROUP': re_compile(r" settings? ?"),
@@ -50,6 +50,7 @@ class Rofi(object):
 
     def __init__(self):
         self.config = OrderedDict()
+        self.groups = []
 
     def assign_rasi_entry(self, key_value_match, destination='default'):
         key = key_value_match.group('key')
@@ -77,6 +78,8 @@ class Rofi(object):
     def process_config(self):
         for _, entry in self.config.iteritems():
             entry.process_entry()
+            if not entry.group in self.groups:
+                self.groups.append(entry.group)
 
     def clean_entry_man(self, contents):
         for substitution in self.PATTERNS['CLEAN_MAN']:
@@ -135,5 +138,7 @@ class Rofi(object):
         return output
 
     def save(self, path=None):
+        if path is None:
+            path = self.DEFAULT_PATH
         with open(path, 'w') as rasi_file:
             rasi_file.write(self.to_rasi())

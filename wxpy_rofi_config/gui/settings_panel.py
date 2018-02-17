@@ -3,6 +3,7 @@
 # pylint: disable=no-name-in-module
 from wx import (
     ALIGN_RIGHT,
+    ALL,
     BOLD,
     BoxSizer,
     CheckBox,
@@ -45,7 +46,12 @@ class SettingsPanel(ScrolledPanel):
         self.grid_sizer = FlexGridSizer(2, 10, 10)
         self.populate_entries(self.config)
         self.grid_sizer.AddGrowableCol(1, 1)
-        self.main_sizer.Add(self.grid_sizer, proportion=1, flag=EXPAND)
+        self.main_sizer.Add(
+            self.grid_sizer,
+            proportion=1,
+            flag=EXPAND | ALL,
+            border=10
+        )
         self.SetSizer(self.main_sizer)
         self.SetupScrolling()
 
