@@ -31,8 +31,8 @@ class Rofi(object):
         ),
         'RASI_COMMENT': re_compile(r"(\/\*.*?\*\/|\/\/.*?$)", MULTILINE),
         'MAN_CONFIG_BLOCK': re_compile(
-            r"\nCONFIGURATION(.*?)\n\w",
-            DOTALL
+            r"\nconfiguration(.*?)\n\w",
+            DOTALL | IGNORECASE
         ),
         'MAN_GROUP': re_compile(
             r"\n {3}(?P<group>\w.*?)\n(?P<contents>(.(?!\n {3}\w|$))*)",
