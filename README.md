@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/thecjharries/wxpy-rofi-config.svg?branch=master)](https://travis-ci.org/thecjharries/wxpy-rofi-config) [![Coverage Status](https://coveralls.io/repos/github/thecjharries/wxpy-rofi-config/badge.svg)](https://coveralls.io/github/thecjharries/wxpy-rofi-config)
 
+**NOTE**: The builds are failing miserably on Travis because `wxPython` takes forever to build. I'll investigate a Docker later. In the mean time, if you're interested, all the tests are in the repo. `master` should always be (fairly) stable and near 100% coverage (for now).
+
 I've got a few goals with this project:
 
 1. Test out `wxPython >=4.0`
