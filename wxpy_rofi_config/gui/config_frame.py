@@ -1,5 +1,7 @@
 """This file provides the ConfigFrame class"""
 
+# pylint:disable=too-many-ancestors
+
 from wx import (
     BoxSizer,
     EVT_INIT_DIALOG,
