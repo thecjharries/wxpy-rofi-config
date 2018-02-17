@@ -72,7 +72,7 @@ class AttemptToCleanValues(EntryTestCase):
     def test_without_method(self, mock_clean):
         self.entry.var_type = 'not a method'
         self.entry.attempt_to_clean_values()
-        self.assertEquals(mock_clean.call_count, 0)
+        mock_clean.assert_not_called()
         self.assertEquals(self.entry.default, self.DEFAULT)
         self.assertEquals(self.entry.current, self.CURRENT)
 
@@ -125,9 +125,9 @@ class EnsureUsefulVarTypeUnitTests(EntryTestCase):
     def test_known_type(self, mock_key, mock_value, mock_force):
         self.entry.var_type = 'string'
         self.entry.ensure_useful_var_type()
-        self.assertEquals(mock_key.call_count, 0)
-        self.assertEquals(mock_value.call_count, 0)
-        self.assertEquals(mock_force.call_count, 0)
+        mock_key.assert_not_called()
+        mock_value.assert_not_called()
+        mock_force.assert_not_called()
 
     @patch.object(
         Entry,
@@ -148,8 +148,8 @@ class EnsureUsefulVarTypeUnitTests(EntryTestCase):
         self.entry.var_type = 'unknown'
         self.entry.ensure_useful_var_type()
         mock_key.assert_called_once_with(Entry.DEFAULTS['key_name'])
-        self.assertEquals(mock_value.call_count, 0)
-        self.assertEquals(mock_force.call_count, 0)
+        mock_value.assert_not_called()
+        mock_force.assert_not_called()
 
     @patch.object(
         Entry,
@@ -169,9 +169,9 @@ class EnsureUsefulVarTypeUnitTests(EntryTestCase):
     def test_value_type(self, mock_key, mock_value, mock_force):
         self.entry.var_type = 'unknown'
         self.entry.ensure_useful_var_type()
-        self.assertEquals(mock_key.call_count, 1)
+        mock_key.assert_called_once()
         mock_value.assert_called_once_with(Entry.DEFAULTS['default'])
-        self.assertEquals(mock_force.call_count, 0)
+        mock_force.assert_not_called()
 
     @patch.object(
         Entry,
@@ -191,7 +191,7 @@ class EnsureUsefulVarTypeUnitTests(EntryTestCase):
     def test_force_type(self, mock_key, mock_value, mock_force):
         self.entry.var_type = 'unknown'
         self.entry.ensure_useful_var_type()
-        self.assertEquals(mock_key.call_count, 1)
+        mock_key.assert_called_once()
         self.assertEquals(mock_value.call_count, 2)
         mock_force.assert_called_once_with(None)
 
@@ -202,7 +202,7 @@ class LookForUsefulGroupUnitTests(EntryTestCase):
     def test_changed_group(self, mock_guess):
         self.entry.group = 'qqq'
         self.entry.look_for_useful_group()
-        self.assertEquals(mock_guess.call_count, 0)
+        mock_guess.assert_not_called()
 
     @patch.object(Entry, 'guess_group_from_key')
     def test_default_group(self, mock_guess):

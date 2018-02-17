@@ -1,4 +1,3 @@
-# pylint: disable=attribute-defined-outside-init
 # pylint: disable=missing-docstring
 # pylint: disable=unused-argument
 
@@ -37,7 +36,7 @@ class AssignRasiEntryUnitTests(RofiTestCase):
         mock_match = MagicMock(group=lambda x: x)
         self.rofi.config['key'] = MagicMock(default='not value')
         self.rofi.assign_rasi_entry(mock_match)
-        self.assertEquals(mock_entry.call_count, 0)
+        mock_entry.assert_not_called()
         self.assertEquals(self.rofi.config['key'].default, 'value')
 
     @patch('wxpy_rofi_config.config.rofi.Entry')
