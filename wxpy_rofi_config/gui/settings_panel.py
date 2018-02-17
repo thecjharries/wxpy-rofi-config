@@ -43,7 +43,7 @@ class SettingsPanel(ScrolledPanel):
             size=(-1, -1)
         )
         self.config = config
-        self.man_texts = []
+        self.resizable_texts = []
         self.font = Font(12, FONTFAMILY_DEFAULT,
                          FONTSTYLE_NORMAL, FONTWEIGHT_BOLD)
         self.create_main_grid()
@@ -109,7 +109,7 @@ class SettingsPanel(ScrolledPanel):
             )
         self.grid_sizer.Add(control, proportion=-1, flag=EXPAND)
 
-    def create_entry_man(self, entry):
+    def create_entry_doc(self, entry, kind='help_value'):
         """Creates the documentation labels for an entry"""
         self.grid_sizer.Add(
             BoxSizer(HORIZONTAL),
@@ -118,8 +118,8 @@ class SettingsPanel(ScrolledPanel):
         )
         sizer = BoxSizer(HORIZONTAL)
         text = FittedStaticText(self)
-        text.set_label(entry.man)
-        self.man_texts.append(text)
+        text.set_label(getattr(entry, kind))
+        self.resizable_texts.append(text)
         sizer.Add(text, proportion=-1, flag=EXPAND)
         self.grid_sizer.Add(sizer, proportion=-1, flag=EXPAND)
 
@@ -140,11 +140,13 @@ class SettingsPanel(ScrolledPanel):
         if not_first:
             self.create_horizontal_rule()
             self.create_horizontal_rule()
+        if entry.help_value:
+            self.create_entry_doc(entry, 'help_value')
         self.create_entry_label(entry)
         self.create_entry_control(entry)
         self.grid_sizer.Layout()
         if entry.man:
-            self.create_entry_man(entry)
+            self.create_entry_doc(entry, 'man')
 
     def populate_entries(self, config):
         """
@@ -157,6 +159,6 @@ class SettingsPanel(ScrolledPanel):
 
     def resize(self):
         """Forces each man label to resize and redefines its own layout"""
-        for man_text in self.man_texts:
-            man_text.resize()
+        for resizable_text in self.resizable_texts:
+            resizable_text.resize()
         self.GetSizer().Layout()

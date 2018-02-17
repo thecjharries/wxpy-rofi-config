@@ -148,7 +148,7 @@ class CreateEntryManUnitTests(SettingsPanelTestCase):
         self.panel.grid_sizer = MagicMock()
         self.mock_fittedstatictext.assert_not_called()
         self.mock_boxsizer.assert_not_called()
-        self.panel.create_entry_man(MagicMock())
+        self.panel.create_entry_doc(MagicMock())
         self.mock_boxsizer.assert_called()
         self.mock_fittedstatictext.assert_called()
 
@@ -175,9 +175,9 @@ class CreateEntryRowsUnitTests(SettingsPanelTestCase):
         control_patcher = patch.object(SettingsPanel, 'create_entry_control')
         self.mock_control = control_patcher.start()
         self.addCleanup(control_patcher.stop)
-        man_patcher = patch.object(SettingsPanel, 'create_entry_man')
-        self.mock_man = man_patcher.start()
-        self.addCleanup(man_patcher.stop)
+        doc_patcher = patch.object(SettingsPanel, 'create_entry_doc')
+        self.mock_doc = doc_patcher.start()
+        self.addCleanup(doc_patcher.stop)
         self.mock_layout = MagicMock()
         self.panel.grid_sizer = MagicMock(Layout=self.mock_layout)
 
@@ -186,20 +186,84 @@ class CreateEntryRowsUnitTests(SettingsPanelTestCase):
         self.mock_holder.attach_mock(self.mock_label, 'create_entry_label')
         self.mock_holder.attach_mock(self.mock_control, 'create_entry_control')
         self.mock_holder.attach_mock(self.mock_layout, 'Layout')
-        self.mock_holder.attach_mock(self.mock_man, 'create_entry_man')
+        self.mock_holder.attach_mock(self.mock_doc, 'create_entry_doc')
 
-    def test_first_with_man(self):
-        entry = MagicMock(man='qqq')
+    def test_first_help_man(self):
+        entry = MagicMock(
+            help_value='qqq',
+            man='qqq'
+        )
+        self.panel.create_entry_rows(entry, False)
+        self.mock_holder.assert_has_calls([
+            call.create_entry_doc(entry, 'help_value'),
+            call.create_entry_label(entry),
+            call.create_entry_control(entry),
+            call.Layout(),
+            call.create_entry_doc(entry, 'man')
+        ])
+
+    def test_not_first_help_man(self):
+        entry = MagicMock(
+            help_value='qqq',
+            man='qqq'
+        )
+        self.panel.create_entry_rows(entry, True)
+        self.mock_holder.assert_has_calls([
+            call.create_horizontal_rule(),
+            call.create_horizontal_rule(),
+            call.create_entry_doc(entry, 'help_value'),
+            call.create_entry_label(entry),
+            call.create_entry_control(entry),
+            call.Layout(),
+            call.create_entry_doc(entry, 'man')
+        ])
+
+    def test_first_help_no_man(self):
+        entry = MagicMock(
+            help_value='qqq',
+            man=None,
+        )
+        self.panel.create_entry_rows(entry, False)
+        self.mock_holder.assert_has_calls([
+            call.create_entry_doc(entry, 'help_value'),
+            call.create_entry_label(entry),
+            call.create_entry_control(entry),
+            call.Layout(),
+        ])
+
+    def test_not_first_help_no_man(self):
+        entry = MagicMock(
+            help_value='qqq',
+            man=None,
+        )
+        self.panel.create_entry_rows(entry, True)
+        self.mock_holder.assert_has_calls([
+            call.create_horizontal_rule(),
+            call.create_horizontal_rule(),
+            call.create_entry_doc(entry, 'help_value'),
+            call.create_entry_label(entry),
+            call.create_entry_control(entry),
+            call.Layout(),
+        ])
+
+    def test_first_no_help_man(self):
+        entry = MagicMock(
+            help_value=None,
+            man='qqq',
+        )
         self.panel.create_entry_rows(entry, False)
         self.mock_holder.assert_has_calls([
             call.create_entry_label(entry),
             call.create_entry_control(entry),
             call.Layout(),
-            call.create_entry_man(entry)
+            call.create_entry_doc(entry, 'man')
         ])
 
-    def test_not_first_with_man(self):
-        entry = MagicMock(man='qqq')
+    def test_not_first_no_help_man(self):
+        entry = MagicMock(
+            help_value=None,
+            man='qqq',
+        )
         self.panel.create_entry_rows(entry, True)
         self.mock_holder.assert_has_calls([
             call.create_horizontal_rule(),
@@ -207,24 +271,30 @@ class CreateEntryRowsUnitTests(SettingsPanelTestCase):
             call.create_entry_label(entry),
             call.create_entry_control(entry),
             call.Layout(),
-            call.create_entry_man(entry)
+            call.create_entry_doc(entry, 'man')
         ])
 
-    def test_first_no_man(self):
-        entry = MagicMock()
-        self.panel.create_entry_rows(entry, False)
+    def test_not_first_no_help_no_man(self):
+        entry = MagicMock(
+            help_value=None,
+            man=None,
+        )
+        self.panel.create_entry_rows(entry, True)
         self.mock_holder.assert_has_calls([
+            call.create_horizontal_rule(),
+            call.create_horizontal_rule(),
             call.create_entry_label(entry),
             call.create_entry_control(entry),
             call.Layout(),
         ])
 
-    def test_not_first_no_man(self):
-        entry = MagicMock()
-        self.panel.create_entry_rows(entry, True)
+    def test_first_no_help_no_man(self):
+        entry = MagicMock(
+            help_value=None,
+            man=None,
+        )
+        self.panel.create_entry_rows(entry, False)
         self.mock_holder.assert_has_calls([
-            call.create_horizontal_rule(),
-            call.create_horizontal_rule(),
             call.create_entry_label(entry),
             call.create_entry_control(entry),
             call.Layout(),
@@ -252,9 +322,9 @@ class ResizeUnitTests(SettingsPanelTestCase):
     @patch.object(SettingsPanel, 'GetSizer')
     def test_calls(self, mock_sizer):
         mock_resize = MagicMock()
-        self.panel.man_texts = []
+        self.panel.resizable_texts = []
         for _ in range(0, self.MAN_TEXTS_COUNT):
-            self.panel.man_texts.append(MagicMock(resize=mock_resize))
+            self.panel.resizable_texts.append(MagicMock(resize=mock_resize))
         mock_layout = MagicMock()
         mock_sizer.return_value = MagicMock(Layout=mock_layout)
         self.panel.resize()
