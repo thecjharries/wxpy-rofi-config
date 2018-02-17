@@ -33,6 +33,8 @@ class ConstructorUnitTests(EntryTestCase):
         'group': 'Mouse',
         'default': 10,
         'current': 20,
+        'help_value': 'zzz',
+        'help_type': 'key',
         'man': 'no soup for you'
     }
 
