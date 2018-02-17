@@ -56,3 +56,30 @@ class AssignCurrentUnitTests(EntryTestCase):
                 self.entry.assign_current()
                 self.assertEquals(self.entry.current, self.EXPECTED[index])
                 index += 1
+
+
+class AttemptToCleanValues(EntryTestCase):
+    RETURN = 47
+    DEFAULT = 22
+    CURRENT = 12
+
+    def setUp(self):
+        EntryTestCase.setUp(self)
+        self.entry.default = self.DEFAULT
+        self.entry.current = self.CURRENT
+
+    @patch.object(Entry, 'clean_number', return_value=RETURN)
+    def test_without_method(self, mock_clean):
+        self.entry.var_type = 'not a method'
+        self.entry.attempt_to_clean_values()
+        self.assertEquals(mock_clean.call_count, 0)
+        self.assertEquals(self.entry.default, self.DEFAULT)
+        self.assertEquals(self.entry.current, self.CURRENT)
+
+    @patch.object(Entry, 'clean_number', return_value=RETURN)
+    def test_without_method(self, mock_clean):
+        self.entry.var_type = 'number'
+        self.entry.attempt_to_clean_values()
+        self.assertEquals(mock_clean.call_count, 2)
+        self.assertEquals(self.entry.default, self.RETURN)
+        self.assertEquals(self.entry.current, self.RETURN)
