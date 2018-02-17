@@ -128,3 +128,13 @@ class BindEventsUnitTests(SettingsNotebookTestCase):
         mock_bind.assert_not_called()
         self.notebook.bind_events()
         mock_bind.assert_called()
+
+
+class ResizeUnitTests(SettingsNotebookTestCase):
+
+    @patch.object(SettingsNotebook, 'GetSelection', return_value=0)
+    def test_calls(self, mock_selection):
+        self.notebook.tabs = [MagicMock()]
+        mock_selection.assert_not_called()
+        self.notebook.resize()
+        mock_selection.assert_called_once()
