@@ -1,8 +1,5 @@
 """This file provides the ConfigFrame class"""
-# pylint: disable=W,C,R
 
-from collections import OrderedDict
-# pylint: disable=no-name-in-module
 from wx import (
     BoxSizer,
     EVT_INIT_DIALOG,
@@ -17,7 +14,7 @@ from wx import (
     SizeEvent,
     VERTICAL,
 )
-# pylint: enable=no-name-in-module
+
 
 # from wxpy_rofi_config.config import Rofi
 from wxpy_rofi_config.gui import SettingsNotebook
