@@ -1,5 +1,6 @@
-# pylint: disable=W,C,R
 # coding=utf8
+
+"""This file provides the Rofi class"""
 
 from collections import OrderedDict
 from os.path import expanduser, join
@@ -10,6 +11,7 @@ from wxpy_rofi_config.config import Entry
 
 
 class Rofi(object):
+    """Rofi holds all the config for rofi"""
 
     DEFAULT_PATH = expanduser(join('~', '.config', 'rofi', 'config.rasi'))
 
@@ -38,7 +40,7 @@ class Rofi(object):
                 ''
             ],
             [
-                re_compile(r" (\w+)‐\n([^\s])"),
+                re_compile(r" (\w+)(‐|-)\n([^\s])"),
                 r" \1\2"
             ],
             [
@@ -53,6 +55,10 @@ class Rofi(object):
         self.groups = []
 
     def assign_rasi_entry(self, key_value_match, destination='default'):
+        """
+        Given a match from a rasi file, attempts to pull values from the input.
+        Assigns either default or current.
+        """
         key = key_value_match.group('key')
         value = key_value_match.group('value')
         if key in self.config:
@@ -63,14 +69,26 @@ class Rofi(object):
             self.config[key] = Entry(**arg_dict)
 
     def parse_rasi(self, rasi, destination='default'):
+        """Parses the provided rasi string for entries"""
         for discovered_entry in finditer(self.PATTERNS['RASI_ENTRY'], rasi):
             self.assign_rasi_entry(discovered_entry, destination)
 
     def load_default_config(self):
+        """
+        Loads the default configuration.
+
+        WARNING: This can actually create broken config depending on what you've
+        got on your system. For example, the official file_browser example
+        creates `display-file_browser`, which kills rofi.
+        see: https://gitcrate.org/qtools/rofi-file_browser
+        """
         raw = check_output(['rofi', '-no-config', '-dump-config'])
         self.parse_rasi(raw, 'default')
 
     def load_current_config(self):
+        """
+        Loads the currently active config (what exists of it)
+        """
         raw = check_output(['rofi', '-dump-config'])
         raw_cleaned = sub(
             self.PATTERNS['RASI_COMMENT'],
@@ -81,12 +99,14 @@ class Rofi(object):
         self.parse_rasi(raw_cleaned, 'current')
 
     def process_config(self):
+        """Process all entries for useful information"""
         for _, entry in self.config.iteritems():
             entry.process_entry()
             if not entry.group in self.groups:
                 self.groups.append(entry.group)
 
     def clean_entry_man(self, contents):
+        """Cleans a single man entry"""
         for substitution in self.PATTERNS['CLEAN_MAN']:
             contents = sub(
                 substitution[0],
@@ -97,6 +117,7 @@ class Rofi(object):
         return contents
 
     def parse_man_entry(self, group, man_entry_match):
+        """Looks for a single man entry"""
         key = man_entry_match.group('key')
         if key in self.config:
             man = self.clean_entry_man(man_entry_match.group('man'))
@@ -105,37 +126,45 @@ class Rofi(object):
                 setattr(self.config[key], 'man', man)
 
     def parse_man_group(self, man_group_match):
+        """Looks for a group of settings in man"""
         group = sub(
             self.PATTERNS['CLEAN_GROUP'],
             '',
             man_group_match.group('group')
         )
         for discovered_entry in finditer(
-            self.PATTERNS['MAN_ITEM'],
-            man_group_match.group('contents')
+                self.PATTERNS['MAN_ITEM'],
+                man_group_match.group('contents')
         ):
             self.parse_man_entry(group, discovered_entry)
 
     def parse_man_config(self, man_config_match):
+        """Looks for the config man section"""
         for discovered_group in finditer(
-            self.PATTERNS['MAN_GROUP'],
-            man_config_match
+                self.PATTERNS['MAN_GROUP'],
+                man_config_match
         ):
             self.parse_man_group(discovered_group)
 
     def load_man(self):
+        """Loads man rofi"""
         raw = check_output(['man', 'rofi'])
         possible_config = search(self.PATTERNS['MAN_CONFIG_BLOCK'], raw)
         if possible_config:
             self.parse_man_config(possible_config.group())
 
     def build(self):
+        """
+        Loads defaults, adds current values, discovers available documentation,
+        and processes all entries
+        """
         self.load_default_config()
         self.load_current_config()
         self.load_man()
         self.process_config()
 
     def to_rasi(self):
+        """Returns a rasi string composed of all its entries"""
         output = "configuration {\n"
         for key in self.config:
             output += "    %s\n" % self.config[key].to_rasi()
@@ -143,6 +172,7 @@ class Rofi(object):
         return output
 
     def save(self, path=None):
+        """Saves the config file"""
         if path is None:
             path = self.DEFAULT_PATH
         with open(path, 'w') as rasi_file:

@@ -1,7 +1,9 @@
-# pylint: disable=W,C,R
+# coding=utf8
 
-from collections import OrderedDict
-# pylint: disable=no-name-in-module
+"""This file provides the ConfigFrame class"""
+
+# pylint:disable=too-many-ancestors
+
 from wx import (
     BoxSizer,
     EVT_INIT_DIALOG,
@@ -16,13 +18,14 @@ from wx import (
     SizeEvent,
     VERTICAL,
 )
-# pylint: enable=no-name-in-module
+
 
 # from wxpy_rofi_config.config import Rofi
 from wxpy_rofi_config.gui import SettingsNotebook
 
 
 class ConfigFrame(Frame):
+    """ConfigFrame is responsible for booting the app and running its menus"""
 
     def __init__(self):
         Frame.__init__(
@@ -36,6 +39,7 @@ class ConfigFrame(Frame):
         self.bind_events()
 
     def create_panel(self):
+        """Creates the main app panel"""
         panel = Panel(self)
         sizer = BoxSizer(VERTICAL)
         self.notebook = SettingsNotebook(panel)
@@ -45,6 +49,7 @@ class ConfigFrame(Frame):
         self.Center()
 
     def create_menu(self):
+        """Creates the app menu"""
         menu_bar = MenuBar()
         file_menu = Menu()
         self.save_menu_item = file_menu.Append(NewId(), '&Save\tCtrl+s')
@@ -53,15 +58,19 @@ class ConfigFrame(Frame):
         self.SetMenuBar(menu_bar)
 
     def bind_events(self):
+        """Binds all useful events"""
         self.Bind(EVT_INIT_DIALOG, self.boot)
         self.Bind(EVT_MENU, self.save, self.save_menu_item)
         self.Bind(EVT_MENU, self.exit, self.exit_menu_item)
 
-    def boot(self):
+    def boot(self, event=None):  # pylint:disable=unused-argument
+        """Sends a resize request to app to coddle StaticTexts"""
         PostEvent(self.notebook, SizeEvent((-1, -1)))
 
-    def save(self, event=None):
+    def save(self, event=None):  # pylint:disable=unused-argument
+        """Fires a save event"""
         self.notebook.save()
 
-    def exit(self, event=None):
+    def exit(self, event=None):  # pylint:disable=unused-argument
+        """Exits the app"""
         self.Close()
