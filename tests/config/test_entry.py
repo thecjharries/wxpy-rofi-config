@@ -77,9 +77,29 @@ class AttemptToCleanValues(EntryTestCase):
         self.assertEquals(self.entry.current, self.CURRENT)
 
     @patch.object(Entry, 'clean_number', return_value=RETURN)
-    def test_without_method(self, mock_clean):
+    def test_with_method(self, mock_clean):
         self.entry.var_type = 'number'
         self.entry.attempt_to_clean_values()
         self.assertEquals(mock_clean.call_count, 2)
         self.assertEquals(self.entry.default, self.RETURN)
         self.assertEquals(self.entry.current, self.RETURN)
+
+
+class ForceVarTypeUnitTests(EntryTestCase):
+
+    # MOCK_NUMBER = lambda
+
+    RESULTS = ['string', 'number']
+
+    @patch.object(
+        Entry,
+        'is_number',
+        side_effect=lambda x: x > 0
+    )
+    def test_values(self, mock_number):
+        for default in [0, 1]:
+            for current in [0, 1]:
+                self.entry.default = default
+                self.entry.current = current
+                var_type = self.entry.force_var_type()
+                self.assertEquals(self.RESULTS[default & current], var_type)
