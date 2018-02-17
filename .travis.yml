@@ -20,7 +20,7 @@ install:
   - python setup.py install
 
 script:
-  - tox
+  - travis_wait tox
 
 after_script:
   - coveralls
