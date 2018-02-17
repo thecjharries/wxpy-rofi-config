@@ -1,7 +1,5 @@
-# pylint: disable=attribute-defined-outside-init
 # pylint: disable=missing-docstring
 # pylint: disable=too-many-instance-attributes
-# pylint: disable=unused-argument
 
 from __future__ import print_function
 

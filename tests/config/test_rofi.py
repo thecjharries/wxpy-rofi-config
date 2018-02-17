@@ -1,4 +1,3 @@
-# pylint: disable=attribute-defined-outside-init
 # pylint: disable=missing-docstring
 # pylint: disable=unused-argument
 
