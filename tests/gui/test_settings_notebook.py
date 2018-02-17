@@ -138,3 +138,67 @@ class ResizeUnitTests(SettingsNotebookTestCase):
         mock_selection.assert_not_called()
         self.notebook.resize()
         mock_selection.assert_called_once()
+
+
+class SaveUnitTests(SettingsNotebookTestCase):
+    TABS = ['one', 'two']
+    GROUPS = {
+        'one': [
+            MagicMock(
+                key_name='one',
+                current='one'
+            )
+        ],
+        'two': [
+            MagicMock(
+                key_name='two',
+                current='two'
+            ),
+            MagicMock(
+                key_name='three',
+                current='three'
+            )
+        ],
+    }
+
+    WINDOWS = {
+        'one': MagicMock(GetValue=MagicMock(return_value=1)),
+        'two': MagicMock(
+            spec=['GetLabel'],
+            GetLabel=MagicMock(return_value=22)
+        ),
+        'three': MagicMock(spec=[])
+    }
+
+    CONFIG = {
+        'one': MagicMock(
+            key_name='one',
+            current='one'
+        ),
+        'two': MagicMock(
+            key_name='two',
+            current='two'
+        ),
+        'three': MagicMock(
+            key_name='three',
+            current='three'
+        )
+    }
+
+    RESULT = {
+        'one': 1,
+        'two': 22,
+        'three': 'three'
+    }
+
+    def test_execution(self):
+        self.notebook.config = MagicMock(config=self.CONFIG)
+        self.notebook.tabs = self.TABS
+        self.notebook.groups = self.GROUPS
+        self.mock_findwindowbyname.side_effect = lambda x: self.WINDOWS[x]
+        self.notebook.save()
+        for key, value in self.RESULT.iteritems():
+            self.assertEquals(
+                self.notebook.config.config[key].current,
+                value
+            )
