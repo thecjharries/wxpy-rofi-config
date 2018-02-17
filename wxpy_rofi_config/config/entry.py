@@ -27,8 +27,8 @@ class Entry(object):
     }
 
     VAR_TYPE_KEY_PATTERNS = {
-        'mouse': re_compile(r"^kb-"),
-        'key': re_compile(r"^m(e|l)-"),
+        'key': re_compile(r"^kb-"),
+        'mouse': re_compile(r"^m(e|l)-"),
         'string': re_compile(r"^display-")
     }
 
@@ -39,6 +39,7 @@ class Entry(object):
     }
 
     key_name = None
+    group = DEFAULTS['group']
 
     def __init__(self, **kwargs):
         for key, value in self.DEFAULTS.iteritems():
@@ -77,10 +78,15 @@ class Entry(object):
             current_call = calls.pop()
             current_call[0](current_call[1])
 
+    def look_for_useful_group(self):
+        if self.DEFAULTS['group'] == self.group:
+            self.group = self.guess_group_from_key(self.key_name)
+
     def process_entry(self):
         self.assign_current()
         self.attempt_to_clean_values()
         self.ensure_useful_var_type()
+        self.look_for_useful_group()
 
     @staticmethod
     def clean_config_key(key):
@@ -142,9 +148,3 @@ class Entry(object):
             Entry.GROUP_KEY_PATTERNS,
             Entry.DEFAULTS['group']
         )
-
-
-entry = Entry(key_name='qqq')
-entry.process_entry()
-for key in dir(entry):
-    print(key, getattr(entry, key))
