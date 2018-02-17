@@ -1,19 +1,22 @@
-# pylint: disable=W,C,R
+# coding=utf8
 
-# pylint: disable=no-name-in-module
+"""This file provides the SettingsPanel class"""
+
+# pylint: disable=too-many-ancestors
+
 from wx import (
     ALIGN_RIGHT,
     ALL,
-    BOLD,
     BoxSizer,
     CheckBox,
-    DEFAULT,
     EXPAND,
     FlexGridSizer,
     Font,
+    FONTFAMILY_DEFAULT,
+    FONTSTYLE_NORMAL,
+    FONTWEIGHT_BOLD,
     HORIZONTAL,
     LI_HORIZONTAL,
-    NORMAL,
     StaticLine,
     StaticText,
     SYS_COLOUR_WINDOWTEXT,
@@ -23,12 +26,15 @@ from wx import (
 )
 from wx.lib.scrolledpanel import ScrolledPanel
 from wx.lib.intctrl import IntCtrl
-# pylint: enable=no-name-in-module
 
 from wxpy_rofi_config.gui import FittedStaticText
 
 
 class SettingsPanel(ScrolledPanel):
+    """
+    The SettingsPanel contains all of the settings entries for a given settings
+    group. It attempts to resize and scroll where possible
+    """
 
     def __init__(self, config, parent):
         ScrolledPanel.__init__(
@@ -38,10 +44,12 @@ class SettingsPanel(ScrolledPanel):
         )
         self.config = config
         self.man_texts = []
-        self.font = Font(12, DEFAULT, NORMAL, BOLD)
+        self.font = Font(12, FONTFAMILY_DEFAULT,
+                         FONTSTYLE_NORMAL, FONTWEIGHT_BOLD)
         self.create_main_grid()
 
     def create_main_grid(self):
+        """Creates the primary grid and enables scrolling"""
         self.main_sizer = BoxSizer(HORIZONTAL)
         self.grid_sizer = FlexGridSizer(2, 10, 10)
         self.populate_entries(self.config)
@@ -56,6 +64,7 @@ class SettingsPanel(ScrolledPanel):
         self.SetupScrolling()
 
     def create_entry_label(self, entry):
+        """Creates an entry label, which usually contains the setting name"""
         sizer = BoxSizer(VERTICAL)
         text = StaticText(
             self,
@@ -69,6 +78,7 @@ class SettingsPanel(ScrolledPanel):
         self.grid_sizer.Add(sizer, proportion=1, flag=EXPAND)
 
     def create_entry_control(self, entry):
+        """Creates an accessible control for the entry"""
         if 'string' == entry.var_type:
             control = TextCtrl(
                 self,
@@ -100,6 +110,7 @@ class SettingsPanel(ScrolledPanel):
         self.grid_sizer.Add(control, proportion=-1, flag=EXPAND)
 
     def create_entry_man(self, entry):
+        """Creates the documentation labels for an entry"""
         self.grid_sizer.Add(
             BoxSizer(HORIZONTAL),
             proportion=1,
@@ -107,12 +118,13 @@ class SettingsPanel(ScrolledPanel):
         )
         sizer = BoxSizer(HORIZONTAL)
         text = FittedStaticText(self)
-        text.SetLabel(entry.man)
+        text.set_label(entry.man)
         self.man_texts.append(text)
         sizer.Add(text, proportion=-1, flag=EXPAND)
         self.grid_sizer.Add(sizer, proportion=-1, flag=EXPAND)
 
     def create_horizontal_rule(self):
+        """Creates a simple horizontal rule"""
         rule = StaticLine(
             self,
             style=LI_HORIZONTAL,
@@ -121,6 +133,10 @@ class SettingsPanel(ScrolledPanel):
         self.grid_sizer.Add(rule, proportion=1, flag=EXPAND)
 
     def create_entry_rows(self, entry, not_first=True):
+        """
+        Creates all the items for a single entry. It creates horizontal rules,
+        entry label and control, and documentation where available
+        """
         if not_first:
             self.create_horizontal_rule()
             self.create_horizontal_rule()
@@ -131,12 +147,16 @@ class SettingsPanel(ScrolledPanel):
             self.create_entry_man(entry)
 
     def populate_entries(self, config):
+        """
+        Parses all the available config options and generates their content
+        """
         not_first = False
         for entry in config:
             self.create_entry_rows(entry, not_first)
             not_first = True
 
     def resize(self):
+        """Forces each man label to resize and redefines its own layout"""
         for man_text in self.man_texts:
             man_text.resize()
         self.GetSizer().Layout()
