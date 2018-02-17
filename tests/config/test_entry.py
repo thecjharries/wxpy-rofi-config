@@ -194,3 +194,17 @@ class EnsureUsefulVarTypeUnitTests(EntryTestCase):
         self.assertEquals(mock_key.call_count, 1)
         self.assertEquals(mock_value.call_count, 2)
         mock_force.assert_called_once_with(None)
+
+
+class LookForUsefulGroupUnitTests(EntryTestCase):
+
+    @patch.object(Entry, 'guess_group_from_key')
+    def test_changed_group(self, mock_guess):
+        self.entry.group = 'qqq'
+        self.entry.look_for_useful_group()
+        self.assertEquals(mock_guess.call_count, 0)
+
+    @patch.object(Entry, 'guess_group_from_key')
+    def test_default_group(self, mock_guess):
+        self.entry.look_for_useful_group()
+        mock_guess.assert_called_once_with(Entry.DEFAULTS['key_name'])
