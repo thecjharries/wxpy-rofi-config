@@ -5,9 +5,7 @@ from __future__ import print_function
 
 from unittest import TestCase
 
-from mock import MagicMock, patch
-# from pytest.mark import parametrize
-from pytest import mark
+from mock import call, MagicMock, patch
 
 from wxpy_rofi_config.config import Entry
 
@@ -208,6 +206,27 @@ class LookForUsefulGroupUnitTests(EntryTestCase):
     def test_default_group(self, mock_guess):
         self.entry.look_for_useful_group()
         mock_guess.assert_called_once_with(Entry.DEFAULTS['key_name'])
+
+
+class ProcessEntryUnitTests(EntryTestCase):
+
+    @patch.object(Entry, 'assign_current')
+    @patch.object(Entry, 'ensure_useful_var_type')
+    @patch.object(Entry, 'attempt_to_clean_values')
+    @patch.object(Entry, 'look_for_useful_group')
+    def test_call(self, mock_look, mock_attempt, mock_ensure, mock_assign):
+        mock_holder = MagicMock()
+        mock_holder.attach_mock(mock_assign, 'assign_current')
+        mock_holder.attach_mock(mock_ensure, 'ensure_useful_var_type')
+        mock_holder.attach_mock(mock_attempt, 'attempt_to_clean_values')
+        mock_holder.attach_mock(mock_look, 'look_for_useful_group')
+        self.entry.process_entry()
+        mock_holder.assert_has_calls([
+            call.assign_current(),
+            call.ensure_useful_var_type(),
+            call.attempt_to_clean_values(),
+            call.look_for_useful_group()
+        ])
 
 
 class ToRasiUnitTests(EntryTestCase):
