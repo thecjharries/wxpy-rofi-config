@@ -40,7 +40,7 @@ class SettingsPanel(ScrolledPanel):
         self.grid_sizer = FlexGridSizer(2, 10, 10)
         self.populate_entries(self.config)
         self.grid_sizer.AddGrowableCol(1, 1)
-        self.main_sizer.Add(self.grid_sizer, -1, EXPAND)
+        self.main_sizer.Add(self.grid_sizer, proportion=-1, flag=EXPAND)
         self.SetSizer(self.main_sizer)
         self.SetupScrolling()
 
@@ -51,10 +51,10 @@ class SettingsPanel(ScrolledPanel):
             label=entry.key_name + ':',
             style=ALIGN_RIGHT | EXPAND
         )
-        sizer.Add((0, 0), 1, EXPAND)
-        sizer.Add(text, 0, EXPAND)
-        sizer.Add((0, 0), 1, EXPAND)
-        self.grid_sizer.Add(sizer, -1, EXPAND)
+        sizer.Add((0, 0), proportion=1, flag=EXPAND)
+        sizer.Add(text, proportion=0, flag=EXPAND)
+        sizer.Add((0, 0), proportion=1, flag=EXPAND)
+        self.grid_sizer.Add(sizer, -1, flag=EXPAND)
 
     def create_entry_control(self, entry):
         if 'string' == entry.var_type:
@@ -85,16 +85,16 @@ class SettingsPanel(ScrolledPanel):
                 name=entry.key_name,
                 size=(-1, -1),
             )
-        self.grid_sizer.Add(control, -1, EXPAND)
+        self.grid_sizer.Add(control, proportion=-1, flag=EXPAND)
 
     def create_entry_man(self, entry):
-        self.grid_sizer.Add(BoxSizer(), 1, EXPAND)
+        self.grid_sizer.Add(BoxSizer(), proportion=1, flag=EXPAND)
         sizer = BoxSizer(HORIZONTAL)
         text = FittedStaticText(self)
         text.SetLabel(entry.man)
         self.man_texts.append(text)
-        sizer.Add(text, 1, EXPAND)
-        self.grid_sizer.Add(sizer, -1, EXPAND)
+        sizer.Add(text, proportion=1, flag=EXPAND)
+        self.grid_sizer.Add(sizer, proportion=-1, flag=EXPAND)
 
     def create_horizontal_rule(self):
         rule = StaticLine(
@@ -102,7 +102,7 @@ class SettingsPanel(ScrolledPanel):
             style=LI_HORIZONTAL,
             size=(-1, 2)
         )
-        self.grid_sizer.Add(rule, 1, EXPAND)
+        self.grid_sizer.Add(rule, proportion=1, flag=EXPAND)
 
     def create_entry_rows(self, entry, not_first=True):
         if not_first:
