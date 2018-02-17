@@ -306,3 +306,28 @@ class CleanBooleanUnitTests(EntryTestCase):
                 run[1],
                 Entry.clean_boolean(run[0])
             )
+
+
+class CleanStringUnitTests(EntryTestCase):
+    RUNS = [
+        [None, ''],
+        ['"qqq"', 'qqq']
+    ]
+
+    def test_values(self):
+        for run in self.RUNS:
+            self.assertEquals(
+                run[1],
+                Entry.clean_string(run[0])
+            )
+
+
+# class IsNumberUnitTests(EntryTestCase):
+
+#     @patch(Entry, 'clean_string', return_value='0')
+#     def test_valid_number(self, mock_clean):
+#         self.assertTrue(Entry.is_number('10'))
+
+#     @patch(Entry, 'clean_string', side_effect=ValueError)
+#     def test_invvalid_number(self, mock_clean):
+#         self.assertTrue(Entry.is_number('10'))
