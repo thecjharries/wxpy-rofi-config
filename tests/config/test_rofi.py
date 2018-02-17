@@ -23,3 +23,9 @@ class RofiTestCase(TestCase):
 
     def construct_rofi(self):
         self.rofi = Rofi()
+
+
+def test_constructor():
+    rofi = Rofi()
+    assert not rofi.config
+    assert not rofi.groups
