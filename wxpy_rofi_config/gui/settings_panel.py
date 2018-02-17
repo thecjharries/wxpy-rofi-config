@@ -43,6 +43,10 @@ class SettingsPanel(ScrolledPanel):
             size=(-1, -1)
         )
         self.config = config
+        self.groups_to_hide = {
+            'help_value': [],
+            'man': []
+        }
         self.resizable_texts = []
         self.font = Font(
             12,
