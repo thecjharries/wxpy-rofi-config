@@ -57,7 +57,7 @@ class Rofi(object):
             ]
         ],
         'HELP_BLOCK': re_compile(
-            r"\nGlobal options:(.*?)(?:\n\n)",
+            r"\n?Global options:(?P<contents>.*?)(?:\n\n)",
             DOTALL
         ),
         'HELP_ENTRY': re_compile(
