@@ -174,3 +174,29 @@ class ParseManEntryUnitTests(RofiTestCase):
             self.rofi.config['key'].man,
             'man'
         )
+
+
+class ParseManGroupUnitTests(RofiTestCase):
+    INPUT = """
+
+       -one
+
+       one
+
+       -two
+
+       two
+
+       -three
+
+       three
+"""
+
+    @patch.object(Rofi, 'parse_man_entry')
+    def test_construction(self, mock_parse):
+        match = MagicMock(group=lambda x: self.INPUT)
+        self.rofi.parse_man_group(match)
+        self.assertEquals(
+            mock_parse.call_count,
+            3
+        )
