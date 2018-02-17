@@ -56,6 +56,7 @@ class Entry(object):
             self.current = self.default
 
     def attempt_to_clean_values(self):
+        self.key_name = self.clean_key(self.key_name)
         cleaner_method = "clean_%s" % self.var_type
         if hasattr(self, cleaner_method):
             callable_method = getattr(self, cleaner_method)
@@ -98,7 +99,7 @@ class Entry(object):
         return "%s: %s;" % (self.key_name, self.current)
 
     @staticmethod
-    def clean_config_key(key):
+    def clean_key(key):
         return sub(Entry.CLEAN_PATTERNS['key'], '-', key)
 
     @staticmethod
