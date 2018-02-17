@@ -88,7 +88,7 @@ class SettingsPanel(ScrolledPanel):
                 self,
                 value=entry.current,
                 name=entry.key_name,
-                fontfamily_default_color=SystemSettings().GetColour(SYS_COLOUR_WINDOWTEXT),
+                default_color=SystemSettings().GetColour(SYS_COLOUR_WINDOWTEXT),
                 size=(-1, -1),
             )
         elif 'boolean' == entry.var_type:
