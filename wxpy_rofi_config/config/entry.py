@@ -88,6 +88,13 @@ class Entry(object):
         self.attempt_to_clean_values()
         self.look_for_useful_group()
 
+    def to_rasi(self):
+        if 'number' == self.var_type:
+            return "%s: %d;" % (self.key_name, self.current)
+        elif 'boolean' == self.var_type:
+            return ("%s: %s;" % (self.key_name, self.current)).lower()
+        return '%s: "%s";' % (self.key_name, self.current)
+
     @staticmethod
     def clean_config_key(key):
         return sub(Entry.CLEAN_PATTERNS['key'], '-', key)
