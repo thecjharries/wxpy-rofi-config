@@ -200,3 +200,25 @@ class ParseManGroupUnitTests(RofiTestCase):
             mock_parse.call_count,
             3
         )
+
+
+class ParseManConfigUnitTests(RofiTestCase):
+    INPUT = """
+   one
+        -one
+
+   two
+        -two
+
+   three
+        -three
+"""
+
+    @patch.object(Rofi, 'parse_man_group')
+    def test_construction(self, mock_parse):
+        match = self.INPUT
+        self.rofi.parse_man_config(match)
+        self.assertEquals(
+            mock_parse.call_count,
+            3
+        )
