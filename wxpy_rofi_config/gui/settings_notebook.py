@@ -34,7 +34,7 @@ class SettingsNotebook(Notebook):
         self.config = Rofi()
         self.config.build()
         for key, entry in self.config.config.iteritems():
-            if not entry.group in self.groups:
+            if entry.group in self.groups:
                 self.groups[entry.group].append(entry)
             else:
                 self.groups[entry.group] = [entry]
@@ -67,5 +67,5 @@ class SettingsNotebook(Notebook):
                     value = widget.GetLabel()
                 else:
                     value = entry.current
-                self.config[entry.key_name].current = value
-        print(self.config.to_rasi())
+                self.config.config[entry.key_name].current = value
+        self.config.save()
