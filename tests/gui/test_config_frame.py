@@ -40,6 +40,10 @@ class ConfigFrameTestCase(TestCase):
         self.addCleanup(panel_patcher.stop)
 
     def construct_frame(self):
+        settings_notebook_patcher = patch(
+            'wxpy_rofi_config.gui.config_frame.SettingsNotebook')
+        self.mock_settings_notebook = settings_notebook_patcher.start()
+        self.addCleanup(settings_notebook_patcher.stop)
         create_menu_patcher = patch.object(ConfigFrame, 'create_menu')
         self.mock_create_menu = create_menu_patcher.start()
         create_panel_patcher = patch.object(ConfigFrame, 'create_panel')
@@ -62,6 +66,7 @@ class ConstructorUnitTests(ConfigFrameTestCase):
 
 class CreatePanelUnitTests(ConfigFrameTestCase):
 
-    def test_something(self):
-        print(self.frame.create_menu)
-        assert 0
+    @patch.object(ConfigFrame, 'Layout')
+    @patch.object(ConfigFrame, 'Center')
+    def test_something(self, mock_center, mock_layout):
+        self.frame.create_panel()
