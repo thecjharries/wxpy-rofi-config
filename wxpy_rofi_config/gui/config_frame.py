@@ -27,8 +27,7 @@ class ConfigFrame(Frame):
     def __init__(self, parent):
         Frame.__init__(
             self,
-            parent=parent,
-            id=-1,
+            None,
             title='rofi Config',
             size=(600, 600)
         )
