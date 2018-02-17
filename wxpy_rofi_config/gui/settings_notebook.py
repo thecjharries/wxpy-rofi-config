@@ -26,6 +26,8 @@ class SettingsNotebook(Notebook):
         self.tabs = []
         self.config = None
         self.groups = OrderedDict()
+        self.create_tabs()
+        self.bind_events()
 
     def group_config(self):
         self.config = Rofi()
