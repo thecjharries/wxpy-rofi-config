@@ -156,6 +156,28 @@ class Entry(object):
         return ''
 
     @staticmethod
+    def clean_key(value):
+        """Cleans strings"""
+        if value:
+            return sub(
+                Entry.CLEAN_PATTERNS['string'],
+                '',
+                value
+            )
+        return ''
+
+    @staticmethod
+    def clean_mouse(value):
+        """Cleans strings"""
+        if value:
+            return sub(
+                Entry.CLEAN_PATTERNS['string'],
+                '',
+                value
+            )
+        return ''
+
+    @staticmethod
     def clean_boolean(value):
         """Cleans booleans"""
         return 'true' == value
