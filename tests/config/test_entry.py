@@ -395,6 +395,34 @@ class CleanStringUnitTests(EntryTestCase):
             )
 
 
+class CleanKeyUnitTests(EntryTestCase):
+    RUNS = [
+        [None, ''],
+        ['"qqq"', 'qqq']
+    ]
+
+    def test_values(self):
+        for run in self.RUNS:
+            self.assertEquals(
+                run[1],
+                Entry.clean_key(run[0])
+            )
+
+
+class CleanMouseUnitTests(EntryTestCase):
+    RUNS = [
+        [None, ''],
+        ['"qqq"', 'qqq']
+    ]
+
+    def test_values(self):
+        for run in self.RUNS:
+            self.assertEquals(
+                run[1],
+                Entry.clean_mouse(run[0])
+            )
+
+
 class IsNumberUnitTests(EntryTestCase):
 
     @patch.object(Entry, 'clean_string', return_value='0')
