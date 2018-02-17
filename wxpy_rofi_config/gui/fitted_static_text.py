@@ -25,15 +25,15 @@ class FittedStaticText(Control):
 
     def SetLabel(self, label):
         self.label = label
-        self.fit()
+        self.fit_label()
 
     def resize(self):
-        self.fit()
+        self.fit_label()
         self.text.SetSize(self.GetSize())
-        self.fit()
+        self.fit_label()
 
-    def fit(self):
+    def fit_label(self):
         self.text.Freeze()
-        self.text.SetLabel(self.Label)
+        self.text.SetLabel(self.label)
         self.text.Wrap(self.GetSize().width)
         self.text.Thaw()
