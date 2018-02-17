@@ -9,7 +9,7 @@ from unittest import TestCase
 from mock import call, MagicMock, patch
 from pytest import mark
 
-from wxpy_rofi_config.config import Rofi
+from wxpy_rofi_config.config import Entry, Rofi
 
 
 class RofiTestCase(TestCase):
@@ -125,3 +125,52 @@ def test_clean_entry_man(mock_sub):
     rofi = Rofi()
     rofi.clean_entry_man('gibberish')
     assert mock_sub.call_count == len(Rofi.PATTERNS['CLEAN_MAN'])
+
+
+class ParseManEntryUnitTests(RofiTestCase):
+
+    def setUp(self):
+        RofiTestCase.setUp(self)
+        self.match = MagicMock(
+            group=lambda x: x
+        )
+        self.rofi.config['key'] = MagicMock(
+            group=Entry.DEFAULTS['group'],
+            man=None
+        )
+        clean_patcher = patch.object(
+            Rofi,
+            'clean_entry_man',
+            return_value='man',
+        )
+        self.mock_clean = clean_patcher.start()
+        self.addCleanup(clean_patcher.stop)
+
+    def test_missing_key(self):
+        self.rofi.config = MagicMock()
+        self.rofi.parse_man_entry('group', self.match)
+        self.mock_clean.assert_not_called()
+
+    def test_existing_key_without_man(self):
+        self.mock_clean.return_value = None
+        self.rofi.parse_man_entry('group', self.match)
+        self.mock_clean.assert_called_once_with('man')
+        self.assertEquals(
+            self.rofi.config['key'].group,
+            Entry.DEFAULTS['group']
+        )
+        self.assertIsNone(
+            self.rofi.config['key'].man
+        )
+
+    def test_existing_key_with_man(self):
+        self.rofi.parse_man_entry('group', self.match)
+        self.mock_clean.assert_called_once_with('man')
+        self.assertEquals(
+            self.rofi.config['key'].group,
+            'group'
+        )
+        self.assertEquals(
+            self.rofi.config['key'].man,
+            'man'
+        )
