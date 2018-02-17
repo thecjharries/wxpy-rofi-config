@@ -8,6 +8,7 @@ from re import (
     compile as re_compile,
     DOTALL,
     finditer,
+    IGNORECASE,
     MULTILINE,
     search,
     sub,
@@ -57,8 +58,8 @@ class Rofi(object):
             ]
         ],
         'HELP_BLOCK': re_compile(
-            r"\n?Global options:(?P<contents>.*?)(?:\n\n)",
-            DOTALL
+            r"\n?global options:(?P<contents>.*?)(?:\n\n)",
+            DOTALL | IGNORECASE
         ),
         'HELP_ENTRY': re_compile(
             r"""
