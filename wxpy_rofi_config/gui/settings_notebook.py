@@ -69,7 +69,7 @@ class SettingsNotebook(Notebook):
 
     def save(self, event=None):  # pylint:disable=unused-argument
         """Saves the config to the default location"""
-        for index, tab in enumerate(self.tabs):
+        for index, _ in enumerate(self.tabs):
             group = self.groups.keys()[index]
             for entry in self.groups[group]:
                 widget = FindWindowByName(entry.key_name)
