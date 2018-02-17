@@ -100,7 +100,7 @@ class Rofi(object):
 
     def process_config(self):
         """Process all entries for useful information"""
-        for _, entry in self.config.iteritems():
+        for _, entry in self.config.items():
             entry.process_entry()
             if not entry.group in self.groups:
                 self.groups.append(entry.group)

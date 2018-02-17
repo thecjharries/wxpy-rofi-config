@@ -48,7 +48,7 @@ class Entry(object):
     man = None
 
     def __init__(self, **kwargs):
-        for key, value in self.DEFAULTS.iteritems():
+        for key, value in self.DEFAULTS.items():
             if key in kwargs:
                 result = kwargs[key]
                 del kwargs[key]
@@ -159,7 +159,7 @@ class Entry(object):
         Using patterns, attempts to discover a match for value. If one is not
         found, returns default.
         """
-        for key, pattern in pattern_dict.iteritems():
+        for key, pattern in pattern_dict.items():
             if value and re_match(pattern, value):
                 return key
         return default

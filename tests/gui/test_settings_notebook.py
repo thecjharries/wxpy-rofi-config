@@ -107,11 +107,7 @@ class CreateTabsUnitTests(SettingsNotebookTestCase):
         'three': 'three'
     }
 
-    CALLS = [
-        call('one'),
-        call('two'),
-        call('three'),
-    ]
+    CALLS = [call(value) for key, value in GROUPS.items()]
 
     @patch.object(SettingsNotebook, 'group_config')
     @patch.object(SettingsNotebook, 'create_tab')
@@ -198,7 +194,7 @@ class SaveUnitTests(SettingsNotebookTestCase):
         self.notebook.groups = self.GROUPS
         self.mock_findwindowbyname.side_effect = lambda x: self.WINDOWS[x]
         self.notebook.save()
-        for key, value in self.RESULT.iteritems():
+        for key, value in self.RESULT.items():
             self.assertEquals(
                 self.notebook.config.config[key].current,
                 value

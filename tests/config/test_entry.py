@@ -37,7 +37,7 @@ class ConstructorUnitTests(EntryTestCase):
     }
 
     def test_values(self):
-        for key, value in self.NOT_DEFAULT.iteritems():
+        for key, value in self.NOT_DEFAULT.items():
             entry = Entry(**{key: value})
             self.assertEquals(getattr(entry, key), value)
 
