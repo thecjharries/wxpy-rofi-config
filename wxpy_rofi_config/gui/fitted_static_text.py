@@ -13,7 +13,8 @@ from wx import (
 class FittedStaticText(Control):
 
     def __init__(self, parent, label="", name="fitted_static_text"):
-        super(FittedStaticText, self).__init__(
+        Control.__init__(
+            self,
             parent=parent,
             id=ID_ANY,
             name=name,
