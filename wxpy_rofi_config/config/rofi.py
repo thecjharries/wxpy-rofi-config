@@ -135,5 +135,7 @@ class Rofi(object):
         return output
 
     def save(self, path=None):
+        if path is None:
+            path = self.DEFAULT_PATH
         with open(path, 'w') as rasi_file:
             rasi_file.write(self.to_rasi())
