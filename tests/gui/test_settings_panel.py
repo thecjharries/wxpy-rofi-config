@@ -149,7 +149,16 @@ class CreateEntryManUnitTests(SettingsPanelTestCase):
     def test_creation(self):
         self.panel.grid_sizer = MagicMock()
         self.mock_fittedstatictext.assert_not_called()
-        self.mock_statictext.assert_not_called()
+        self.mock_boxsizer.assert_not_called()
         self.panel.create_entry_man(MagicMock())
         self.mock_boxsizer.assert_called()
         self.mock_fittedstatictext.assert_called()
+
+
+class CreateHorizontalRuleUnitTests(SettingsPanelTestCase):
+
+    def test_creation(self):
+        self.panel.grid_sizer = MagicMock()
+        self.mock_staticline.assert_not_called()
+        self.panel.create_horizontal_rule()
+        self.mock_staticline.assert_called()
