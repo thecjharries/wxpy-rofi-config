@@ -18,7 +18,7 @@ class Rofi(object):
             r"^.*?(?:\s|\/|\*)(?P<key>[a-z][a-z0-9-]*):\s*(?P<value>.*?);.*?$",
             MULTILINE
         ),
-        'RASI_COMMENT': re_compile(r"(\/\*.*?\*\/|\/\/.*?$)"),
+        'RASI_COMMENT': re_compile(r"(\/\*.*?\*\/|\/\/.*?$)", MULTILINE),
         'MAN_CONFIG_BLOCK': re_compile(
             r"\nCONFIGURATION(.*?)\n\w",
             DOTALL
@@ -72,7 +72,12 @@ class Rofi(object):
 
     def load_current_config(self):
         raw = check_output(['rofi', '-dump-config'])
-        raw_cleaned = sub(self.PATTERNS['RASI_COMMENT'], '', raw)
+        raw_cleaned = sub(
+            self.PATTERNS['RASI_COMMENT'],
+            '',
+            raw,
+            0
+        )
         self.parse_rasi(raw_cleaned, 'current')
 
     def process_config(self):
