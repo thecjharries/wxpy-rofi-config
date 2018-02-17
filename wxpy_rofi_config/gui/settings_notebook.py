@@ -52,5 +52,5 @@ class SettingsNotebook(Notebook):
         self.Bind(EVT_NOTEBOOK_PAGE_CHANGED, self.resize)
         self.Bind(EVT_SIZE, self.resize)
 
-    def resize(self):
+    def resize(self, event=None):
         self.tabs[self.GetSelection()].resize()
