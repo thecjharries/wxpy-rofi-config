@@ -56,6 +56,22 @@ class ConfigFrame(Frame):
         self.save_menu_item = file_menu.Append(NewId(), '&Save\tCtrl+s')
         self.exit_menu_item = file_menu.Append(NewId(), 'E&xit\tCtrl+w')
         menu_bar.Append(file_menu, '&File')
+        docs_menu = Menu()
+        self.show_help_menu_item = docs_menu.Append(
+            NewId(),
+            'rofi --help',
+            'Show or hide pertinent rofi --help info',
+            ITEM_CHECK
+        )
+        self.show_help_menu_item.Check(True)
+        self.show_man_menu_item = docs_menu.Append(
+            NewId(),
+            'man rofi',
+            'Show or hide pertinent man rofi info',
+            ITEM_CHECK
+        )
+        self.show_man_menu_item.Check(True)
+        menu_bar.Append(docs_menu, '&Docs')
         self.SetMenuBar(menu_bar)
 
     def bind_events(self):
