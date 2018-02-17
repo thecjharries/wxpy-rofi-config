@@ -43,7 +43,7 @@ class SettingsPanel(ScrolledPanel):
             size=(-1, -1)
         )
         self.config = config
-        self.man_texts = []
+        self.resizable_texts = []
         self.font = Font(12, FONTFAMILY_DEFAULT,
                          FONTSTYLE_NORMAL, FONTWEIGHT_BOLD)
         self.create_main_grid()
@@ -119,7 +119,7 @@ class SettingsPanel(ScrolledPanel):
         sizer = BoxSizer(HORIZONTAL)
         text = FittedStaticText(self)
         text.set_label(getattr(entry, kind))
-        self.man_texts.append(text)
+        self.resizable_texts.append(text)
         sizer.Add(text, proportion=-1, flag=EXPAND)
         self.grid_sizer.Add(sizer, proportion=-1, flag=EXPAND)
 
@@ -157,6 +157,6 @@ class SettingsPanel(ScrolledPanel):
 
     def resize(self):
         """Forces each man label to resize and redefines its own layout"""
-        for man_text in self.man_texts:
-            man_text.resize()
+        for resizable_text in self.resizable_texts:
+            resizable_text.resize()
         self.GetSizer().Layout()
