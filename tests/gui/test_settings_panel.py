@@ -114,3 +114,14 @@ class CreateMainGridUnitTests(SettingsPanelTestCase):
             call.SetupScrolling()
 
         ])
+
+
+class CreateEntryLabelUnitTests(SettingsPanelTestCase):
+
+    def test_construction(self):
+        self.panel.grid_sizer = MagicMock()
+        self.mock_boxsizer.assert_not_called()
+        self.mock_statictext.assert_not_called()
+        self.panel.create_entry_label(MagicMock())
+        self.mock_boxsizer.assert_called()
+        self.mock_statictext.assert_called()
