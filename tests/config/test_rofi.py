@@ -251,18 +251,28 @@ class BuildUnitTests(RofiTestCase):
 
     @patch.object(Rofi, 'load_default_config')
     @patch.object(Rofi, 'load_current_config')
+    @patch.object(Rofi, 'load_help')
     @patch.object(Rofi, 'load_man')
     @patch.object(Rofi, 'process_config')
-    def test_call(self, mock_process, mock_man, mock_current, mock_default):
+    def test_call(  # pylint: disable=too-many-arguments
+            self,
+            mock_process,
+            mock_man,
+            mock_help,
+            mock_current,
+            mock_default
+    ):
         mock_holder = MagicMock()
         mock_holder.attach_mock(mock_default, 'load_default_config')
         mock_holder.attach_mock(mock_current, 'load_current_config')
+        mock_holder.attach_mock(mock_help, 'load_help')
         mock_holder.attach_mock(mock_man, 'load_man')
         mock_holder.attach_mock(mock_process, 'process_config')
         self.rofi.build()
         mock_holder.assert_has_calls([
             call.load_default_config(),
             call.load_current_config(),
+            call.load_help(),
             call.load_man(),
             call.process_config()
         ])
