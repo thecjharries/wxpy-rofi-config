@@ -61,7 +61,7 @@ class ConfigFrame(Frame):
         PostEvent(self.notebook, SizeEvent((-1, -1)))
 
     def save(self, event=None):
-        print('saving')
+        self.notebook.save()
 
     def exit(self, event=None):
         self.Close()
