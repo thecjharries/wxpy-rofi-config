@@ -55,7 +55,7 @@ class SettingsNotebook(Notebook):
     def create_tabs(self):
         """Creates all tabs for all settings groups"""
         self.group_config()
-        for group in self.groups.keys():
+        for group in list(self.groups.keys()):
             self.create_tab(group)
 
     def bind_events(self):
@@ -73,7 +73,7 @@ class SettingsNotebook(Notebook):
     def save(self, event=None):  # pylint:disable=unused-argument
         """Saves the config to the default location"""
         for index, _ in enumerate(self.tabs):
-            group = self.groups.keys()[index]
+            group = list(self.groups.keys())[index]
             for entry in self.groups[group]:
                 widget = FindWindowByName(entry.key_name)
                 if hasattr(widget, 'GetValue'):
