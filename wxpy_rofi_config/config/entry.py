@@ -13,7 +13,7 @@ class Entry(object):
         'group': 'Miscellaneous',
         'default': None,
         'current': None,
-        'help': None,
+        'help_value': None,
         'help_type': None,
         'man': None,
     }
