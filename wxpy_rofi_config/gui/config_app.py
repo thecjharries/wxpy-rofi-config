@@ -15,6 +15,7 @@ class ConfigApp(App):
     def OnInit(self):
         frame = ConfigFrame()
         frame.Show()
+        return True
 
 if '__main__' == __name__:
     app = ConfigApp(False)
