@@ -110,6 +110,8 @@ class BindEventsUnitTests(ConfigFrameTestCase):
     def test_calls(self, mock_bind):
         self.frame.save_menu_item = None
         self.frame.exit_menu_item = None
+        self.frame.show_help_menu_item = None
+        self.frame.show_man_menu_item = None
         mock_bind.assert_not_called()
         self.frame.bind_events()
         mock_bind.assert_called()
