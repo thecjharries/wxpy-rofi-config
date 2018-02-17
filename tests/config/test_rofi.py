@@ -268,3 +268,20 @@ class BuildUnitTests(RofiTestCase):
             call.load_man(),
             call.process_config()
         ])
+
+
+class ToRasiUnitTests(RofiTestCase):
+    RESULT = (
+        'configuration {\n'
+        '    key: value;\n'
+        '}\n'
+    )
+
+    def test_result(self):
+        self.rofi.config = {
+            'key': MagicMock(to_rasi=lambda: 'key: value;')
+        }
+        self.assertEquals(
+            self.rofi.to_rasi(),
+            self.RESULT
+        )
