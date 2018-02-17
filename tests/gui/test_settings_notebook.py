@@ -119,3 +119,12 @@ class CreateTabsUnitTests(SettingsNotebookTestCase):
         self.notebook.create_tabs()
         mock_config.assert_called_once()
         mock_tab.assert_has_calls(self.CALLS)
+
+
+class BindEventsUnitTests(SettingsNotebookTestCase):
+
+    @patch.object(SettingsNotebook, 'Bind')
+    def test_calls(self, mock_bind):
+        mock_bind.assert_not_called()
+        self.notebook.bind_events()
+        mock_bind.assert_called()
