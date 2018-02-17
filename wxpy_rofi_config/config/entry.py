@@ -93,7 +93,8 @@ class Entry(object):
         when it's an input binding. Something more than a string is useful.
         """
         if self.help_type:
-            self.var_type = self.help_type
+            return self.help_type
+        return self.var_type
 
     def ensure_useful_var_type(self):
         """Runs all available methods to determine the setting's type."""
