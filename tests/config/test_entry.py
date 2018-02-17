@@ -322,12 +322,12 @@ class CleanStringUnitTests(EntryTestCase):
             )
 
 
-# class IsNumberUnitTests(EntryTestCase):
+class IsNumberUnitTests(EntryTestCase):
 
-#     @patch(Entry, 'clean_string', return_value='0')
-#     def test_valid_number(self, mock_clean):
-#         self.assertTrue(Entry.is_number('10'))
+    @patch.object(Entry, 'clean_string', return_value='0')
+    def test_valid_number(self, mock_clean):
+        self.assertTrue(Entry.is_number('10'))
 
-#     @patch(Entry, 'clean_string', side_effect=ValueError)
-#     def test_invvalid_number(self, mock_clean):
-#         self.assertTrue(Entry.is_number('10'))
+    @patch.object(Entry, 'clean_string', side_effect=ValueError)
+    def test_invvalid_number(self, mock_clean):
+        self.assertFalse(Entry.is_number('qqq'))
