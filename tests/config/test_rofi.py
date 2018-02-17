@@ -222,3 +222,28 @@ class ParseManConfigUnitTests(RofiTestCase):
             mock_parse.call_count,
             3
         )
+
+
+class LoadManUnitTests(RofiTestCase):
+
+    @patch(
+        'wxpy_rofi_config.config.rofi.check_output',
+        return_value='''
+CONFIGURATION
+    stuff
+q
+'''
+    )
+    @patch.object(Rofi, 'parse_man_config')
+    def test_with_config(self, mock_parse, mock_output):
+        self.rofi.load_man()
+        mock_parse.assert_called_once()
+
+    @patch(
+        'wxpy_rofi_config.config.rofi.check_output',
+        return_value=''
+    )
+    @patch.object(Rofi, 'parse_man_config')
+    def test_without_config(self, mock_parse, mock_output):
+        self.rofi.load_man()
+        mock_parse.assert_not_called()
