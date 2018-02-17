@@ -36,11 +36,11 @@ class SettingsPanel(ScrolledPanel):
         self.create_main_grid()
 
     def create_main_grid(self):
-        self.main_sizer = BoxSizer(VERTICAL)
+        self.main_sizer = BoxSizer(HORIZONTAL)
         self.grid_sizer = FlexGridSizer(2, 10, 10)
         self.populate_entries(self.config)
         self.grid_sizer.AddGrowableCol(1, 1)
-        self.main_sizer.Add(self.grid_sizer, EXPAND)
+        self.main_sizer.Add(self.grid_sizer, -1, EXPAND)
         self.SetSizer(self.main_sizer)
         self.SetupScrolling()
 
