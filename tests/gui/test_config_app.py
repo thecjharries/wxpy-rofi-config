@@ -5,8 +5,9 @@ from __future__ import print_function
 from mock import MagicMock, patch
 
 
+@patch('wxpy_rofi_config.gui.config_app.App')
 @patch('wxpy_rofi_config.gui.config_app.ConfigFrame')
-def test_on_init(mock_frame):
+def test_on_init(mock_frame, mock_app):  # pylint: disable=unused-argument
     from wxpy_rofi_config import ConfigApp
     ConfigApp()
     mock_frame.assert_called_once_with()
