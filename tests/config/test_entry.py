@@ -40,3 +40,19 @@ class ConstructorUnitTests(EntryTestCase):
         for key, value in self.NOT_DEFAULT.iteritems():
             entry = Entry(**{key: value})
             self.assertEquals(getattr(entry, key), value)
+
+
+class AssignCurrentUnitTests(EntryTestCase):
+    DEFAULT = [None, 10]
+    CURRENT = [None, 20]
+    EXPECTED = [None, 20, 10, 20]
+
+    def test_values(self):
+        index = 0
+        for default in self.DEFAULT:
+            for current in self.CURRENT:
+                self.entry.default = default
+                self.entry.current = current
+                self.entry.assign_current()
+                self.assertEquals(self.entry.current, self.EXPECTED[index])
+                index += 1
