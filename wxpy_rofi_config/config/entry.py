@@ -93,7 +93,9 @@ class Entry(object):
             return "%s: %d;" % (self.key_name, self.current)
         elif 'boolean' == self.var_type:
             return ("%s: %s;" % (self.key_name, self.current)).lower()
-        return '%s: "%s";' % (self.key_name, self.current)
+        elif 'string' == self.var_type:
+            return '%s: "%s";' % (self.key_name, self.current)
+        return "%s: %s;" % (self.key_name, self.current)
 
     @staticmethod
     def clean_config_key(key):
