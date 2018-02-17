@@ -329,5 +329,33 @@ class IsNumberUnitTests(EntryTestCase):
         self.assertTrue(Entry.is_number('10'))
 
     @patch.object(Entry, 'clean_string', side_effect=ValueError)
-    def test_invvalid_number(self, mock_clean):
+    def test_invalid_number(self, mock_clean):
         self.assertFalse(Entry.is_number('qqq'))
+
+
+class GuessSomethingFromPatterns(EntryTestCase):
+    RUNS = [
+        [
+            'kb-accept-entry',
+            Entry.VAR_TYPE_KEY_PATTERNS,
+            Entry.DEFAULTS['var_type'],
+            'key'
+        ],
+        [
+            'qqq',
+            Entry.VAR_TYPE_KEY_PATTERNS,
+            Entry.DEFAULTS['var_type'],
+            Entry.DEFAULTS['var_type'],
+        ]
+    ]
+
+    def test_values(self):
+        for run in self.RUNS:
+            self.assertEquals(
+                Entry.guess_something_from_patterns(
+                    run[0],
+                    run[1],
+                    run[2],
+                ),
+                run[3]
+            )
