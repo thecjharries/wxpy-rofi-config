@@ -95,9 +95,13 @@ class CreateMenuUnitTests(ConfigFrameTestCase):
     def test_menu_creation(self, mock_set):
         self.assertIsNone(getattr(self.frame, 'save_menu_item', None))
         self.assertIsNone(getattr(self.frame, 'exit_menu_item', None))
+        self.assertIsNone(getattr(self.frame, 'show_help_menu_item', None))
+        self.assertIsNone(getattr(self.frame, 'show_man_menu_item', None))
         self.frame.create_menu()
         self.assertIsNotNone(self.frame.save_menu_item)
         self.assertIsNotNone(self.frame.exit_menu_item)
+        self.assertIsNotNone(self.frame.show_help_menu_item)
+        self.assertIsNotNone(self.frame.show_man_menu_item)
 
 
 class BindEventsUnitTests(ConfigFrameTestCase):
