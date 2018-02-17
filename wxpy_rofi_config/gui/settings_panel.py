@@ -1,20 +1,18 @@
 """This file provides the SettingsPanel class"""
-# pylint: disable=W,C,R
 
-# pylint: disable=no-name-in-module
 from wx import (
     ALIGN_RIGHT,
     ALL,
-    BOLD,
     BoxSizer,
     CheckBox,
-    DEFAULT,
     EXPAND,
     FlexGridSizer,
     Font,
+    FONTFAMILY_DEFAULT,
+    FONTSTYLE_NORMAL,
+    FONTWEIGHT_BOLD,
     HORIZONTAL,
     LI_HORIZONTAL,
-    NORMAL,
     StaticLine,
     StaticText,
     SYS_COLOUR_WINDOWTEXT,
@@ -24,7 +22,6 @@ from wx import (
 )
 from wx.lib.scrolledpanel import ScrolledPanel
 from wx.lib.intctrl import IntCtrl
-# pylint: enable=no-name-in-module
 
 from wxpy_rofi_config.gui import FittedStaticText
 
@@ -39,7 +36,8 @@ class SettingsPanel(ScrolledPanel):
         )
         self.config = config
         self.man_texts = []
-        self.font = Font(12, DEFAULT, NORMAL, BOLD)
+        self.font = Font(12, FONTFAMILY_DEFAULT,
+                         FONTSTYLE_NORMAL, FONTWEIGHT_BOLD)
         self.create_main_grid()
 
     def create_main_grid(self):
@@ -82,7 +80,7 @@ class SettingsPanel(ScrolledPanel):
                 self,
                 value=entry.current,
                 name=entry.key_name,
-                default_color=SystemSettings().GetColour(SYS_COLOUR_WINDOWTEXT),
+                fontfamily_default_color=SystemSettings().GetColour(SYS_COLOUR_WINDOWTEXT),
                 size=(-1, -1),
             )
         elif 'boolean' == entry.var_type:
