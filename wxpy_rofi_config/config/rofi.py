@@ -4,7 +4,15 @@
 
 from collections import OrderedDict
 from os.path import expanduser, join
-from re import compile as re_compile, DOTALL, finditer, MULTILINE, search, sub
+from re import (
+    compile as re_compile,
+    DOTALL,
+    finditer,
+    MULTILINE,
+    search,
+    sub,
+    VERBOSE
+)
 from subprocess import check_output
 
 from wxpy_rofi_config.config import Entry
@@ -53,8 +61,13 @@ class Rofi(object):
             DOTALL
         ),
         'HELP_ENTRY': re_compile(
-            r"^\s+-(?:\[no-\])?(?P<key>[a-z0-9-]+?)(?:\s+\[(?P<help_type>\w+)\])?\s+(?P<help_value>.*?)$",
-            MULTILINE
+            r"""
+            ^\s+-(?:\[no-\])?               # Preface stuff; skip it
+            (?P<key>[a-z0-9-]+?)            # The entry key
+            (?:\s+\[(?P<help_type>\w+)\])?  # Type info is not always there
+            \s+(?P<help_value>.*?)$         # The short help string
+            """,
+            MULTILINE | VERBOSE
         )
     }
 
