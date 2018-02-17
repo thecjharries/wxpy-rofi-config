@@ -15,7 +15,7 @@ class Rofi(object):
 
     PATTERNS = {
         'RASI_ENTRY': re_compile(
-            r"^.*?(?P<key>[\w-]*):\s*(?P<value>.*?);.*?$",
+            r"^.*?(?:\s|\/|\*)(?P<key>[a-z][a-z0-9-]*):\s*(?P<value>.*?);.*?$",
             MULTILINE
         ),
         'RASI_COMMENT': re_compile(r"(\/\*.*?\*\/|\/\/.*?$)"),
