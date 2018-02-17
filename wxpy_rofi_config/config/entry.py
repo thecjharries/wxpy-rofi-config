@@ -15,7 +15,7 @@ class Entry(object):
     }
 
     CLEAN_PATTERNS = {
-        'key': re_compile(r"_"),
+        'config_key': re_compile(r"_"),
         'number': re_compile(r"[^\d\-\.]"),
         'string': re_compile(r"(^(\"|')|(\"|')$)")
     }
@@ -56,7 +56,6 @@ class Entry(object):
             self.current = self.default
 
     def attempt_to_clean_values(self):
-        self.key_name = self.clean_key(self.key_name)
         cleaner_method = "clean_%s" % self.var_type
         if hasattr(self, cleaner_method):
             callable_method = getattr(self, cleaner_method)
@@ -99,7 +98,7 @@ class Entry(object):
         return "%s: %s;" % (self.key_name, self.current)
 
     @staticmethod
-    def clean_key(key):
+    def clean_config_key(key):
         return sub(Entry.CLEAN_PATTERNS['key'], '-', key)
 
     @staticmethod
