@@ -35,6 +35,9 @@ class ConfigFrameTestCase(TestCase):
         menubar_patcher = patch('wxpy_rofi_config.gui.config_frame.MenuBar')
         self.mock_menubar = menubar_patcher.start()
         self.addCleanup(menubar_patcher.stop)
+        newid_patcher = patch('wxpy_rofi_config.gui.config_frame.NewId')
+        self.mock_newid = newid_patcher.start()
+        self.addCleanup(newid_patcher.stop)
         panel_patcher = patch('wxpy_rofi_config.gui.config_frame.Panel')
         self.mock_panel = panel_patcher.start()
         self.addCleanup(panel_patcher.stop)
@@ -68,5 +71,23 @@ class CreatePanelUnitTests(ConfigFrameTestCase):
 
     @patch.object(ConfigFrame, 'Layout')
     @patch.object(ConfigFrame, 'Center')
-    def test_something(self, mock_center, mock_layout):
+    def test_construction(self, mock_center, mock_layout):
         self.frame.create_panel()
+        mock_center.assert_called_once()
+        mock_layout.assert_called_once()
+
+
+class CreateMenuUnitTests(ConfigFrameTestCase):
+
+    @patch.object(ConfigFrame, 'SetMenuBar')
+    def test_construction(self, mock_set):
+        self.frame.create_menu()
+        mock_set.assert_called_once()
+
+    @patch.object(ConfigFrame, 'SetMenuBar')
+    def test_menu_creation(self, mock_set):
+        self.assertIsNone(getattr(self.frame, 'save_menu_item', None))
+        self.assertIsNone(getattr(self.frame, 'exit_menu_item', None))
+        self.frame.create_menu()
+        self.assertIsNotNone(self.frame.save_menu_item)
+        self.assertIsNotNone(self.frame.exit_menu_item)
