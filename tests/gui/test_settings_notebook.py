@@ -107,7 +107,11 @@ class CreateTabsUnitTests(SettingsNotebookTestCase):
         'three': 'three'
     }
 
-    CALLS = [call(value) for key, value in GROUPS.iteritems()]
+    CALLS = [
+        call('one'),
+        call('two'),
+        call('three'),
+    ]
 
     @patch.object(SettingsNotebook, 'group_config')
     @patch.object(SettingsNotebook, 'create_tab')
