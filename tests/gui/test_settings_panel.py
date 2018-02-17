@@ -162,3 +162,72 @@ class CreateHorizontalRuleUnitTests(SettingsPanelTestCase):
         self.mock_staticline.assert_not_called()
         self.panel.create_horizontal_rule()
         self.mock_staticline.assert_called()
+
+
+class CreateEntryRowsUnitTests(SettingsPanelTestCase):
+
+    def setUp(self):
+        SettingsPanelTestCase.setUp(self)
+        rule_patcher = patch.object(SettingsPanel, 'create_horizontal_rule')
+        self.mock_rule = rule_patcher.start()
+        self.addCleanup(rule_patcher.stop)
+        label_patcher = patch.object(SettingsPanel, 'create_entry_label')
+        self.mock_label = label_patcher.start()
+        self.addCleanup(label_patcher.stop)
+        control_patcher = patch.object(SettingsPanel, 'create_entry_control')
+        self.mock_control = control_patcher.start()
+        self.addCleanup(control_patcher.stop)
+        man_patcher = patch.object(SettingsPanel, 'create_entry_man')
+        self.mock_man = man_patcher.start()
+        self.addCleanup(man_patcher.stop)
+        self.mock_layout = MagicMock()
+        self.panel.grid_sizer = MagicMock(Layout=self.mock_layout)
+
+        self.mock_holder = MagicMock()
+        self.mock_holder.attach_mock(self.mock_rule, 'create_horizontal_rule')
+        self.mock_holder.attach_mock(self.mock_label, 'create_entry_label')
+        self.mock_holder.attach_mock(self.mock_control, 'create_entry_control')
+        self.mock_holder.attach_mock(self.mock_layout, 'Layout')
+        self.mock_holder.attach_mock(self.mock_man, 'create_entry_man')
+
+    def test_first_with_man(self):
+        entry = MagicMock(man='qqq')
+        self.panel.create_entry_rows(entry, False)
+        self.mock_holder.assert_has_calls([
+            call.create_entry_label(entry),
+            call.create_entry_control(entry),
+            call.Layout(),
+            call.create_entry_man(entry)
+        ])
+
+    def test_not_first_with_man(self):
+        entry = MagicMock(man='qqq')
+        self.panel.create_entry_rows(entry, True)
+        self.mock_holder.assert_has_calls([
+            call.create_horizontal_rule(),
+            call.create_horizontal_rule(),
+            call.create_entry_label(entry),
+            call.create_entry_control(entry),
+            call.Layout(),
+            call.create_entry_man(entry)
+        ])
+
+    def test_first_no_man(self):
+        entry = MagicMock()
+        self.panel.create_entry_rows(entry, False)
+        self.mock_holder.assert_has_calls([
+            call.create_entry_label(entry),
+            call.create_entry_control(entry),
+            call.Layout(),
+        ])
+
+    def test_not_first_no_man(self):
+        entry = MagicMock()
+        self.panel.create_entry_rows(entry, True)
+        self.mock_holder.assert_has_calls([
+            call.create_horizontal_rule(),
+            call.create_horizontal_rule(),
+            call.create_entry_label(entry),
+            call.create_entry_control(entry),
+            call.Layout(),
+        ])
