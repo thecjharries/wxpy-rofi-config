@@ -72,7 +72,7 @@ class Entry(object):
             self.default = callable_method(self.default)
             self.current = callable_method(self.current)
 
-    def force_var_type(self, hint=None):
+    def force_var_type(self, hint=None):  # pylint: disable=unused-argument
         """
         Forces a variable type. Defaults to string. Only used as a last resort.
         """
