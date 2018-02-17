@@ -49,3 +49,24 @@ class AssignRasiEntryUnitTests(RofiTestCase):
             key_name='key',
             default='value',
         )
+
+
+class ParseRasiUnitTests(RofiTestCase):
+    RUNS = [
+        [
+            ' modi: qqq;\n'
+            ' bad_opt: qqq;\n'
+            ' good-opt: qqq;\n',
+            2
+        ]
+    ]
+
+    @patch.object(Rofi, 'assign_rasi_entry')
+    def test_rasi_discover(self, mock_assign):
+        for run in self.RUNS:
+            mock_assign.reset_mock()
+            self.rofi.parse_rasi(run[0])
+            self.assertEquals(
+                mock_assign.call_count,
+                run[1]
+            )
