@@ -1,3 +1,4 @@
+"""This file provides the ConfigFrame class"""
 # pylint: disable=W,C,R
 
 from collections import OrderedDict

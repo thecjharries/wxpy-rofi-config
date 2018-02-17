@@ -1,3 +1,4 @@
+"""This file provides the FittedStaticText class"""
 # pylint: disable=W,C,R
 
 # pylint: disable=no-name-in-module

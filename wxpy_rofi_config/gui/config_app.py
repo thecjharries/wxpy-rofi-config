@@ -1,3 +1,4 @@
+"""This file provides the ConfigApp class and cli access"""
 # pylint: disable=W,C,R
 
 # pylint: disable=no-name-in-module

@@ -1,3 +1,4 @@
+"""This file provides the SettingsNotebook class"""
 # pylint: disable=W,C,R
 
 from collections import OrderedDict

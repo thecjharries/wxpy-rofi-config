@@ -1,3 +1,4 @@
+"""This file provides the Entry class"""
 # pylint: disable=W,C,R
 # coding=utf8
 

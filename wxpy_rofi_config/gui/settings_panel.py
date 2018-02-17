@@ -1,3 +1,4 @@
+"""This file provides the SettingsPanel class"""
 # pylint: disable=W,C,R
 
 # pylint: disable=no-name-in-module

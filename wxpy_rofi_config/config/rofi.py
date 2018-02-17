@@ -1,3 +1,4 @@
+"""This file provides the Rofi class"""
 # pylint: disable=W,C,R
 # coding=utf8
 
