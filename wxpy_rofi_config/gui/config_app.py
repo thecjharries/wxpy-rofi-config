@@ -12,8 +12,8 @@ from wxpy_rofi_config.gui import ConfigFrame
 
 class ConfigApp(App):
     """ConfigApp provides the main GUI"""
-
-    def OnInit(self):  # pylint:disable=invalid-name
+    @staticmethod
+    def OnInit():  # pylint:disable=invalid-name
         """Initializes the GUI"""
         frame = ConfigFrame()
         frame.Show()
