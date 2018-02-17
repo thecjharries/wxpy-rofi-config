@@ -15,7 +15,7 @@ class Entry(object):
     }
 
     CLEAN_PATTERNS = {
-        'config_key': re_compile(r"_"),
+        'key_name': re_compile(r"_"),
         'number': re_compile(r"[^\d\-\.]"),
         'string': re_compile(r"(^(\"|')|(\"|')$)")
     }
@@ -98,8 +98,8 @@ class Entry(object):
         return "%s: %s;" % (self.key_name, self.current)
 
     @staticmethod
-    def clean_config_key(key):
-        return sub(Entry.CLEAN_PATTERNS['key'], '-', key)
+    def clean_key_name(key):
+        return sub(Entry.CLEAN_PATTERNS['key_name'], '-', key)
 
     @staticmethod
     def clean_number(value):
