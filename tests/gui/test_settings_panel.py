@@ -234,7 +234,18 @@ class CreateEntryRowsUnitTests(SettingsPanelTestCase):
 
 
 class PopulateEntriesUnitTests(SettingsPanelTestCase):
-    ''''''
+    CONFIG = ['one', 'two', 'three']
+    CALLS = [
+        call('one', False),
+        call('two', True),
+        call('three', True),
+    ]
+
+    @patch.object(SettingsPanel, 'create_entry_rows')
+    def test_calls(self, mock_create):
+        mock_create.assert_not_called()
+        self.panel.populate_entries(self.CONFIG)
+        mock_create.assert_has_calls(self.CALLS)
 
 
 class ResizeUnitTests(SettingsPanelTestCase):
