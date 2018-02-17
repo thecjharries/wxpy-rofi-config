@@ -114,10 +114,10 @@ class SettingsPanel(ScrolledPanel):
             self.create_entry_man(entry)
 
     def populate_entries(self, config):
-        first = True
+        not_first = False
         for entry in config:
-            self.create_entry_rows(entry, first)
-            first = False
+            self.create_entry_rows(entry, not_first)
+            not_first = True
 
     def resize(self):
         for man_text in self.man_texts:
