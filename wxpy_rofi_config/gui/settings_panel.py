@@ -26,7 +26,7 @@ from wxpy_rofi_config.gui import FittedStaticText
 class SettingsPanel(ScrolledPanel):
 
     def __init__(self, config, parent):
-        super(SettingsPanel, self).__init__(
+        ScrolledPanel.__init__(
             self,
             parent=parent,
             size=(-1, -1)
