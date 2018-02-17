@@ -50,6 +50,7 @@ class Rofi(object):
 
     def __init__(self):
         self.config = OrderedDict()
+        self.groups = []
 
     def assign_rasi_entry(self, key_value_match, destination='default'):
         key = key_value_match.group('key')
@@ -77,6 +78,8 @@ class Rofi(object):
     def process_config(self):
         for _, entry in self.config.iteritems():
             entry.process_entry()
+            if not entry.group in self.groups:
+                self.groups.append(entry.group)
 
     def clean_entry_man(self, contents):
         for substitution in self.PATTERNS['CLEAN_MAN']:
