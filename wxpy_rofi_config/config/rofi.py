@@ -133,16 +133,16 @@ class Rofi(object):
             man_group_match.group('group')
         )
         for discovered_entry in finditer(
-            self.PATTERNS['MAN_ITEM'],
-            man_group_match.group('contents')
+                self.PATTERNS['MAN_ITEM'],
+                man_group_match.group('contents')
         ):
             self.parse_man_entry(group, discovered_entry)
 
     def parse_man_config(self, man_config_match):
         """Looks for the config man section"""
         for discovered_group in finditer(
-            self.PATTERNS['MAN_GROUP'],
-            man_config_match
+                self.PATTERNS['MAN_GROUP'],
+                man_config_match
         ):
             self.parse_man_group(discovered_group)
 
