@@ -5,6 +5,7 @@ from collections import OrderedDict
 from wx import (
     EVT_NOTEBOOK_PAGE_CHANGED,
     EVT_SIZE,
+    FindWindowByName,
     NB_LEFT,
     Notebook,
 )
@@ -33,7 +34,7 @@ class SettingsNotebook(Notebook):
         self.config = Rofi()
         self.config.build()
         for key, entry in self.config.config.iteritems():
-            if entry.group in self.groups:
+            if not entry.group in self.groups:
                 self.groups[entry.group].append(entry)
             else:
                 self.groups[entry.group] = [entry]
@@ -54,3 +55,17 @@ class SettingsNotebook(Notebook):
 
     def resize(self, event=None):
         self.tabs[self.GetSelection()].resize()
+
+    def save(self, event=None):
+        for index, tab in enumerate(self.tabs):
+            group = self.groups.keys()[index]
+            for entry in self.groups[group]:
+                widget = FindWindowByName(entry.key_name)
+                if hasattr(widget, 'GetValue'):
+                    value = widget.GetValue()
+                elif hasattr(widget, 'GetLabel'):
+                    value = widget.GetLabel()
+                else:
+                    value = entry.current
+                self.config[entry.key_name].current = value
+        print(self.config.to_rasi())
