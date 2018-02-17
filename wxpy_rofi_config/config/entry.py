@@ -84,8 +84,8 @@ class Entry(object):
 
     def process_entry(self):
         self.assign_current()
-        self.attempt_to_clean_values()
         self.ensure_useful_var_type()
+        self.attempt_to_clean_values()
         self.look_for_useful_group()
 
     @staticmethod
