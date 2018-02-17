@@ -1,3 +1,4 @@
+# pylint: disable=attribute-defined-outside-init
 # pylint: disable=missing-docstring
 # pylint: disable=unused-argument
 
@@ -262,3 +263,46 @@ class ToRasiUnitTests(EntryTestCase):
             self.entry = Entry(**run)
             result = self.entry.to_rasi()
             self.assertEquals(result, run['expected'])
+
+
+class CleanKeyNameUnitTests(EntryTestCase):
+    RUNS = [
+        ['www', 'www'],
+        ['w_w-w', 'w-w-w']
+    ]
+
+    def test_values(self):
+        for run in self.RUNS:
+            self.assertEquals(
+                run[1],
+                Entry.clean_key_name(run[0])
+            )
+
+
+class CleanNumberUnitTests(EntryTestCase):
+    RUNS = [
+        ['912', 912],
+        ['p/-1', -1]
+    ]
+
+    def test_values(self):
+        for run in self.RUNS:
+            self.assertEquals(
+                run[1],
+                Entry.clean_number(run[0])
+            )
+
+
+class CleanBooleanUnitTests(EntryTestCase):
+    RUNS = [
+        ['true', True],
+        ['p/-', False],
+        ['false', False]
+    ]
+
+    def test_values(self):
+        for run in self.RUNS:
+            self.assertEquals(
+                run[1],
+                Entry.clean_boolean(run[0])
+            )
