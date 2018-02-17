@@ -115,7 +115,7 @@ class SettingsPanel(ScrolledPanel):
 
     def populate_entries(self, config):
         first = True
-        for key, entry in config.config.iteritems():
+        for entry in config:
             self.create_entry_rows(entry, first)
             first = False
 
