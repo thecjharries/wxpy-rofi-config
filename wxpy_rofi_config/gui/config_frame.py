@@ -54,8 +54,8 @@ class ConfigFrame(Frame):
 
     def bind_events(self):
         self.Bind(EVT_INIT_DIALOG, self.boot)
-        self.Bind(EVT_MENU, self.on_save, self.save_menu_item)
-        self.Bind(EVT_MENU, self.on_exit, self.exit_menu_item)
+        self.Bind(EVT_MENU, self.save, self.save_menu_item)
+        self.Bind(EVT_MENU, self.exit, self.exit_menu_item)
 
     def boot(self):
         PostEvent(self.notebook, SizeEvent((-1, -1)))
