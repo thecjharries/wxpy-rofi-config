@@ -107,7 +107,7 @@ class SettingsPanel(ScrolledPanel):
         )
         sizer = BoxSizer(HORIZONTAL)
         text = FittedStaticText(self)
-        text.SetLabel(entry.man)
+        text.set_label(entry.man)
         self.man_texts.append(text)
         sizer.Add(text, proportion=-1, flag=EXPAND)
         self.grid_sizer.Add(sizer, proportion=-1, flag=EXPAND)

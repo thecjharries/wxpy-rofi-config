@@ -17,6 +17,10 @@ class ConfigApp(App):
         frame.Show()
         return True
 
-if '__main__' == __name__:
-    app = ConfigApp(False)
-    app.MainLoop()
+
+def cli():
+    if '__main__' == __name__:
+        app = ConfigApp(False)
+        app.MainLoop()
+
+cli()
