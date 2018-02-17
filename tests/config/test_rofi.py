@@ -294,6 +294,23 @@ class ParseHelpEntryUnitTests(RofiTestCase):
         )
 
 
+class ParseHelpConfigUnitTests(RofiTestCase):
+    INPUT = """
+   -one             one
+   -two [string]    two
+   -three           three
+"""
+
+    @patch.object(Rofi, 'parse_help_entry')
+    def test_construction(self, mock_parse):
+        match = MagicMock(group=lambda x: self.INPUT)
+        self.rofi.parse_help_config(match)
+        self.assertEquals(
+            mock_parse.call_count,
+            3
+        )
+
+
 class BuildUnitTests(RofiTestCase):
 
     @patch.object(Rofi, 'load_default_config')
