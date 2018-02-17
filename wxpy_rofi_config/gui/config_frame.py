@@ -24,10 +24,10 @@ from wxpy_rofi_config.gui import SettingsNotebook
 
 class ConfigFrame(Frame):
 
-    def __init__(self):
+    def __init__(self, parent):
         super(ConfigFrame, self).__init__(
-            self,
-            None,
+            parent=parent,
+            id=-1,
             title='rofi Config',
             size=(600, 600)
         )
