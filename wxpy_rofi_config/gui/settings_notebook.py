@@ -63,11 +63,11 @@ class SettingsNotebook(Notebook):
         self.Bind(EVT_NOTEBOOK_PAGE_CHANGED, self.resize)
         self.Bind(EVT_SIZE, self.resize)
 
-    def resize(self, event=None):
+    def resize(self, event=None):  # pylint:disable=unused-argument
         """Resizes only the active tab"""
         self.tabs[self.GetSelection()].resize()
 
-    def save(self, event=None):
+    def save(self, event=None):  # pylint:disable=unused-argument
         """Saves the config to the default location"""
         for index, tab in enumerate(self.tabs):
             group = self.groups.keys()[index]
