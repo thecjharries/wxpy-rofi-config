@@ -140,11 +140,13 @@ class SettingsPanel(ScrolledPanel):
         if not_first:
             self.create_horizontal_rule()
             self.create_horizontal_rule()
+        if entry.help_value:
+            self.create_entry_doc(entry, 'help_value')
         self.create_entry_label(entry)
         self.create_entry_control(entry)
         self.grid_sizer.Layout()
         if entry.man:
-            self.create_entry_man(entry)
+            self.create_entry_doc(entry, 'man')
 
     def populate_entries(self, config):
         """
