@@ -21,9 +21,9 @@ class FittedStaticText(Control):
             style=BORDER_NONE
         )
         self.text = StaticText(self, -1, label)
-        self.SetLabel(label)
+        self.set_label(label)
 
-    def SetLabel(self, label):
+    def set_label(self, label):
         self.label = label
         self.fit_label()
 
