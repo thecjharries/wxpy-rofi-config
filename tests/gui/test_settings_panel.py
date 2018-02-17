@@ -75,3 +75,9 @@ class SettingsPanelTestCase(TestCase):
         self.mock_create_main_grid = create_main_grid_patcher.start()
         self.panel = SettingsPanel(None, None)
         create_main_grid_patcher.stop()
+
+
+class ConstructorUnitTests(SettingsPanelTestCase):
+
+    def test_construction(self):
+        self.mock_create_main_grid.assert_called_once()
