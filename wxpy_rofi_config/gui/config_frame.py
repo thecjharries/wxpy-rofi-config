@@ -95,6 +95,7 @@ class ConfigFrame(Frame):
         PostEvent(self.notebook, SizeEvent((-1, -1)))
 
     def change_display_state(self, event=None):
+        """Process display state changes"""
         if self.show_help_menu_item.Id == event.Id:
             target = 'help_value'
         elif self.show_man_menu_item.Id == event.Id:
