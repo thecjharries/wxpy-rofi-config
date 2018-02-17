@@ -170,7 +170,8 @@ class SettingsPanel(ScrolledPanel):
     def resize(self):
         """Forces each man label to resize and redefines its own layout"""
         for resizable_text in self.resizable_texts:
-            resizable_text.resize()
+            if resizable_text.IsShown():
+                resizable_text.resize()
         self.GetSizer().Layout()
 
     def change_display_state(self, kind, show=True):
