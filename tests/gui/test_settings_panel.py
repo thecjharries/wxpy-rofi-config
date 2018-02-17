@@ -332,3 +332,35 @@ class ResizeUnitTests(SettingsPanelTestCase):
         self.panel.resize()
         self.assertEquals(mock_resize.call_count, self.MAN_TEXTS_COUNT)
         mock_layout.assert_called_once()
+
+
+class ChangeDisplayStateUnitTests(SettingsPanelTestCase):
+    SHOW = MagicMock()
+    HIDE = MagicMock()
+    GROUPS = {
+        'help_value': [
+            MagicMock(Show=SHOW, Hide=HIDE),
+            MagicMock(Show=SHOW, Hide=HIDE)
+        ],
+        'man': [
+            MagicMock(Show=SHOW, spec=['Show']),
+            MagicMock(Hide=HIDE, spec=['Hide'])
+        ]
+    }
+
+    def setUp(self):
+        SettingsPanelTestCase.setUp(self)
+        self.SHOW.reset_mock()
+        self.HIDE.reset_mock()
+
+    def test_show(self):
+        self.panel.groups_to_hide = self.GROUPS
+        self.panel.change_display_state('help_value', True)
+        self.SHOW.assert_has_calls([call(), call()])
+        self.HIDE.assert_not_called()
+
+    def test_hide(self):
+        self.panel.groups_to_hide = self.GROUPS
+        self.panel.change_display_state('man', False)
+        self.HIDE.assert_called_once_with()
+        self.SHOW.assert_not_called()
