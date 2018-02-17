@@ -99,3 +99,22 @@ class LoadCurrentConfigUnitTests(RofiTestCase):
     def test_calls(self, mock_parse, mock_check):
         self.rofi.load_current_config()
         mock_parse.assert_called_once_with(self.RESULT, 'current')
+
+
+class ProcessConfigUnitTests(RofiTestCase):
+    INPUT = {
+        'one': MagicMock(group='one'),
+        'two': MagicMock(group='one'),
+        'three': MagicMock(group='two')
+    }
+    GROUPS = ['one', 'two']
+
+    def test_construction(self):
+        self.rofi.config = self.INPUT
+        self.rofi.process_config()
+        if hasattr(self, 'assertCountEqual'):
+            self.assertCountEqual(self.rofi.groups, self.GROUPS)
+        elif hasattr(self, 'assertItemsEqual'):
+            self.assertItemsEqual(self.rofi.groups, self.GROUPS)
+        else:
+            assert 0
