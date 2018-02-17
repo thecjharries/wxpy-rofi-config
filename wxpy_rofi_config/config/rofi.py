@@ -1,6 +1,6 @@
+# coding=utf8
 """This file provides the Rofi class"""
 
-# coding=utf8
 
 from collections import OrderedDict
 from os.path import expanduser, join
