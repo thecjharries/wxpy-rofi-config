@@ -17,7 +17,7 @@ from wxpy_rofi_config.gui import SettingsPanel
 class SettingsNotebook(Notebook):
 
     def __init__(self, parent):
-        super(SettingsNotebook, self).__init__(
+        Notebook.__init__(
             self,
             parent=parent,
             style=NB_LEFT,
