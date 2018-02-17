@@ -11,18 +11,17 @@ from wxpy_rofi_config.gui import ConfigFrame
 
 class ConfigApp(App):
     """ConfigApp provides the main GUI"""
-    @staticmethod
-    def OnInit():  # pylint:disable=invalid-name
-        """Initializes the GUI"""
+
+    def __init__(self):
+        App.__init__(self)
         frame = ConfigFrame()
         frame.Show()
-        return True
 
 
 def cli():
     """Checks if the module has been loaded via the CLI"""
     if '__main__' == __name__:
-        app = ConfigApp(False)
+        app = ConfigApp()
         app.MainLoop()
 
 cli()
