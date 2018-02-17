@@ -36,7 +36,7 @@ class SettingsNotebook(Notebook):
         """Parses the available config into groups"""
         self.config = Rofi()
         self.config.build()
-        for key, entry in self.config.config.iteritems():
+        for _, entry in self.config.config.iteritems():
             if entry.group in self.groups:
                 self.groups[entry.group].append(entry)
             else:
