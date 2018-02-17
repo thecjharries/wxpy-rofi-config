@@ -40,7 +40,7 @@ class Rofi(object):
                 ''
             ],
             [
-                re_compile(r" (\w+)‐\n([^\s])"),
+                re_compile(r" (\w+)(‐|-)\n([^\s])"),
                 r" \1\2"
             ],
             [
