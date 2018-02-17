@@ -199,3 +199,24 @@ class SaveUnitTests(SettingsNotebookTestCase):
                 self.notebook.config.config[key].current,
                 value
             )
+
+
+class ChangeDisplayStateUnitTests(SettingsNotebookTestCase):
+    CHANGE_STATE = MagicMock()
+
+    TABS = [
+        MagicMock(change_display_state=CHANGE_STATE),
+        MagicMock(change_display_state=CHANGE_STATE),
+        MagicMock(change_display_state=CHANGE_STATE),
+    ]
+
+    @patch.object(SettingsNotebook, 'resize')
+    def test_state_change(self, mock_resize):
+        self.notebook.tabs = self.TABS
+        self.notebook.change_display_state('target', True)
+        self.CHANGE_STATE.assert_has_calls([
+            call('target', True),
+            call('target', True),
+            call('target', True),
+        ])
+        mock_resize.assert_called_once_with()
