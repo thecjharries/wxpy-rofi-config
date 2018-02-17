@@ -120,7 +120,6 @@ class Entry(object):
     @staticmethod
     def guess_something_from_patterns(value, pattern_dict, default):
         for key, pattern in pattern_dict.iteritems():
-            print(key, value)
             if value and re_match(pattern, value):
                 return key
         return default
