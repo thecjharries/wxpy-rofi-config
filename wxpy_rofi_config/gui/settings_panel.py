@@ -43,9 +43,18 @@ class SettingsPanel(ScrolledPanel):
             size=(-1, -1)
         )
         self.config = config
+        self.groups_to_hide = {
+            'help_value': [],
+            'man': []
+        }
         self.resizable_texts = []
-        self.font = Font(12, FONTFAMILY_DEFAULT,
-                         FONTSTYLE_NORMAL, FONTWEIGHT_BOLD)
+        self.font = Font(
+            12,
+            FONTFAMILY_DEFAULT,
+            FONTSTYLE_NORMAL,
+            FONTWEIGHT_BOLD
+        )
+
         self.create_main_grid()
 
     def create_main_grid(self):
@@ -122,6 +131,7 @@ class SettingsPanel(ScrolledPanel):
         self.resizable_texts.append(text)
         sizer.Add(text, proportion=-1, flag=EXPAND)
         self.grid_sizer.Add(sizer, proportion=-1, flag=EXPAND)
+        self.groups_to_hide[kind].append(text)
 
     def create_horizontal_rule(self):
         """Creates a simple horizontal rule"""
@@ -160,5 +170,16 @@ class SettingsPanel(ScrolledPanel):
     def resize(self):
         """Forces each man label to resize and redefines its own layout"""
         for resizable_text in self.resizable_texts:
-            resizable_text.resize()
+            if resizable_text.IsShown():
+                resizable_text.resize()
         self.GetSizer().Layout()
+
+    def change_display_state(self, kind, show=True):
+        """Changes the display state of the provided kind of group"""
+        if show:
+            action = 'Show'
+        else:
+            action = 'Hide'
+        for widget in self.groups_to_hide[kind]:
+            if hasattr(widget, action):
+                getattr(widget, action)()
