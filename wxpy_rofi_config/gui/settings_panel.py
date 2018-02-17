@@ -3,12 +3,16 @@
 # pylint: disable=no-name-in-module
 from wx import (
     ALIGN_RIGHT,
+    BOLD,
     BoxSizer,
     CheckBox,
+    DEFAULT,
     EXPAND,
     FlexGridSizer,
+    Font,
     HORIZONTAL,
     LI_HORIZONTAL,
+    NORMAL,
     StaticLine,
     StaticText,
     SYS_COLOUR_WINDOWTEXT,
@@ -33,6 +37,7 @@ class SettingsPanel(ScrolledPanel):
         )
         self.config = config
         self.man_texts = []
+        self.font = Font(12, DEFAULT, NORMAL, BOLD)
         self.create_main_grid()
 
     def create_main_grid(self):
@@ -49,8 +54,9 @@ class SettingsPanel(ScrolledPanel):
         text = StaticText(
             self,
             label=entry.key_name + ':',
-            style=ALIGN_RIGHT | EXPAND
+            style=ALIGN_RIGHT | EXPAND,
         )
+        text.SetFont(self.font)
         sizer.Add((0, 0), proportion=1, flag=EXPAND)
         sizer.Add(text, proportion=0, flag=EXPAND)
         sizer.Add((0, 0), proportion=1, flag=EXPAND)
