@@ -41,8 +41,11 @@ class Entry(object):
     }
 
     key_name = None
-    group = DEFAULTS['group']
     var_type = DEFAULTS['var_type']
+    group = DEFAULTS['group']
+    default = None
+    current = None
+    man = None
 
     def __init__(self, **kwargs):
         for key, value in self.DEFAULTS.iteritems():
