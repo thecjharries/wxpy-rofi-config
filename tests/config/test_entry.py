@@ -103,3 +103,94 @@ class ForceVarTypeUnitTests(EntryTestCase):
                 self.entry.current = current
                 var_type = self.entry.force_var_type()
                 self.assertEquals(self.RESULTS[default & current], var_type)
+
+
+class EnsureUsefulVarTypeUnitTests(EntryTestCase):
+
+    @patch.object(
+        Entry,
+        'force_var_type',
+        return_value='string'
+    )
+    @patch.object(
+        Entry,
+        'guess_var_type_from_value',
+        return_value='unknown'
+    )
+    @patch.object(
+        Entry,
+        'guess_var_type_from_key',
+        return_value='unknown'
+    )
+    def test_known_type(self, mock_key, mock_value, mock_force):
+        self.entry.var_type = 'string'
+        self.entry.ensure_useful_var_type()
+        self.assertEquals(mock_key.call_count, 0)
+        self.assertEquals(mock_value.call_count, 0)
+        self.assertEquals(mock_force.call_count, 0)
+
+    @patch.object(
+        Entry,
+        'force_var_type',
+        return_value='string'
+    )
+    @patch.object(
+        Entry,
+        'guess_var_type_from_value',
+        return_value='unknown'
+    )
+    @patch.object(
+        Entry,
+        'guess_var_type_from_key',
+        return_value='string'
+    )
+    def test_key_type(self, mock_key, mock_value, mock_force):
+        self.entry.var_type = 'unknown'
+        self.entry.ensure_useful_var_type()
+        mock_key.assert_called_once_with(Entry.DEFAULTS['key_name'])
+        self.assertEquals(mock_value.call_count, 0)
+        self.assertEquals(mock_force.call_count, 0)
+
+    @patch.object(
+        Entry,
+        'force_var_type',
+        return_value='string'
+    )
+    @patch.object(
+        Entry,
+        'guess_var_type_from_value',
+        return_value='string'
+    )
+    @patch.object(
+        Entry,
+        'guess_var_type_from_key',
+        return_value='unknown'
+    )
+    def test_value_type(self, mock_key, mock_value, mock_force):
+        self.entry.var_type = 'unknown'
+        self.entry.ensure_useful_var_type()
+        self.assertEquals(mock_key.call_count, 1)
+        mock_value.assert_called_once_with(Entry.DEFAULTS['default'])
+        self.assertEquals(mock_force.call_count, 0)
+
+    @patch.object(
+        Entry,
+        'force_var_type',
+        return_value='string'
+    )
+    @patch.object(
+        Entry,
+        'guess_var_type_from_value',
+        return_value='unknown'
+    )
+    @patch.object(
+        Entry,
+        'guess_var_type_from_key',
+        return_value='unknown'
+    )
+    def test_force_type(self, mock_key, mock_value, mock_force):
+        self.entry.var_type = 'unknown'
+        self.entry.ensure_useful_var_type()
+        self.assertEquals(mock_key.call_count, 1)
+        self.assertEquals(mock_value.call_count, 2)
+        mock_force.assert_called_once_with(None)
