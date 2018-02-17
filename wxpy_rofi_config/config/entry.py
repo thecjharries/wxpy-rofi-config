@@ -70,8 +70,8 @@ class Entry(object):
     def ensure_useful_var_type(self):
         calls = [
             (self.force_var_type, None),
-            (self.guess_var_type_from_value, self.default),
             (self.guess_var_type_from_value, self.current),
+            (self.guess_var_type_from_value, self.default),
             (self.guess_var_type_from_key, self.key_name),
         ]
         while 'unknown' == self.var_type and calls:
@@ -105,11 +105,13 @@ class Entry(object):
 
     @staticmethod
     def clean_string(value):
-        return sub(
-            Entry.CLEAN_PATTERNS['string'],
-            '',
-            value
-        )
+        if value:
+            return sub(
+                Entry.CLEAN_PATTERNS['string'],
+                '',
+                value
+            )
+        return ''
 
     @staticmethod
     def clean_boolean(value):
@@ -118,7 +120,7 @@ class Entry(object):
     @staticmethod
     def is_number(value):
         try:
-            Entry.clean_number(value)
+            int(Entry.clean_string(value))
             return True
         except (ValueError, TypeError):
             pass
