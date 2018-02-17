@@ -128,13 +128,9 @@ class Entry(object):
 
     @staticmethod
     def guess_something_from_patterns(value, pattern_dict, default):
-        if value is None:
-            value = ''
         for key, pattern in pattern_dict.iteritems():
-            if re_match(pattern, value):
+            if value and re_match(pattern, value):
                 return key
-            # else:
-            #     print(value)
         return default
 
     @staticmethod
@@ -160,7 +156,3 @@ class Entry(object):
             Entry.GROUP_KEY_PATTERNS,
             Entry.DEFAULTS['group']
         )
-
-# if 'false' and re_match(Entry.VAR_TYPE_VALUE_PATTERNS['boolean'], 'false'):
-#     print('cool')
-print(Entry.guess_var_type_from_value('false'))
