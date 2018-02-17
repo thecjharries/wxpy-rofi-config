@@ -208,3 +208,38 @@ class LookForUsefulGroupUnitTests(EntryTestCase):
     def test_default_group(self, mock_guess):
         self.entry.look_for_useful_group()
         mock_guess.assert_called_once_with(Entry.DEFAULTS['key_name'])
+
+
+class ToRasiUnitTests(EntryTestCase):
+
+    RUNS = [
+        {
+            'var_type': 'number',
+            'key_name': 'qqq',
+            'current': 10,
+            'expected': 'qqq: 10;'
+        },
+        {
+            'var_type': 'boolean',
+            'key_name': 'qqq',
+            'current': False,
+            'expected': 'qqq: false;'
+        },
+        {
+            'var_type': 'string',
+            'key_name': 'qqq',
+            'current': 'zzz',
+            'expected': 'qqq: "zzz";'
+        },
+        {
+            'key_name': 'qqq',
+            'current': 'testing',
+            'expected': 'qqq: testing;'
+        }
+    ]
+
+    def test_values(self):
+        for run in self.RUNS:
+            self.entry = Entry(**run)
+            result = self.entry.to_rasi()
+            self.assertEquals(result, run['expected'])
