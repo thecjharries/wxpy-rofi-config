@@ -10,6 +10,7 @@ from wx import (
     EVT_MENU,
     EXPAND,
     Frame,
+    ITEM_CHECK,
     Menu,
     MenuBar,
     NewId,
