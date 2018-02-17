@@ -46,6 +46,7 @@ class SettingsPanel(ScrolledPanel):
         self.create_main_grid()
 
     def create_main_grid(self):
+        """Creates the primary grid and enables scrolling"""
         self.main_sizer = BoxSizer(HORIZONTAL)
         self.grid_sizer = FlexGridSizer(2, 10, 10)
         self.populate_entries(self.config)
@@ -60,6 +61,7 @@ class SettingsPanel(ScrolledPanel):
         self.SetupScrolling()
 
     def create_entry_label(self, entry):
+        """Creates an entry label, which usually contains the setting name"""
         sizer = BoxSizer(VERTICAL)
         text = StaticText(
             self,
@@ -73,6 +75,7 @@ class SettingsPanel(ScrolledPanel):
         self.grid_sizer.Add(sizer, proportion=1, flag=EXPAND)
 
     def create_entry_control(self, entry):
+        """Creates an accessible control for the entry"""
         if 'string' == entry.var_type:
             control = TextCtrl(
                 self,
@@ -104,6 +107,7 @@ class SettingsPanel(ScrolledPanel):
         self.grid_sizer.Add(control, proportion=-1, flag=EXPAND)
 
     def create_entry_man(self, entry):
+        """Creates the documentation labels for an entry"""
         self.grid_sizer.Add(
             BoxSizer(HORIZONTAL),
             proportion=1,
@@ -117,6 +121,7 @@ class SettingsPanel(ScrolledPanel):
         self.grid_sizer.Add(sizer, proportion=-1, flag=EXPAND)
 
     def create_horizontal_rule(self):
+        """Creates a simple horizontal rule"""
         rule = StaticLine(
             self,
             style=LI_HORIZONTAL,
@@ -125,6 +130,10 @@ class SettingsPanel(ScrolledPanel):
         self.grid_sizer.Add(rule, proportion=1, flag=EXPAND)
 
     def create_entry_rows(self, entry, not_first=True):
+        """
+        Creates all the items for a single entry. It creates horizontal rules,
+        entry label and control, and documentation where available
+        """
         if not_first:
             self.create_horizontal_rule()
             self.create_horizontal_rule()
@@ -135,12 +144,16 @@ class SettingsPanel(ScrolledPanel):
             self.create_entry_man(entry)
 
     def populate_entries(self, config):
+        """
+        Parses all the available config options and generates their content
+        """
         not_first = False
         for entry in config:
             self.create_entry_rows(entry, not_first)
             not_first = True
 
     def resize(self):
+        """Forces each man label to resize and redefines its own layout"""
         for man_text in self.man_texts:
             man_text.resize()
         self.GetSizer().Layout()
