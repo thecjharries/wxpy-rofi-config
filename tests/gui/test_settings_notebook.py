@@ -7,7 +7,7 @@ from __future__ import print_function
 
 from unittest import TestCase
 
-from mock import MagicMock, patch
+from mock import call, MagicMock, patch
 
 from wxpy_rofi_config.gui import SettingsNotebook
 
@@ -101,3 +101,21 @@ class CreateTabUnitTests(SettingsNotebookTestCase):
         self.notebook.create_tab('qqq')
         self.mock_settings_panel.assert_called_once()
         mock_add.assert_called_once()
+
+
+class CreateTabsUnitTests(SettingsNotebookTestCase):
+    GROUPS = {
+        'one': 'one',
+        'two': 'two',
+        'three': 'three'
+    }
+
+    CALLS = [call(value) for key, value in GROUPS.iteritems()]
+
+    @patch.object(SettingsNotebook, 'group_config')
+    @patch.object(SettingsNotebook, 'create_tab')
+    def test_construction(self, mock_tab, mock_config):
+        self.notebook.groups = self.GROUPS
+        self.notebook.create_tabs()
+        mock_config.assert_called_once()
+        mock_tab.assert_has_calls(self.CALLS)
