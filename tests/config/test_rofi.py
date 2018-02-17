@@ -113,8 +113,15 @@ class ProcessConfigUnitTests(RofiTestCase):
         self.rofi.config = self.INPUT
         self.rofi.process_config()
         if hasattr(self, 'assertCountEqual'):
-            self.assertCountEqual(self.rofi.groups, self.GROUPS)
+            getattr(self, 'assertCountEqual')(self.rofi.groups, self.GROUPS)
         elif hasattr(self, 'assertItemsEqual'):
-            self.assertItemsEqual(self.rofi.groups, self.GROUPS)
+            getattr(self, 'assertItemsEqual')(self.rofi.groups, self.GROUPS)
         else:
             assert 0
+
+
+@patch('wxpy_rofi_config.config.rofi.sub')
+def test_clean_entry_man(mock_sub):
+    rofi = Rofi()
+    rofi.clean_entry_man('gibberish')
+    assert mock_sub.call_count == len(Rofi.PATTERNS['CLEAN_MAN'])
