@@ -8,6 +8,13 @@
 
 I'm currently refactoring the source. I slammed out the first couple of versions just to figure out wxPython, and it shows. I'm starting from scratch and rebuilding each component, taking the time now to research best practices, grok code I didn't quite understand the first time around, and implement proper messaging. Aside from some cosmetic stuff, the refactor shouldn't add any new features and might actually remove a few things until I can build them properly.
 
+## Sample
+
+I'm using [vanilla Equilux](https://github.com/ddnexus/equilux-theme). It uses native bindings so it should theme like your OS.
+
+![Sample Screenshot](assets/sample.png)
+
+
 ## Overview
 
 I've got a few goals with this project:
