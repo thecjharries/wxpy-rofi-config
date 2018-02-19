@@ -25,8 +25,7 @@ matrix:
 
 install:
   # - sudo apt-get install -y dpkg-dev build-essential python-dev libjpeg-dev libtiff5-dev libsdl1.2-dev libgstreamer-plugins-base0.10-dev libnotify-dev freeglut3 freeglut3-dev libsm-dev libgtk-3-dev libwebkitgtk-3.0-dev libgstreamer-plugins-base1.0-dev
-  # - pip install tox-travis
-  - pip install tox coveralls
+  - pip install tox-travis coveralls
   - pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-14.04 wxPython
   - python setup.py install
 
