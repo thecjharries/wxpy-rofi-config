@@ -41,12 +41,7 @@ class ConfigPage(Panel):
             if entry.help_value:
                 self.construct_docs_label('help_value', entry.help_value)
             self.construct_entry_label(entry.key_name)
-            current_value = TextCtrl(
-                self.scrolled_panel,
-                value=str(entry.current),
-                size=(-1, -1)
-            )
-            self.grid_sizer.Add(current_value, -1, EXPAND)
+            self.construct_entry_label(entry)
             if entry.man:
                 self.construct_docs_label('man', entry.man)
         self.grid_sizer.AddGrowableCol(1, 1)
@@ -95,3 +90,12 @@ class ConfigPage(Panel):
         label_sizer.Add(label, flag=ALIGN_RIGHT)
         label_sizer.Add(0, 1, 1, EXPAND)
         self.grid_sizer.Add(label_sizer, 0, EXPAND)
+
+    def construct_entry_control(self, entry):
+        """Creates the primary entry control"""
+        current_value = TextCtrl(
+            self.scrolled_panel,
+            value=str(entry.current),
+            size=(-1, -1)
+        )
+        self.grid_sizer.Add(current_value, -1, EXPAND)
