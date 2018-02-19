@@ -40,16 +40,7 @@ class ConfigPage(Panel):
                 self.construct_horizontal_rule()
             if entry.help_value:
                 self.construct_docs_label('help_value', entry.help_value)
-            label_sizer = BoxSizer(VERTICAL)
-            label_sizer.Add(0, 1, 1, EXPAND)
-            label = StaticText(
-                self.scrolled_panel,
-                label=entry.key_name,
-                style=ALIGN_RIGHT
-            )
-            label_sizer.Add(label, flag=ALIGN_RIGHT)
-            label_sizer.Add(0, 1, 1, EXPAND)
-            self.grid_sizer.Add(label_sizer, 0, EXPAND)
+            self.construct_entry_label(entry.key_name)
             current_value = TextCtrl(
                 self.scrolled_panel,
                 value=str(entry.current),
@@ -91,3 +82,16 @@ class ConfigPage(Panel):
         )
         sizer.Add(label, -1, EXPAND)
         self.grid_sizer.Add(sizer, 1, EXPAND)
+
+    def construct_entry_label(self, value):
+        """Creates the primary entry label"""
+        label_sizer = BoxSizer(VERTICAL)
+        label_sizer.Add(0, 1, 1, EXPAND)
+        label = StaticText(
+            self.scrolled_panel,
+            label=value,
+            style=ALIGN_RIGHT
+        )
+        label_sizer.Add(label, flag=ALIGN_RIGHT)
+        label_sizer.Add(0, 1, 1, EXPAND)
+        self.grid_sizer.Add(label_sizer, 0, EXPAND)
