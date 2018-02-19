@@ -25,6 +25,7 @@ class ConfigApp(App, InspectionMixin):
         return True
 
     def construct_gui(self):
+        """Constructs the primary GUI"""
         self.frame = ConfigFrame(None, title="rofi Configuration")
         self.frame.Show()
         self.SetTopWindow(self.frame)
