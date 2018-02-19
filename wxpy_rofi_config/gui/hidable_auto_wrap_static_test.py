@@ -2,6 +2,8 @@
 
 """This file provide HidableAutoWrapStaticText"""
 
+# pylint: disable=too-many-ancestors
+
 from wx.lib.pubsub import pub
 from wx.lib.agw.infobar import AutoWrapStaticText
 
