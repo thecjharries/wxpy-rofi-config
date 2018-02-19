@@ -33,8 +33,8 @@ class ConfigPage(Panel):
         scrolled_panel = ScrolledPanel(self)
         scrolled_panel.SetAutoLayout(1)
         scrolled_panel.SetupScrolling()
-        main_sizer = BoxSizer(HORIZONTAL)
-        grid_sizer = FlexGridSizer(2, 10, 10)
+        self.main_sizer = BoxSizer(HORIZONTAL)
+        self.grid_sizer = FlexGridSizer(2, 10, 10)
         for index, entry in enumerate(config):
             if index > 0:
                 for _ in range(0, 2):
@@ -43,10 +43,10 @@ class ConfigPage(Panel):
                         style=LI_HORIZONTAL,
                         size=(-1, 2)
                     )
-                    grid_sizer.Add(rule, proportion=1, flag=EXPAND |
-                                   TOP | BOTTOM, border=10)
+                    self.grid_sizer.Add(rule, proportion=1, flag=EXPAND |
+                                        TOP | BOTTOM, border=10)
             if entry.help_value:
-                grid_sizer.Add(1, 0, 1, EXPAND)
+                self.grid_sizer.Add(1, 0, 1, EXPAND)
                 help_sizer = BoxSizer(HORIZONTAL)
                 help_label = HidableAutoWrapStaticText(
                     parent=scrolled_panel,
@@ -54,7 +54,7 @@ class ConfigPage(Panel):
                     kind='help_value',
                 )
                 help_sizer.Add(help_label, -1, EXPAND)
-                grid_sizer.Add(help_sizer, 1, EXPAND)
+                self.grid_sizer.Add(help_sizer, 1, EXPAND)
             label_sizer = BoxSizer(VERTICAL)
             label_sizer.Add(0, 1, 1, EXPAND)
             label = StaticText(
@@ -64,15 +64,15 @@ class ConfigPage(Panel):
             )
             label_sizer.Add(label, flag=ALIGN_RIGHT)
             label_sizer.Add(0, 1, 1, EXPAND)
-            grid_sizer.Add(label_sizer, 0, EXPAND)
+            self.grid_sizer.Add(label_sizer, 0, EXPAND)
             current_value = TextCtrl(
                 scrolled_panel,
                 value=str(entry.current),
                 size=(-1, -1)
             )
-            grid_sizer.Add(current_value, -1, EXPAND)
+            self.grid_sizer.Add(current_value, -1, EXPAND)
             if entry.man:
-                grid_sizer.Add(1, 0, 1, EXPAND)
+                self.grid_sizer.Add(1, 0, 1, EXPAND)
                 man_sizer = BoxSizer(HORIZONTAL)
                 man_label = HidableAutoWrapStaticText(
                     parent=scrolled_panel,
@@ -80,10 +80,10 @@ class ConfigPage(Panel):
                     kind='man',
                 )
                 man_sizer.Add(man_label, -1, EXPAND)
-                grid_sizer.Add(man_sizer, 1, EXPAND)
-        grid_sizer.AddGrowableCol(1, 1)
+                self.grid_sizer.Add(man_sizer, 1, EXPAND)
+        self.grid_sizer.AddGrowableCol(1, 1)
         scroll_sizer = BoxSizer(HORIZONTAL)
-        scroll_sizer.Add(grid_sizer, 1, EXPAND | ALL, 10)
+        scroll_sizer.Add(self.grid_sizer, 1, EXPAND | ALL, 10)
         scrolled_panel.SetSizer(scroll_sizer)
-        main_sizer.Add(scrolled_panel, 1, EXPAND)
-        self.SetSizer(main_sizer)
+        self.main_sizer.Add(scrolled_panel, 1, EXPAND)
+        self.SetSizer(self.main_sizer)
