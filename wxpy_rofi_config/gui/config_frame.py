@@ -80,6 +80,6 @@ class ConfigFrame(wx.Frame):
         if kind:
             pub.sendMessage("toggle_display_%s" % kind, data=event.IsChecked())
 
-    def exit(self, event=None):
+    def exit(self, event=None):  # pylint: disable=unused-argument
         """Kills the app"""
         self.GetTopLevelParent().Close()
