@@ -2,11 +2,8 @@
 
 """This file provide HidableAutoWrapStaticText"""
 
-import wx
 from wx.lib.pubsub import pub
 from wx.lib.agw.infobar import AutoWrapStaticText
-
-from wxpy_rofi_config.config import Rofi
 
 
 class HidableAutoWrapStaticText(AutoWrapStaticText):
