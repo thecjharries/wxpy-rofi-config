@@ -95,9 +95,13 @@ class CreateMenuUnitTests(ConfigFrameTestCase):
     def test_menu_creation(self, mock_set):
         self.assertIsNone(getattr(self.frame, 'save_menu_item', None))
         self.assertIsNone(getattr(self.frame, 'exit_menu_item', None))
+        self.assertIsNone(getattr(self.frame, 'show_help_menu_item', None))
+        self.assertIsNone(getattr(self.frame, 'show_man_menu_item', None))
         self.frame.create_menu()
         self.assertIsNotNone(self.frame.save_menu_item)
         self.assertIsNotNone(self.frame.exit_menu_item)
+        self.assertIsNotNone(self.frame.show_help_menu_item)
+        self.assertIsNotNone(self.frame.show_man_menu_item)
 
 
 class BindEventsUnitTests(ConfigFrameTestCase):
@@ -106,6 +110,8 @@ class BindEventsUnitTests(ConfigFrameTestCase):
     def test_calls(self, mock_bind):
         self.frame.save_menu_item = None
         self.frame.exit_menu_item = None
+        self.frame.show_help_menu_item = None
+        self.frame.show_man_menu_item = None
         mock_bind.assert_not_called()
         self.frame.bind_events()
         mock_bind.assert_called()
@@ -118,6 +124,50 @@ class BootUnitTests(ConfigFrameTestCase):
         self.mock_postevent.assert_not_called()
         self.frame.boot()
         self.mock_postevent.assert_called()
+
+
+class ChangeDisplayStateUnitTests(ConfigFrameTestCase):
+    NO_ID = 99
+    HELP_VALUE_ID = 22
+    MAN_ID = 47
+
+    def setUp(self):
+        ConfigFrameTestCase.setUp(self)
+        self.frame.show_help_menu_item = MagicMock(Id=self.HELP_VALUE_ID)
+        self.frame.show_man_menu_item = MagicMock(Id=self.MAN_ID)
+        self.mock_change = MagicMock()
+        self.frame.notebook = MagicMock(change_display_state=self.mock_change)
+        self.mock_skip = MagicMock()
+
+    def test_help_value(self):
+        event = MagicMock(
+            Id=self.HELP_VALUE_ID,
+            IsChecked=MagicMock(return_value=True),
+            Skip=self.mock_skip
+        )
+        self.frame.change_display_state(event)
+        self.mock_change.assert_called_once_with('help_value', True)
+        self.mock_skip.assert_not_called()
+
+    def test_man_value(self):
+        event = MagicMock(
+            Id=self.MAN_ID,
+            IsChecked=MagicMock(return_value=True),
+            Skip=self.mock_skip
+        )
+        self.frame.change_display_state(event)
+        self.mock_change.assert_called_once_with('man', True)
+        self.mock_skip.assert_not_called()
+
+    def test_unknown_value(self):
+        event = MagicMock(
+            Id=self.NO_ID,
+            IsChecked=MagicMock(return_value=True),
+            Skip=self.mock_skip
+        )
+        self.frame.change_display_state(event)
+        self.mock_change.assert_not_called()
+        self.mock_skip.assert_called_once_with()
 
 
 class SaveUnitTests(ConfigFrameTestCase):

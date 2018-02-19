@@ -10,6 +10,7 @@ from wx import (
     EVT_MENU,
     EXPAND,
     Frame,
+    ITEM_CHECK,
     Menu,
     MenuBar,
     NewId,
@@ -55,6 +56,22 @@ class ConfigFrame(Frame):
         self.save_menu_item = file_menu.Append(NewId(), '&Save\tCtrl+s')
         self.exit_menu_item = file_menu.Append(NewId(), 'E&xit\tCtrl+w')
         menu_bar.Append(file_menu, '&File')
+        docs_menu = Menu()
+        self.show_help_menu_item = docs_menu.Append(
+            NewId(),
+            'rofi --help',
+            'Show or hide pertinent rofi --help info',
+            ITEM_CHECK
+        )
+        self.show_help_menu_item.Check(True)
+        self.show_man_menu_item = docs_menu.Append(
+            NewId(),
+            'man rofi',
+            'Show or hide pertinent man rofi info',
+            ITEM_CHECK
+        )
+        self.show_man_menu_item.Check(True)
+        menu_bar.Append(docs_menu, '&Docs')
         self.SetMenuBar(menu_bar)
 
     def bind_events(self):
@@ -62,10 +79,32 @@ class ConfigFrame(Frame):
         self.Bind(EVT_INIT_DIALOG, self.boot)
         self.Bind(EVT_MENU, self.save, self.save_menu_item)
         self.Bind(EVT_MENU, self.exit, self.exit_menu_item)
+        self.Bind(
+            EVT_MENU,
+            self.change_display_state,
+            self.show_help_menu_item
+        )
+        self.Bind(
+            EVT_MENU,
+            self.change_display_state,
+            self.show_man_menu_item
+        )
 
     def boot(self, event=None):  # pylint:disable=unused-argument
         """Sends a resize request to app to coddle StaticTexts"""
         PostEvent(self.notebook, SizeEvent((-1, -1)))
+
+    def change_display_state(self, event=None):
+        """Process display state changes"""
+        if self.show_help_menu_item.Id == event.Id:
+            target = 'help_value'
+        elif self.show_man_menu_item.Id == event.Id:
+            target = 'man'
+        else:
+            target = None
+            event.Skip()
+        if target:
+            self.notebook.change_display_state(target, event.IsChecked())
 
     def save(self, event=None):  # pylint:disable=unused-argument
         """Fires a save event"""

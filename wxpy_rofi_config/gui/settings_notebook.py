@@ -84,3 +84,9 @@ class SettingsNotebook(Notebook):
                     value = entry.current
                 self.config.config[entry.key_name].current = value
         self.config.save()
+
+    def change_display_state(self, target, show):
+        """Pass display state changes on to children"""
+        for tab in self.tabs:
+            tab.change_display_state(target, show)
+        self.resize()
