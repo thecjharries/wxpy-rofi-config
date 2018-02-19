@@ -2,6 +2,8 @@
 
 """This file provides ConfigApp"""
 
+# pylint: disable=too-many-ancestors
+
 import wx
 import wx.lib.mixins.inspection
 
