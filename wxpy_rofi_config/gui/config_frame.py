@@ -1,5 +1,7 @@
 # coding=utf8
 
+"""This file provides ConfigFrame"""
+
 import wx
 from wx.lib.pubsub import pub
 
@@ -8,6 +10,7 @@ from wxpy_rofi_config.gui import ConfigPage
 
 
 class ConfigFrame(wx.Frame):
+    """ConfigFrame is used as the primary app context"""
 
     def __init__(self, parent, title=""):
         wx.Frame.__init__(
@@ -65,6 +68,7 @@ class ConfigFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.toggle_display, self.man_values_menu_item)
 
     def toggle_display(self, event):
+        """Publishes show/hide messages via pub"""
         if self.help_values_menu_item.Id == event.Id:
             kind = 'help_value'
         elif self.man_values_menu_item.Id == event.Id:
@@ -75,4 +79,5 @@ class ConfigFrame(wx.Frame):
             pub.sendMessage("toggle_display_%s" % kind, data=event.IsChecked())
 
     def exit(self, event=None):
+        """Kills the app"""
         self.GetTopLevelParent().Close()
