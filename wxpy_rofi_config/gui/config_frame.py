@@ -76,6 +76,7 @@ class ConfigFrame(Frame):
         self.SetMenuBar(self.menu_bar)
         self.status_bar = ConfigFrameStatusBar(self)
         self.SetStatusBar(self.status_bar)
+        self.construct_notebook()
 
     def bind_events(self):
         """Binds events on ConfigFrame"""
