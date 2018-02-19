@@ -13,8 +13,8 @@ from wx.lib.pubsub import pub
 class ConfigFrameStatusBar(StatusBar):
     """ConfigFrameStatusBar collects status bar construction and actions"""
 
-    def __init__(self):
-        StatusBar.__init__(self)
+    def __init__(self, parent):
+        StatusBar.__init__(self, parent)
         pub.subscribe(self.update, 'status_update')
         pub.subscribe(self.clear, 'status_clear')
 
