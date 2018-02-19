@@ -2,6 +2,8 @@
 
 """This file provides ConfigFrame"""
 
+# pylint: disable=too-many-ancestors
+
 import wx
 from wx.lib.pubsub import pub
 
