@@ -1,5 +1,7 @@
 # coding=utf8
 
+"""This file provides ConfigPage"""
+
 import wx
 from wx.lib.scrolledpanel import ScrolledPanel
 
@@ -8,6 +10,7 @@ from wxpy_rofi_config.gui import HidableAutoWrapStaticText
 
 
 class ConfigPage(wx.Panel):
+    """ConfigPage holds the GUI for a single tab pane"""
 
     def __init__(self, parent, config):
         wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
