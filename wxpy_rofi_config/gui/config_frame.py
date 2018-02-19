@@ -4,52 +4,68 @@
 
 # pylint: disable=too-many-ancestors
 
-import wx
+from wx import (
+    BoxSizer,
+    EVT_MENU,
+    EXPAND,
+    Frame,
+    HORIZONTAL,
+    ID_ANY,
+    ID_EXIT,
+    ITEM_CHECK,
+    Menu,
+    MenuBar,
+    NB_LEFT,
+    NewId,
+    Notebook,
+    Panel,
+    StatusBar,
+)
 from wx.lib.pubsub import pub
 
 from wxpy_rofi_config.config import Rofi
 from wxpy_rofi_config.gui import ConfigPage
 
 
-class ConfigFrame(wx.Frame):
+class ConfigFrame(Frame):
     """ConfigFrame is used as the primary app context"""
 
     def __init__(self, parent, title=""):
-        wx.Frame.__init__(
+        Frame.__init__(
             self,
             parent=parent,
-            id=wx.ID_ANY,
+            id=ID_ANY,
             size=(800, 640),
             title=title
         )
-        menu_bar = wx.MenuBar()
-        file_menu = wx.Menu()
+        menu_bar = MenuBar()
+        file_menu = Menu()
         self.exit_menu_item = file_menu.Append(
-            wx.ID_EXIT,
+            ID_EXIT,
             'E&xit\tCtrl+w'
         )
         menu_bar.Append(file_menu, '&File')
-        docs_menu = wx.Menu()
+        docs_menu = Menu()
         self.help_values_menu_item = docs_menu.Append(
-            wx.NewId(),
+            NewId(),
             'rofi --help',
             'Show or hide pertinent rofi --help info',
-            wx.ITEM_CHECK,
+            ITEM_CHECK,
         )
         self.help_values_menu_item.Check(True)
         self.man_values_menu_item = docs_menu.Append(
-            wx.NewId(),
+            NewId(),
             'man rofi',
             'Show or hide pertinent man rofi info',
-            wx.ITEM_CHECK
+            ITEM_CHECK
         )
         self.man_values_menu_item.Check(True)
         menu_bar.Append(docs_menu, '&Docs')
         self.SetMenuBar(menu_bar)
-        status_bar = wx.StatusBar(self)
+        status_bar = StatusBar(self)
         self.SetStatusBar(status_bar)
-        panel = wx.Panel(self)
-        notebook = wx.Notebook(panel, style=wx.NB_LEFT)
+        panel = Panel(self)
+        notebook = Notebook(panel, style=NB_LEFT)
         config = Rofi()
         config.build()
         groups = {}
@@ -61,13 +77,13 @@ class ConfigFrame(wx.Frame):
         for key, config_list in groups.items():
             page = ConfigPage(notebook, config_list)
             notebook.AddPage(page, key)
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(notebook, 1, wx.EXPAND)
+        sizer = BoxSizer(HORIZONTAL)
+        sizer.Add(notebook, 1, EXPAND)
         panel.SetSizer(sizer)
 
-        self.Bind(wx.EVT_MENU, self.exit, self.exit_menu_item)
-        self.Bind(wx.EVT_MENU, self.toggle_display, self.help_values_menu_item)
-        self.Bind(wx.EVT_MENU, self.toggle_display, self.man_values_menu_item)
+        self.Bind(EVT_MENU, self.exit, self.exit_menu_item)
+        self.Bind(EVT_MENU, self.toggle_display, self.help_values_menu_item)
+        self.Bind(EVT_MENU, self.toggle_display, self.man_values_menu_item)
 
     def toggle_display(self, event):
         """Publishes show/hide messages via pub"""
