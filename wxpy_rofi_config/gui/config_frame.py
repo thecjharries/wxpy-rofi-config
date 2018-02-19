@@ -25,8 +25,9 @@ class ConfigFrame(Frame):
     """ConfigFrame is used as the primary app context"""
 
     config = None
-    menu_bar = None
     groups = None
+    menu_bar = None
+    notebook = None
 
     def __init__(self, parent, title=""):
         Frame.__init__(
@@ -58,13 +59,17 @@ class ConfigFrame(Frame):
     def construct_notebook(self):
         """Constructs the main Notebook panel"""
         panel = Panel(self)
-        notebook = Notebook(panel, style=NB_LEFT)
-        for key, config_list in self.groups.items():
-            page = ConfigPage(notebook, config_list)
-            notebook.AddPage(page, key)
+        self.notebook = Notebook(panel, style=NB_LEFT)
+        self.construct_tabs()
         sizer = BoxSizer(HORIZONTAL)
-        sizer.Add(notebook, 1, EXPAND)
+        sizer.Add(self.notebook, 1, EXPAND)
         panel.SetSizer(sizer)
+
+    def construct_tabs(self):
+        """Constructs all available tabs"""
+        for key, config_list in self.groups.items():
+            page = ConfigPage(self.notebook, config_list)
+            self.notebook.AddPage(page, key)
 
     def bind_events(self):
         """Binds events on ConfigFrame"""
