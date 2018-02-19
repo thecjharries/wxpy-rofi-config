@@ -37,14 +37,7 @@ class ConfigPage(Panel):
         self.grid_sizer = FlexGridSizer(2, 10, 10)
         for index, entry in enumerate(config):
             if index > 0:
-                for _ in range(0, 2):
-                    rule = StaticLine(
-                        self.scrolled_panel,
-                        style=LI_HORIZONTAL,
-                        size=(-1, 2)
-                    )
-                    self.grid_sizer.Add(rule, proportion=1, flag=EXPAND |
-                                        TOP | BOTTOM, border=10)
+                self.construct_horizontal_rule()
             if entry.help_value:
                 self.grid_sizer.Add(1, 0, 1, EXPAND)
                 help_sizer = BoxSizer(HORIZONTAL)
@@ -87,3 +80,18 @@ class ConfigPage(Panel):
         self.scrolled_panel.SetSizer(scroll_sizer)
         self.main_sizer.Add(self.scrolled_panel, 1, EXPAND)
         self.SetSizer(self.main_sizer)
+
+    def construct_horizontal_rule(self):
+        """Adds a horizontal rule to the grid"""
+        for _ in range(0, 2):
+            rule = StaticLine(
+                self.scrolled_panel,
+                style=LI_HORIZONTAL,
+                size=(-1, 2)
+            )
+            self.grid_sizer.Add(
+                rule,
+                proportion=1,
+                flag=EXPAND | TOP | BOTTOM,
+                border=10
+            )
