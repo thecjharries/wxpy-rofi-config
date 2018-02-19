@@ -13,13 +13,18 @@ from wxpy_rofi_config.gui import ConfigFrame
 class ConfigApp(App, InspectionMixin):
     """This class runs the main application"""
 
+    frame = None
+
     def OnInit(self):  # pylint:disable=invalid-name
         """
         The OnInit is used instead of __init__ to properly handle the wxPython
         boot and InspectionMixin
         """
         self.Init()  # initialize the inspection tool
-        frame = ConfigFrame(None, title="rofi Configuration")
-        frame.Show()
-        self.SetTopWindow(frame)
+        self.construct_gui()
         return True
+
+    def construct_gui(self):
+        self.frame = ConfigFrame(None, title="rofi Configuration")
+        self.frame.Show()
+        self.SetTopWindow(self.frame)
