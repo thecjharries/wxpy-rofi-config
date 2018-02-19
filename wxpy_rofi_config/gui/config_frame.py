@@ -37,13 +37,9 @@ class ConfigFrame(Frame):
             size=(800, 640),
             title=title
         )
-
-    def construct_gui(self):
-        """Constructs ConfigFrame's GUI"""
-        self.menu_bar = ConfigFrameMenuBar()
-        self.SetMenuBar(self.menu_bar)
-        status_bar = StatusBar(self)
-        self.SetStatusBar(status_bar)
+        self.construct_config()
+        self.construct_gui()
+        self.bind_events()
 
     def construct_config(self):
         """Constucts the Rofi config object and parses its groups"""
@@ -56,6 +52,12 @@ class ConfigFrame(Frame):
             else:
                 self.groups[entry.group] = [entry]
 
+    def construct_tabs(self):
+        """Constructs all available tabs"""
+        for key, config_list in self.groups.items():
+            page = ConfigPage(self.notebook, config_list)
+            self.notebook.AddPage(page, key)
+
     def construct_notebook(self):
         """Constructs the main Notebook panel"""
         panel = Panel(self)
@@ -65,11 +67,12 @@ class ConfigFrame(Frame):
         sizer.Add(self.notebook, 1, EXPAND)
         panel.SetSizer(sizer)
 
-    def construct_tabs(self):
-        """Constructs all available tabs"""
-        for key, config_list in self.groups.items():
-            page = ConfigPage(self.notebook, config_list)
-            self.notebook.AddPage(page, key)
+    def construct_gui(self):
+        """Constructs ConfigFrame's GUI"""
+        self.menu_bar = ConfigFrameMenuBar()
+        self.SetMenuBar(self.menu_bar)
+        status_bar = StatusBar(self)
+        self.SetStatusBar(status_bar)
 
     def bind_events(self):
         """Binds events on ConfigFrame"""
