@@ -11,24 +11,26 @@ from wx import (
     Frame,
     HORIZONTAL,
     ID_ANY,
-    ID_EXIT,
-    ITEM_CHECK,
-    Menu,
-    MenuBar,
     NB_LEFT,
-    NewId,
     Notebook,
     Panel,
-    StatusBar,
 )
-from wx.lib.pubsub import pub
 
 from wxpy_rofi_config.config import Rofi
-from wxpy_rofi_config.gui import ConfigPage
+from wxpy_rofi_config.gui import (
+    ConfigFrameMenuBar,
+    ConfigFrameStatusBar,
+    ConfigPage
+)
 
 
 class ConfigFrame(Frame):
     """ConfigFrame is used as the primary app context"""
+
+    config = None
+    groups = None
+    menu_bar = None
+    notebook = None
 
     def __init__(self, parent, title=""):
         Frame.__init__(
@@ -38,64 +40,58 @@ class ConfigFrame(Frame):
             size=(800, 640),
             title=title
         )
-        menu_bar = MenuBar()
-        file_menu = Menu()
-        self.exit_menu_item = file_menu.Append(
-            ID_EXIT,
-            'E&xit\tCtrl+w'
-        )
-        menu_bar.Append(file_menu, '&File')
-        docs_menu = Menu()
-        self.help_values_menu_item = docs_menu.Append(
-            NewId(),
-            'rofi --help',
-            'Show or hide pertinent rofi --help info',
-            ITEM_CHECK,
-        )
-        self.help_values_menu_item.Check(True)
-        self.man_values_menu_item = docs_menu.Append(
-            NewId(),
-            'man rofi',
-            'Show or hide pertinent man rofi info',
-            ITEM_CHECK
-        )
-        self.man_values_menu_item.Check(True)
-        menu_bar.Append(docs_menu, '&Docs')
-        self.SetMenuBar(menu_bar)
-        status_bar = StatusBar(self)
-        self.SetStatusBar(status_bar)
-        panel = Panel(self)
-        notebook = Notebook(panel, style=NB_LEFT)
-        config = Rofi()
-        config.build()
-        groups = {}
-        for _, entry in config.config.items():
-            if entry.group in groups:
-                groups[entry.group].append(entry)
+        self.construct_config()
+        self.construct_gui()
+        self.bind_events()
+
+    def construct_config(self):
+        """Constucts the Rofi config object and parses its groups"""
+        self.config = Rofi()
+        self.config.build()
+        self.groups = {}
+        for _, entry in self.config.config.items():
+            if entry.group in self.groups:
+                self.groups[entry.group].append(entry)
             else:
-                groups[entry.group] = [entry]
-        for key, config_list in groups.items():
-            page = ConfigPage(notebook, config_list)
-            notebook.AddPage(page, key)
+                self.groups[entry.group] = [entry]
+
+    def construct_tabs(self):
+        """Constructs all available tabs"""
+        for key, config_list in self.groups.items():
+            page = ConfigPage(self.notebook, config_list)
+            self.notebook.AddPage(page, key)
+
+    def construct_notebook(self):
+        """Constructs the main Notebook panel"""
+        panel = Panel(self)
+        self.notebook = Notebook(panel, style=NB_LEFT)
+        self.construct_tabs()
         sizer = BoxSizer(HORIZONTAL)
-        sizer.Add(notebook, 1, EXPAND)
+        sizer.Add(self.notebook, 1, EXPAND)
         panel.SetSizer(sizer)
 
-        self.Bind(EVT_MENU, self.exit, self.exit_menu_item)
-        self.Bind(EVT_MENU, self.toggle_display, self.help_values_menu_item)
-        self.Bind(EVT_MENU, self.toggle_display, self.man_values_menu_item)
+    def construct_gui(self):
+        """Constructs ConfigFrame's GUI"""
+        self.menu_bar = ConfigFrameMenuBar()
+        self.SetMenuBar(self.menu_bar)
+        self.status_bar = ConfigFrameStatusBar(self)
+        self.SetStatusBar(self.status_bar)
+        self.construct_notebook()
 
-    def toggle_display(self, event):
-        """Publishes show/hide messages via pub"""
-        if self.help_values_menu_item.Id == event.Id:
-            kind = 'help_value'
-        elif self.man_values_menu_item.Id == event.Id:
-            kind = 'man'
-        else:
-            kind = None
-        if kind:
-            pub.sendMessage("toggle_display_%s" % kind, data=event.IsChecked())
-
-    def exit(self, event=None):  # pylint: disable=unused-argument
-        """Kills the app"""
-        self.GetTopLevelParent().Close()
+    def bind_events(self):
+        """Binds events on ConfigFrame"""
+        self.Bind(
+            EVT_MENU,
+            self.menu_bar.exit,
+            self.menu_bar.exit_menu_item
+        )
+        self.Bind(
+            EVT_MENU,
+            self.menu_bar.toggle_display,
+            self.menu_bar.help_values_menu_item
+        )
+        self.Bind(
+            EVT_MENU,
+            self.menu_bar.toggle_display,
+            self.menu_bar.man_values_menu_item
+        )
