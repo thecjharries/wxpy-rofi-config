@@ -1,6 +1,5 @@
 # coding=utf8
-# pylint: disable=W,C,R
-# pylint: disable=no-member
+
 import wx
 from wx.lib.pubsub import pub
 
