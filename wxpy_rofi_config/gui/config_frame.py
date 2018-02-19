@@ -14,11 +14,14 @@ from wx import (
     NB_LEFT,
     Notebook,
     Panel,
-    StatusBar,
 )
 
 from wxpy_rofi_config.config import Rofi
-from wxpy_rofi_config.gui import ConfigFrameMenuBar, ConfigPage
+from wxpy_rofi_config.gui import (
+    ConfigFrameMenuBar,
+    ConfigFrameStatusBar,
+    ConfigPage
+)
 
 
 class ConfigFrame(Frame):
@@ -71,8 +74,8 @@ class ConfigFrame(Frame):
         """Constructs ConfigFrame's GUI"""
         self.menu_bar = ConfigFrameMenuBar()
         self.SetMenuBar(self.menu_bar)
-        status_bar = StatusBar(self)
-        self.SetStatusBar(status_bar)
+        self.status_bar = ConfigFrameStatusBar(self)
+        self.SetStatusBar(self.status_bar)
 
     def bind_events(self):
         """Binds events on ConfigFrame"""
