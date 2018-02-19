@@ -4,13 +4,13 @@
 
 # pylint: disable=too-many-ancestors
 
-import wx
-import wx.lib.mixins.inspection
+from wx import App
+from wx.lib.mixins.inspection import InspectionMixin
 
 from wxpy_rofi_config.gui import ConfigFrame
 
 
-class ConfigApp(wx.App, wx.lib.mixins.inspection.InspectionMixin):
+class ConfigApp(App, InspectionMixin):
     """This class runs the main application"""
 
     def OnInit(self):  # pylint:disable=invalid-name
