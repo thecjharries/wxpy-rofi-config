@@ -24,7 +24,9 @@ from wxpy_rofi_config.gui import ConfigFrameMenuBar, ConfigPage
 class ConfigFrame(Frame):
     """ConfigFrame is used as the primary app context"""
 
+    config = None
     menu_bar = None
+    groups = None
 
     def __init__(self, parent, title=""):
         Frame.__init__(
@@ -43,20 +45,23 @@ class ConfigFrame(Frame):
         self.SetStatusBar(status_bar)
         panel = Panel(self)
         notebook = Notebook(panel, style=NB_LEFT)
-        config = Rofi()
-        config.build()
-        groups = {}
-        for _, entry in config.config.items():
-            if entry.group in groups:
-                groups[entry.group].append(entry)
-            else:
-                groups[entry.group] = [entry]
-        for key, config_list in groups.items():
+        for key, config_list in self.groups.items():
             page = ConfigPage(notebook, config_list)
             notebook.AddPage(page, key)
         sizer = BoxSizer(HORIZONTAL)
         sizer.Add(notebook, 1, EXPAND)
         panel.SetSizer(sizer)
+
+    def construct_config(self):
+        """Constucts the Rofi config object and parses its groups"""
+        self.config = Rofi()
+        self.config.build()
+        self.groups = {}
+        for _, entry in self.config.config.items():
+            if entry.group in self.groups:
+                self.groups[entry.group].append(entry)
+            else:
+                self.groups[entry.group] = [entry]
 
     def bind_events(self):
         """Binds events on ConfigFrame"""
