@@ -22,14 +22,19 @@ class ConfigAppTestCase(TestCase):
         del self.app
 
     def patch_wx(self):
-        app_patcher = patch('wxpy_rofi_config.gui.config_app.App')
+        app_patcher = patch(
+            'wxpy_rofi_config.gui.config_app.App'
+        )
         self.mock_app = app_patcher.start()
         self.addCleanup(app_patcher.stop)
-        frame_patcher = patch('wxpy_rofi_config.gui.config_app.ConfigFrame')
+        frame_patcher = patch(
+            'wxpy_rofi_config.gui.config_app.ConfigFrame'
+        )
         self.mock_frame = frame_patcher.start()
         self.addCleanup(frame_patcher.stop)
         inspectionmixin_patcher = patch(
-            'wxpy_rofi_config.gui.config_app.InspectionMixin')
+            'wxpy_rofi_config.gui.config_app.InspectionMixin'
+        )
         self.mock_inspectionmixin = inspectionmixin_patcher.start()
         self.addCleanup(inspectionmixin_patcher.stop)
 
@@ -47,9 +52,21 @@ class OnInitUnitTests(ConfigAppTestCase):
 
     @patch.object(ConfigApp, 'Init')
     @patch.object(ConfigApp, 'construct_gui')
-    def test_construction(self, mock_gui, mock_init):
+    def test_calls(self, mock_gui, mock_init):
         mock_init.assert_not_called()
         mock_gui.assert_not_called()
         self.app.OnInit()
         mock_init.assert_called_once_with()
         mock_gui.assert_called_once_with()
+
+
+class ConstructGuiUnitTests(ConfigAppTestCase):
+
+    @patch.object(ConfigApp, 'SetTopWindow')
+    def test_construction(self, mock_set):
+        self.mock_frame.assert_not_called()
+        self.app.construct_gui()
+        self.mock_frame.assert_called_once_with(
+            None,
+            title=ConfigApp.DEFAULT_TITLE
+        )
