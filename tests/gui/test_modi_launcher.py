@@ -60,3 +60,33 @@ class SelectModiUnitTests(ModiLauncherTestCase):
 
     def test_cancelled_modal(self):
         self.assertIsNone(self.modi.select_modi())
+
+
+class SelectAndLaunchUnitTests(ModiLauncherTestCase):
+    MODI = 'window'
+
+    @patch.object(
+        ModiLauncher,
+        'select_modi',
+        return_value=MODI
+    )
+    @patch.object(ModiLauncher, 'launch_modi')
+    def test_with_selection(self, mock_launch, mock_select):
+        mock_select.assert_not_called()
+        mock_launch.assert_not_called()
+        self.modi.select_and_launch()
+        mock_select.assert_called_once_with()
+        mock_launch.assert_called_once_with(self.MODI)
+
+    @patch.object(
+        ModiLauncher,
+        'select_modi',
+        return_value=None
+    )
+    @patch.object(ModiLauncher, 'launch_modi')
+    def test_without_selection(self, mock_launch, mock_select):
+        mock_select.assert_not_called()
+        mock_launch.assert_not_called()
+        self.modi.select_and_launch()
+        mock_select.assert_called_once_with()
+        mock_launch.assert_not_called()
