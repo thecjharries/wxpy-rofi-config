@@ -34,7 +34,8 @@ class ConfigFrameMenuBarTestCase(TestCase):
         self.mock_new_id = new_id_patcher.start()
         self.addCleanup(new_id_patcher.stop)
         pub_patcher = patch(
-            'wxpy_rofi_config.gui.config_frame_menu_bar.pub.sendMessage')
+            'wxpy_rofi_config.gui.config_frame_menu_bar.send'
+        )
         self.mock_pub = pub_patcher.start()
         self.addCleanup(pub_patcher.stop)
 
@@ -133,7 +134,7 @@ class ToggleDisplayUnitTests(ConfigFrameMenuBarTestCase):
             ),
             True,
             'toggle_display_help_value',
-            {'data': True}
+            {'message': True}
         ],
         [
             MagicMock(
@@ -142,7 +143,7 @@ class ToggleDisplayUnitTests(ConfigFrameMenuBarTestCase):
             ),
             True,
             'toggle_display_man',
-            {'data': False}
+            {'message': False}
         ],
         [
             MagicMock(),

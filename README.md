@@ -55,14 +55,14 @@ Once all of these are finished, I'll release `v1`. Until then, `v0` should be us
 |    100% | Save default `rofi` config |
 |    100% | Load arbitrary `rofi` config |
 |    100% | Save arbitrary `rofi` config |
-|     13% | Style UI |
+|     95% | Style UI |
 |    100% | Backup existing `rofi` config |
-|     10% | Validate `rofi` config (before/during/after save) |
 |    100% | Only save changed values (i.e. not the original `rofi` default) |
-|     90% | Fix sizing glitches (e.g. too much at top of scroll) |
+|     99% | Fix sizing glitches (e.g. too much at top of scroll) |
 |    100% | Refresh config in place |
 |     90% | Launch available modi from app |
 |      0% | Provide status bar updates |
+|    100% | Refactor `pubsub` with `pydispatch` to overcome [an old `pyinstaller` bug](https://github.com/pyinstaller/pyinstaller/issues/2215) |
 
 ### Eventual features
 
@@ -71,6 +71,7 @@ These are things I'd like to add, but probably won't be included in `v1`. If not
 | Progess | Feature |
 | ------: | ------- |
 |      0% | Publish on PyPi |
+|     10% | Validate `rofi` config (need a clever solution; when broken `rofi` ignores input) |
 |      0% | Improve docs show/hide speed |
 |      0% | Enumerate known values (e.g. `location`) |
 |      0% | Code known limits (e.g. `columns >= 1`) |

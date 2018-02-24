@@ -8,6 +8,8 @@ from unittest import TestCase
 
 from mock import MagicMock, patch
 
+from pydispatch.dispatcher import Any
+
 from wxpy_rofi_config.gui import HidableAutoWrapStaticText
 
 
@@ -23,7 +25,7 @@ class HidableAutoWrapStaticTextTestCase(TestCase):
 
     def patch_wx(self):
         pub_patcher = patch(
-            'wxpy_rofi_config.gui.hidable_auto_wrap_static_test.pub.subscribe'
+            'wxpy_rofi_config.gui.hidable_auto_wrap_static_test.connect'
         )
         self.mock_pub = pub_patcher.start()
         self.addCleanup(pub_patcher.stop)
@@ -43,7 +45,8 @@ class ConstructorUnitTests(HidableAutoWrapStaticTextTestCase):
         self.mock_autostaticwraptext.assert_called_once()
         self.mock_pub.assert_called_once_with(
             self.text.toggle_display,
-            "toggle_display_%s" % HidableAutoWrapStaticText.DEFAULT_KIND
+            signal="toggle_display_%s" % HidableAutoWrapStaticText.DEFAULT_KIND,
+            sender=Any
         )
 
 
