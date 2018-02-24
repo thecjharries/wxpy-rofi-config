@@ -408,3 +408,19 @@ class RestoreUnitTests(ConfigFrameTestCase):
         self.mock_can_restore.assert_called_once_with()
         self.mock_backup.assert_called_once_with(restore=True)
         self.mock_refresh_config.assert_called_once_with()
+
+
+class CleanEditStateUnitTests(ConfigFrameTestCase):
+    DIRTY = ['one']
+
+    def test_wipe(self):
+        self.frame.dirty_values = self.DIRTY
+        self.assertListEqual(
+            self.DIRTY,
+            self.frame.dirty_values
+        )
+        self.frame.clean_edit_state()
+        self.assertListEqual(
+            [],
+            self.frame.dirty_values
+        )
