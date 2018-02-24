@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from unittest import TestCase
 
-from mock import patch
+from mock import call, patch
 
 from wxpy_rofi_config.gui import ConfigFrameStatusBar
 
@@ -23,7 +23,7 @@ class ConfigFrameStatusBarTestCase(TestCase):
 
     def patch_wx(self):
         status_bar_patcher = patch(
-            'wxpy_rofi_config.gui.config_frame_status_bar.StatusBar'
+            'wxpy_rofi_config.gui.config_frame_status_bar.StatusBar.__init__'
         )
         self.mock_status_bar = status_bar_patcher.start()
         self.addCleanup(status_bar_patcher.stop)
@@ -34,3 +34,16 @@ class ConfigFrameStatusBarTestCase(TestCase):
 
     def construct_status_bar(self):
         self.status_bar = ConfigFrameStatusBar(None)
+
+
+class ConstructorUnitTests(ConfigFrameStatusBarTestCase):
+
+    def test_calls(self):
+        self.mock_status_bar.assert_called_once()
+        self.mock_pub.assert_has_calls(
+            [
+                call(self.status_bar.update, 'status_update'),
+                call(self.status_bar.clear, 'status_clear')
+            ],
+            True
+        )
