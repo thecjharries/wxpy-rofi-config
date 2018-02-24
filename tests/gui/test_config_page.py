@@ -39,6 +39,16 @@ class ConfigPageTestCase(TestCase):
         )
         self.mock_flexgridsizer = flexgridsizer_patcher.start()
         self.addCleanup(flexgridsizer_patcher.stop)
+        font_patcher = patch(
+            'wxpy_rofi_config.gui.config_page.Font'
+        )
+        self.mock_font = font_patcher.start()
+        self.addCleanup(font_patcher.stop)
+        fontinfo_patcher = patch(
+            'wxpy_rofi_config.gui.config_page.FontInfo'
+        )
+        self.mock_fontinfo = fontinfo_patcher.start()
+        self.addCleanup(fontinfo_patcher.stop)
         panel_patcher = patch(
             'wxpy_rofi_config.gui.config_page.Panel.__init__'
         )
@@ -82,6 +92,8 @@ class ConstructorUnitTests(ConfigPageTestCase):
 
     def test_calls(self):
         self.mock_panel.assert_called_once()
+        self.mock_font.assert_called_once()
+        self.mock_fontinfo.assert_called_once()
         self.mock_construct_gui.assert_called_once_with()
 
 
