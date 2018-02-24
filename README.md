@@ -60,6 +60,8 @@ Once all of these are finished, I'll release `v1`. Until then, `v0` should be us
 |     10% | Validate `rofi` config (before/during/after save) |
 |      0% | Only save changed values (i.e. not the original `rofi` default) |
 |      0% | Fix sizing glitches (e.g. too much at top of scroll) |
+|     90% | Refresh config in place |
+|     90% | Launch available modi from app |
 
 ### Eventual features
 
@@ -74,3 +76,4 @@ These are things I'd like to add, but probably won't be included in `v1`. If not
 |      0% | Map input bindings |
 |      0% | Validate available `modi` |
 |      0% | Add `path` type and validate |
+|      0% | Reduce levels of data binding |
