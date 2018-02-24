@@ -6,7 +6,10 @@
 
 from wx import (
     BoxSizer,
+    EVT_CHECKBOX,
     EVT_MENU,
+    EVT_SPINCTRL,
+    EVT_TEXT,
     EXPAND,
     FindWindowByName,
     Frame,
@@ -30,9 +33,10 @@ from wxpy_rofi_config.gui import (
 class ConfigFrame(Frame):
     """ConfigFrame is used as the primary app context"""
 
-    BOUND_ACTIONS = 6
+    BOUND_ACTIONS = 9
 
     config = None
+    dirty_values = []
     groups = None
     menu_bar = None
     notebook = None
@@ -65,6 +69,7 @@ class ConfigFrame(Frame):
         for key, config_list in self.groups.items():
             page = ConfigPage(self.notebook, config_list)
             self.notebook.AddPage(page, key)
+        self.clean_edit_state()
 
     def construct_notebook(self):
         """Constructs the main Notebook panel"""
@@ -116,6 +121,9 @@ class ConfigFrame(Frame):
             self.menu_bar.toggle_display,
             self.menu_bar.man_values_menu_item
         )
+        self.Bind(EVT_CHECKBOX, self.dirty_edit_state)
+        self.Bind(EVT_SPINCTRL, self.dirty_edit_state)
+        self.Bind(EVT_TEXT, self.dirty_edit_state)
 
     def modi_launcher(self, event=None):  # pylint: disable=unused-argument
         """Launches a modi selection dialog"""
@@ -142,6 +150,7 @@ class ConfigFrame(Frame):
         self.update_config()
         self.config.save(backup=self.menu_bar.backup_on_menu_item.IsChecked())
         pub.sendMessage('status_update', data='Saved!')
+        self.clean_edit_state()
         self.toggle_restoration()
 
     def toggle_restoration(self, event=None):  # pylint: disable=unused-argument
@@ -164,3 +173,25 @@ class ConfigFrame(Frame):
         if self.config.can_restore():
             self.config.backup(restore=True)
             self.refresh_config()
+
+    def clean_edit_state(self):
+        """Resets the dirty value list"""
+        self.dirty_values = []
+
+    def dirty_edit_state(self, event=None):
+        """Updates the dirty value list"""
+        if event is None:
+            return
+        control_value = event.EventObject.GetValue()
+        control_name = event.EventObject.GetName()
+        config_value = self.config.config[control_name].current
+        is_dirty = control_value != config_value
+        if is_dirty:
+            if not control_name in self.dirty_values:
+                self.dirty_values.append(control_name)
+        else:
+            self.dirty_values = [
+                key
+                for key in self.dirty_values
+                if control_name != key
+            ]
