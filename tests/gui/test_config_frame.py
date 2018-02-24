@@ -130,8 +130,8 @@ class ConstructTabsUnitTests(ConfigFrameTestCase):
     def test_page_construction(self, mock_page):
         self.frame.construct_tabs()
         mock_page.assert_has_calls([
-            call(self.NOTEBOOK, [self.THREE, self.TWO]),
             call(self.NOTEBOOK, [self.ONE]),
+            call(self.NOTEBOOK, [self.TWO, self.THREE]),
         ])
 
 
