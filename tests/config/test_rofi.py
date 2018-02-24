@@ -553,7 +553,16 @@ class GetMtimeUnitTests(RofiTestCase):
 
 
 class UpdateMtimeUnitTests(RofiTestCase):
-    """"""
+    TIME = 2
+
+    @patch.object(Rofi, 'get_mtime', return_value=TIME)
+    def test_call(self, mock_time):
+        self.assertIsNone(self.rofi.last_mtime)
+        self.rofi.update_mtime()
+        self.assertEquals(
+            self.TIME,
+            self.rofi.last_mtime,
+        )
 
 
 class ProbablyModifiedUnitTests(RofiTestCase):
