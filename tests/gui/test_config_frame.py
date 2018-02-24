@@ -424,3 +424,71 @@ class CleanEditStateUnitTests(ConfigFrameTestCase):
             [],
             self.frame.dirty_values
         )
+
+
+class DirtyEditState(ConfigFrameTestCase):
+
+    KEY_NAME = 'location'
+    DIRTY_VALUE = 13
+    CLEAN_VALUE = 19
+
+    DIRTY_EVENT = MagicMock(
+        EventObject=MagicMock(
+            GetName=MagicMock(
+                return_value=KEY_NAME
+            ),
+            GetValue=MagicMock(
+                return_value=DIRTY_VALUE
+            )
+        ),
+    )
+
+    CLEAN_EVENT = MagicMock(
+        EventObject=MagicMock(
+            GetName=MagicMock(
+                return_value=KEY_NAME
+            ),
+            GetValue=MagicMock(
+                return_value=CLEAN_VALUE
+            )
+        ),
+    )
+
+    CONFIG = {
+        KEY_NAME: MagicMock(current=CLEAN_VALUE)
+    }
+
+    def setUp(self):
+        ConfigFrameTestCase.setUp(self)
+        self.frame.config = MagicMock(config=self.CONFIG)
+        self.frame.dirty_values = []
+
+    def test_without_event(self):
+        self.frame.dirty_edit_state()
+        self.assertListEqual(
+            [],
+            self.frame.dirty_values
+        )
+
+    def test_dirty_event(self):
+        self.assertListEqual(
+            [],
+            self.frame.dirty_values
+        )
+        self.frame.dirty_edit_state(self.DIRTY_EVENT)
+        self.assertListEqual(
+            [self.KEY_NAME],
+            self.frame.dirty_values
+        )
+
+    def test_clean_event(self):
+        self.frame.dirty_values = [self.KEY_NAME]
+        self.assertListEqual(
+            [self.KEY_NAME],
+            self.frame.dirty_values
+        )
+        self.frame.dirty_edit_state(self.CLEAN_EVENT)
+        self.assertListEqual(
+            [],
+            self.frame.dirty_values
+        )
