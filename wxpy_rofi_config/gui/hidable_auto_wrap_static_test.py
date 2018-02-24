@@ -28,4 +28,4 @@ class HidableAutoWrapStaticText(AutoWrapStaticText):
             action = 'Hide'
         if hasattr(self, action):
             getattr(self, action)()
-            self.GetParent().GetSizer().Layout()
+            self.GetParent().GetParent().Layout()
