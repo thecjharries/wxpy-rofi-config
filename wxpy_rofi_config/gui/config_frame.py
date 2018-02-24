@@ -8,6 +8,7 @@ from wx import (
     BoxSizer,
     EVT_MENU,
     EXPAND,
+    FindWindowByName,
     Frame,
     HORIZONTAL,
     ID_ANY,
@@ -15,6 +16,7 @@ from wx import (
     Notebook,
     Panel,
 )
+from wx.lib.pubsub import pub
 
 from wxpy_rofi_config.config import Rofi
 from wxpy_rofi_config.gui import (
@@ -82,6 +84,11 @@ class ConfigFrame(Frame):
         """Binds events on ConfigFrame"""
         self.Bind(
             EVT_MENU,
+            self.save,
+            self.menu_bar.save_menu_item
+        )
+        self.Bind(
+            EVT_MENU,
             self.menu_bar.exit,
             self.menu_bar.exit_menu_item
         )
@@ -95,3 +102,25 @@ class ConfigFrame(Frame):
             self.menu_bar.toggle_display,
             self.menu_bar.man_values_menu_item
         )
+
+    def update_config_entry(self, key_name, entry):
+        """Updates the value for a single entry"""
+        widget = FindWindowByName(key_name)
+        if hasattr(widget, 'GetValue'):
+            value = widget.GetValue()
+        elif hasattr(widget, 'GetLabel'):
+            value = widget.GetLabel()
+        else:
+            value = entry.current
+        self.config.config[key_name].current = value
+
+    def update_config(self):
+        """Updates the entire config object"""
+        for key_name, entry in self.config.config.items():
+            self.update_config_entry(key_name, entry)
+
+    def save(self, event=None):  # pylint: disable=unused-argument
+        """Saves the config file"""
+        self.update_config()
+        self.config.save()
+        pub.sendMessage('status_update', data='Saved!')
