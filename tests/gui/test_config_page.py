@@ -137,7 +137,11 @@ class ConstructEntryRowUnitTests(ConfigPageTestCase):
         )
         self.mock_construct_entry_control = construct_entry_control_patcher.start()
         self.addCleanup(construct_entry_control_patcher.stop)
-        self.entry = MagicMock()
+        self.entry = MagicMock(
+            key_name='qqq',
+            help_value=None,
+            man=None
+        )
 
     def test_hr_generation(self):
         self.mock_construct_horizontal_rule.assert_not_called()
@@ -145,3 +149,14 @@ class ConstructEntryRowUnitTests(ConfigPageTestCase):
         self.mock_construct_horizontal_rule.assert_not_called()
         self.page.construct_entry_row(self.entry, 1)
         self.mock_construct_horizontal_rule.assert_called_once_with()
+
+    def test_help_value_generation(self):
+        self.mock_construct_docs_label.assert_not_called()
+        self.page.construct_entry_row(self.entry, 0)
+        self.mock_construct_docs_label.assert_not_called()
+        self.entry.help_value = 'qqq'
+        self.page.construct_entry_row(self.entry, 0)
+        self.mock_construct_docs_label.assert_called_once_with(
+            'help_value',
+            'qqq'
+        )
