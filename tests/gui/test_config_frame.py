@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from unittest import TestCase
 
-from mock import patch
+from mock import MagicMock, patch
 
 from wxpy_rofi_config.gui import ConfigFrame
 
@@ -63,3 +63,17 @@ class ConstructorUnitTests(ConfigFrameTestCase):
         self.mock_construct_config.assert_called_once()
         self.mock_construct_gui.assert_called_once()
         self.mock_bind_events.assert_called_once()
+
+
+class ConstructConfigUnitTests(ConfigFrameTestCase):
+    CONFIG = {
+        'one': MagicMock(group='one'),
+        'two': MagicMock(group='two'),
+        'three': MagicMock(group='two')
+    }
+
+    @patch('wxpy_rofi_config.gui.config_frame.Rofi')
+    def test_construction(self, mock_rofi):
+        mock_rofi.assert_not_called()
+        self.frame.construct_config()
+        mock_rofi.assert_called_once_with()
