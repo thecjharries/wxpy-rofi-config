@@ -130,6 +130,8 @@ class Rofi(object):
             entry.process_entry()
             if not entry.group in self.groups:
                 self.groups.append(entry.group)
+        if not self.active_file:
+            self.active_file = self.create_default_path()
 
     def clean_entry_man(self, contents):
         """Cleans a single man entry"""
