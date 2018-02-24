@@ -28,10 +28,24 @@ class HidableAutoWrapStaticTextTestCase(TestCase):
         self.mock_pub = pub_patcher.start()
         self.addCleanup(pub_patcher.stop)
         autostaticwraptext_patcher = patch(
-            'wxpy_rofi_config.gui.hidable_auto_wrap_static_test.AutoWrapStaticText'
+            'wxpy_rofi_config.gui.hidable_auto_wrap_static_test.AutoWrapStaticText.__init__'
         )
         self.mock_autostaticwraptext = autostaticwraptext_patcher.start()
         self.addCleanup(autostaticwraptext_patcher.stop)
 
     def construct_text(self):
         self.text = HidableAutoWrapStaticText()
+
+
+class ConstructorUnitTests(HidableAutoWrapStaticTextTestCase):
+
+    def test_calls(self):
+        self.mock_autostaticwraptext.assert_called_once()
+        self.mock_pub.assert_called_once_with(
+            self.text.toggle_display,
+            "toggle_display_%s" % HidableAutoWrapStaticText.DEFAULT_KIND
+        )
+
+
+class ToggleDisplayUnitTests(HidableAutoWrapStaticTextTestCase):
+    """"""
