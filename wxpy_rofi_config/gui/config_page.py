@@ -97,6 +97,7 @@ class ConfigPage(Panel):
             control = TextCtrl(
                 self.scrolled_panel,
                 value=str(entry.current),
+                name=entry.key_name,
                 size=(-1, -1)
             )
         self.grid_sizer.Add(control, -1, EXPAND)
