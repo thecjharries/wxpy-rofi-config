@@ -165,6 +165,7 @@ class ConfigFrame(Frame):
         self.config.save(backup=self.menu_bar.backup_on_menu_item.IsChecked())
         pub.sendMessage('status_update', data='Saved!')
         self.clean_edit_state()
+        self.toggle_refresh()
         self.toggle_restoration()
 
     def toggle_restoration(self, event=None):  # pylint: disable=unused-argument
@@ -180,6 +181,7 @@ class ConfigFrame(Frame):
         self.construct_tabs()
         if current_page and current_page < self.notebook.GetPageCount():
             self.notebook.SetSelection(current_page)
+        self.toggle_refresh()
         self.toggle_restoration()
 
     def restore(self, event=None):  # pylint: disable=unused-argument
@@ -209,6 +211,10 @@ class ConfigFrame(Frame):
                 for key in self.dirty_values
                 if control_name != key
             ]
+        self.toggle_refresh()
+
+    def toggle_refresh(self):
+        """Toggle refresh availability"""
         self.menu_bar.refresh_menu_item.Enable(
             len(self.dirty_values) > 0
             or
