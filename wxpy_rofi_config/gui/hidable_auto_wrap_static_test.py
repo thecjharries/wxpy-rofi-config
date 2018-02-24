@@ -14,7 +14,9 @@ class HidableAutoWrapStaticText(AutoWrapStaticText):
     actions. Its parent automatically resizes StaticText controls.
     """
 
-    def __init__(self, parent=None, label="", kind='help_value'):
+    DEFAULT_KIND = 'help_value'
+
+    def __init__(self, parent=None, label="", kind=DEFAULT_KIND):
         AutoWrapStaticText.__init__(self, parent, label)
         pub.subscribe(self.toggle_display, "toggle_display_%s" % kind)
 
