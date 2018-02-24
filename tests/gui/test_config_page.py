@@ -98,3 +98,11 @@ class ConstructEntryLabelUnitTests(ConfigPageTestCase):
         self.page.construct_entry_label('qqq')
         self.mock_boxsizer.assert_called_once()
         self.mock_statictext.assert_called_once()
+
+
+class ConstructEntryControlUnitTests(ConfigPageTestCase):
+
+    def test_calls(self):
+        self.mock_textctrl.assert_not_called()
+        self.page.construct_entry_control(MagicMock(current='qqq'))
+        self.mock_textctrl.assert_called_once()
