@@ -494,10 +494,12 @@ class BackupUnitTests(RofiTestCase):
 
 @patch('wxpy_rofi_config.config.rofi.open', return_value=MagicMock())
 @patch.object(Rofi, 'to_rasi')
-def test_write_config(mock_rasi, mock_open):
+@patch.object(Rofi, 'update_mtime')
+def test_write_config(mock_time, mock_rasi, mock_open):
     rofi = Rofi()
     rofi.write_config()
     mock_rasi.assert_called_once_with()
+    mock_time.assert_called_once_with()
 
 
 class SaveUnitTests(RofiTestCase):
