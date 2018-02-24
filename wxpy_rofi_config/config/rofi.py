@@ -21,7 +21,7 @@ from subprocess import check_output
 from wxpy_rofi_config.config import Entry
 
 
-class Rofi(object):
+class Rofi(object):  # pylint: disable=too-many-public-methods
     """Rofi holds all the config for rofi"""
 
     PATTERNS = {
