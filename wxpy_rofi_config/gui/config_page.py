@@ -7,12 +7,14 @@ from wx import (
     ALL,
     BOTTOM,
     BoxSizer,
+    CheckBox,
     EXPAND,
     FlexGridSizer,
     HORIZONTAL,
     ID_ANY,
     LI_HORIZONTAL,
     Panel,
+    SpinCtrl,
     StaticLine,
     StaticText,
     TextCtrl,
@@ -79,12 +81,25 @@ class ConfigPage(Panel):
 
     def construct_entry_control(self, entry):
         """Creates the primary entry control"""
-        current_value = TextCtrl(
-            self.scrolled_panel,
-            value=str(entry.current),
-            size=(-1, -1)
-        )
-        self.grid_sizer.Add(current_value, -1, EXPAND)
+        if 'boolean' == entry.var_type:
+            control = CheckBox(
+                self.scrolled_panel,
+                name=entry.key_name
+            )
+            control.SetValue(entry.current)
+        elif 'number' == entry.var_type:
+            control = SpinCtrl(
+                self.scrolled_panel,
+                name=entry.key_name,
+            )
+            control.SetValue(entry.current)
+        else:
+            control = TextCtrl(
+                self.scrolled_panel,
+                value=str(entry.current),
+                size=(-1, -1)
+            )
+        self.grid_sizer.Add(control, -1, EXPAND)
 
     def construct_entry_row(self, entry, index=0):
         """Constructs all the necessary rows for a single entry"""
