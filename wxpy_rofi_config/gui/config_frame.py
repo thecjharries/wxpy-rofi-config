@@ -42,7 +42,7 @@ from wxpy_rofi_config.gui import (
 class ConfigFrame(Frame):
     """ConfigFrame is used as the primary app context"""
 
-    BOUND_ACTIONS = 10
+    BOUND_ACTIONS = 11
 
     PROMPTS = {
         'dirty_values': 'You have unsaved changes. ',
