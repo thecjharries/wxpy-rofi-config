@@ -9,7 +9,7 @@ from unittest import TestCase
 
 from mock import call, MagicMock, patch
 
-from wx import ID_YES  # pylint: disable=no-name-in-module
+from wx import ID_OK, ID_YES  # pylint: disable=no-name-in-module
 
 from wxpy_rofi_config.gui import ConfigFrame
 
@@ -358,6 +358,7 @@ class RefreshConfigUnitTests(ConfigFrameTestCase):
         self.addCleanup(toggle_refresh_patcher.stop)
         self.mock_delete = MagicMock()
         self.frame.notebook = MagicMock(
+            GetSelection=MagicMock(return_value=0),
             DeletePage=self.mock_delete,
             GetPageCount=pages.pop,
         )
@@ -368,12 +369,21 @@ class RefreshConfigUnitTests(ConfigFrameTestCase):
         self.mock_toggle_restoration.assert_not_called()
         self.mock_toggle_refresh.assert_not_called()
         self.frame.refresh_config()
-        self.mock_construct_config.assert_called_once_with()
+        self.mock_construct_config.assert_called_once_with(None)
         self.mock_construct_tabs.assert_called_once_with()
         self.mock_toggle_restoration.assert_called_once_with()
         self.mock_toggle_refresh.assert_called_once_with()
 
     def test_delete_loop(self):
+        self.mock_delete.assert_not_called()
+        self.frame.refresh_config()
+        self.mock_delete.assert_has_calls([
+            call(0),
+            call(0),
+        ])
+
+    def test_without_valid_selection(self):
+        self.frame.notebook.GetSelection = MagicMock(return_value=10)
         self.mock_delete.assert_not_called()
         self.frame.refresh_config()
         self.mock_delete.assert_has_calls([
@@ -562,3 +572,85 @@ class ForceRefreshConfigUnitTests(ConfigFrameTestCase):
             ConfigFrame.PROMPTS['probably_modified']
         )
         self.mock_refresh_config.assert_called_once_with()
+
+
+class PickSaveFileUnitTests(ConfigFrameTestCase):
+
+    PATH = 'qqq'
+
+    @patch('wxpy_rofi_config.gui.config_frame.dirname')
+    @patch('wxpy_rofi_config.gui.config_frame.FileDialog')
+    def test_yes_modal(self, mock_file, mock_dir):
+        self.frame.config = MagicMock()
+        mock_file.return_value = MagicMock(
+            __enter__=MagicMock(
+                return_value=MagicMock(
+                    ShowModal=MagicMock(return_value=ID_OK),
+                    GetPath=MagicMock(return_value=self.PATH)
+                )
+            )
+        )
+        self.assertEquals(
+            self.PATH,
+            self.frame.pick_save_file()
+        )
+
+    @patch('wxpy_rofi_config.gui.config_frame.dirname')
+    @patch('wxpy_rofi_config.gui.config_frame.FileDialog')
+    def test_no_modal(self, mock_file, mock_dir):
+        self.frame.config = MagicMock()
+        self.assertIsNone(self.frame.pick_save_file())
+
+
+class SaveAsUnitTests(ConfigFrameTestCase):
+
+    @patch.object(ConfigFrame, 'pick_save_file')
+    @patch.object(ConfigFrame, 'save')
+    def test_calls(self, mock_save, mock_pick):
+        self.frame.config = MagicMock()
+        mock_pick.assert_not_called()
+        mock_save.assert_not_called()
+        self.frame.save_as()
+        mock_pick.assert_called_once_with()
+        mock_save.assert_called_once_with()
+
+
+class PickOpenFileUnitTests(ConfigFrameTestCase):
+
+    PATH = 'qqq'
+
+    @patch('wxpy_rofi_config.gui.config_frame.dirname')
+    @patch('wxpy_rofi_config.gui.config_frame.FileDialog')
+    def test_yes_modal(self, mock_file, mock_dir):
+        self.frame.config = MagicMock()
+        mock_file.return_value = MagicMock(
+            __enter__=MagicMock(
+                return_value=MagicMock(
+                    ShowModal=MagicMock(return_value=ID_OK),
+                    GetPath=MagicMock(return_value=self.PATH)
+                )
+            )
+        )
+        self.assertEquals(
+            self.PATH,
+            self.frame.pick_open_file()
+        )
+
+    @patch('wxpy_rofi_config.gui.config_frame.dirname')
+    @patch('wxpy_rofi_config.gui.config_frame.FileDialog')
+    def test_no_modal(self, mock_file, mock_dir):
+        self.frame.config = MagicMock()
+        self.assertIsNone(self.frame.pick_open_file())
+
+
+class OpenUnitTests(ConfigFrameTestCase):
+
+    @patch.object(ConfigFrame, 'pick_open_file', return_value='qqq')
+    @patch.object(ConfigFrame, 'refresh_config')
+    def test_calls(self, mock_refresh, mock_pick):
+        self.frame.config = MagicMock()
+        mock_pick.assert_not_called()
+        mock_refresh.assert_not_called()
+        self.frame.open()
+        mock_pick.assert_called_once_with()
+        mock_refresh.assert_called_once_with(config_path='qqq')

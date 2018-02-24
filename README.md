@@ -51,17 +51,18 @@ Once all of these are finished, I'll release `v1`. Until then, `v0` should be us
 
 | Progess | Feature |
 | ------: | ------- |
-|     90% | Load default `rofi` config |
-|     90% | Save default `rofi` config |
-|      0% | Load arbitrary `rofi` config |
-|      0% | Save arbitrary `rofi` config |
+|    100% | Load default `rofi` config |
+|    100% | Save default `rofi` config |
+|    100% | Load arbitrary `rofi` config |
+|    100% | Save arbitrary `rofi` config |
 |     13% | Style UI |
-|     90% | Backup existing `rofi` config |
+|    100% | Backup existing `rofi` config |
 |     10% | Validate `rofi` config (before/during/after save) |
-|      0% | Only save changed values (i.e. not the original `rofi` default) |
-|      0% | Fix sizing glitches (e.g. too much at top of scroll) |
-|     90% | Refresh config in place |
+|    100% | Only save changed values (i.e. not the original `rofi` default) |
+|     90% | Fix sizing glitches (e.g. too much at top of scroll) |
+|    100% | Refresh config in place |
 |     90% | Launch available modi from app |
+|      0% | Provide status bar updates |
 
 ### Eventual features
 
@@ -77,3 +78,4 @@ These are things I'd like to add, but probably won't be included in `v1`. If not
 |      0% | Validate available `modi` |
 |      0% | Add `path` type and validate |
 |      0% | Reduce levels of data binding |
+|      0% | Break status bar into several sections |

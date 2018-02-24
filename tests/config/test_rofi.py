@@ -105,6 +105,36 @@ class LoadCurrentConfigUnitTests(RofiTestCase):
         mock_parse.assert_called_once_with(self.RESULT, 'current')
 
 
+class LoadArbitraryConfigUnitTests(RofiTestCase):
+    OUTPUT = '''
+ modi/* something */: qqq;
+// something
+ display-window: "stuff";
+'''
+    RESULT = r'''
+ modi: qqq;
+
+ display-window: "stuff";
+'''
+
+    @patch(
+        'wxpy_rofi_config.config.rofi.open',
+        return_value=MagicMock(
+            __enter__=MagicMock(
+                return_value=MagicMock(
+                    read=MagicMock(
+                        return_value=OUTPUT
+                    )
+                )
+            )
+        )
+    )
+    @patch.object(Rofi, 'parse_rasi')
+    def test_calls(self, mock_parse, mock_open):
+        self.rofi.load_arbitrary_config('qqq')
+        mock_parse.assert_called_once_with(self.RESULT, 'current')
+
+
 class ProcessConfigUnitTests(RofiTestCase):
     INPUT = {
         'one': MagicMock(group='one'),
@@ -424,7 +454,7 @@ class BuildUnitTests(RofiTestCase):
     @patch.object(Rofi, 'load_help')
     @patch.object(Rofi, 'load_man')
     @patch.object(Rofi, 'process_config')
-    def test_call(  # pylint: disable=too-many-arguments
+    def test_without_path(  # pylint: disable=too-many-arguments
             self,
             mock_process,
             mock_man,
@@ -442,6 +472,34 @@ class BuildUnitTests(RofiTestCase):
         mock_holder.assert_has_calls([
             call.load_default_config(),
             call.load_current_config(),
+            call.load_help(),
+            call.load_man(),
+            call.process_config()
+        ])
+
+    @patch.object(Rofi, 'load_default_config')
+    @patch.object(Rofi, 'load_arbitrary_config')
+    @patch.object(Rofi, 'load_help')
+    @patch.object(Rofi, 'load_man')
+    @patch.object(Rofi, 'process_config')
+    def test_with_path(  # pylint: disable=too-many-arguments
+            self,
+            mock_process,
+            mock_man,
+            mock_help,
+            mock_arbitrary,
+            mock_default
+    ):
+        mock_holder = MagicMock()
+        mock_holder.attach_mock(mock_default, 'load_default_config')
+        mock_holder.attach_mock(mock_arbitrary, 'load_arbitrary_config')
+        mock_holder.attach_mock(mock_help, 'load_help')
+        mock_holder.attach_mock(mock_man, 'load_man')
+        mock_holder.attach_mock(mock_process, 'process_config')
+        self.rofi.build('qqq')
+        mock_holder.assert_has_calls([
+            call.load_default_config(),
+            call.load_arbitrary_config('qqq'),
             call.load_help(),
             call.load_man(),
             call.process_config()
@@ -483,13 +541,20 @@ class BackupUnitTests(RofiTestCase):
         ['zzz', 'qqq']
     ]
 
-    def test_results(self):
+    @patch('wxpy_rofi_config.config.rofi.exists', return_value=True)
+    def test_results(self, mock_exists):
         self.rofi.active_file = self.ACTIVE_FILE
         for index in range(0, len(self.INPUT)):
             self.mock_copyfile.assert_not_called()
             self.rofi.backup(*self.INPUT[index])
             self.mock_copyfile.assert_called_once_with(*self.RESULTS[index])
             self.mock_copyfile.reset_mock()
+
+    @patch('wxpy_rofi_config.config.rofi.exists', return_value=False)
+    def test_without_active(self, mock_exists):
+        self.mock_copyfile.assert_not_called()
+        self.rofi.backup()
+        self.mock_copyfile.assert_not_called()
 
 
 @patch('wxpy_rofi_config.config.rofi.open', return_value=MagicMock())

@@ -6,7 +6,9 @@
 
 from wx import (
     ID_EXIT,
+    ID_OPEN,
     ID_SAVE,
+    ID_SAVEAS,
     ITEM_CHECK,
     Menu,
     MenuBar,
@@ -22,9 +24,11 @@ class ConfigFrameMenuBar(MenuBar):  # pylint:disable=too-many-instance-attribute
     help_values_menu_item = None
     launch_menu_item = None
     man_values_menu_item = None
+    open_menu_item = None
     refresh_menu_item = None
     restore_menu_item = None
     save_menu_item = None
+    save_as_menu_item = None
 
     def __init__(self):
         MenuBar.__init__(self)
@@ -33,6 +37,10 @@ class ConfigFrameMenuBar(MenuBar):  # pylint:disable=too-many-instance-attribute
     def construct_file_menu(self):
         """Constructs the file menu"""
         file_menu = Menu()
+        self.open_menu_item = file_menu.Append(
+            ID_OPEN,
+            '&Open File\tCtrl+o'
+        )
         self.refresh_menu_item = file_menu.Append(
             NewId(),
             '&Refresh Config\tCtrl+r'
@@ -43,6 +51,10 @@ class ConfigFrameMenuBar(MenuBar):  # pylint:disable=too-many-instance-attribute
             'Restore Backup Config'
         )
         self.restore_menu_item.Enable(False)
+        self.save_as_menu_item = file_menu.Append(
+            ID_SAVEAS,
+            'Save As\tCtrl+Shift+s'
+        )
         self.save_menu_item = file_menu.Append(
             ID_SAVE,
             '&Save\tCtrl+s'

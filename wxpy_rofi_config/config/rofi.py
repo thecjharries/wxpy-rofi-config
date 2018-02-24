@@ -137,6 +137,20 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         )
         self.parse_rasi(raw_cleaned, 'current')
 
+    def load_arbitrary_config(self, config_path):
+        """
+        Loads the provided file
+        """
+        with open(config_path, 'r') as config_file:
+            raw = config_file.read()
+        raw_cleaned = sub(
+            self.PATTERNS['RASI_COMMENT'],
+            '',
+            raw,
+            0
+        )
+        self.parse_rasi(raw_cleaned, 'current')
+
     def process_config(self):
         """Process all entries for useful information"""
         for _, entry in self.config.items():
@@ -254,22 +268,28 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         self.parse_help_active_file(raw)
         self.parse_help_modi_block(raw)
 
-    def build(self):
+    def build(self, config_path=None):
         """
         Loads defaults, adds current values, discovers available documentation,
         and processes all entries
         """
         self.load_default_config()
-        self.load_current_config()
+        if config_path:
+            self.load_arbitrary_config(config_path)
+        else:
+            self.load_current_config()
         self.load_help()
         self.load_man()
         self.process_config()
+        if config_path:
+            self.active_file = config_path
 
     def to_rasi(self):
         """Returns a rasi string composed of all its entries"""
         output = "configuration {\n"
-        for key in self.config:
-            output += "    %s\n" % self.config[key].to_rasi()
+        for key, entry in self.config.items():
+            if entry.current != entry.default:
+                output += "    %s\n" % self.config[key].to_rasi()
         output += "}\n"
         return output
 
@@ -277,6 +297,8 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         """Backs up the provided config file"""
         if source is None:
             source = self.active_file
+        if not exists(source):
+            return
         if destination is None:
             destination = "%s.bak" % source
         self.active_backup = destination

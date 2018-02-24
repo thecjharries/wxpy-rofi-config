@@ -56,7 +56,7 @@ class ConfigPage(Panel):
 
     def construct_docs_label(self, kind, value):
         """Constructs a documentation label"""
-        self.grid_sizer.Add(1, 0, 1, EXPAND)
+        self.grid_sizer.Add(1, -1, 1, EXPAND)
         sizer = BoxSizer(HORIZONTAL)
         label = HidableAutoWrapStaticText(
             parent=self.scrolled_panel,
@@ -64,7 +64,7 @@ class ConfigPage(Panel):
             kind=kind,
         )
         sizer.Add(label, -1, EXPAND)
-        self.grid_sizer.Add(sizer, 1, EXPAND)
+        self.grid_sizer.Add(sizer, -1, EXPAND)
 
     def construct_entry_label(self, value):
         """Creates the primary entry label"""

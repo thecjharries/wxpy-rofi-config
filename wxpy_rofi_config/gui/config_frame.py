@@ -4,6 +4,7 @@
 
 # pylint: disable=too-many-ancestors
 
+from os.path import dirname
 from wx import (
     BoxSizer,
     EVT_CHECKBOX,
@@ -11,11 +12,17 @@ from wx import (
     EVT_SPINCTRL,
     EVT_TEXT,
     EXPAND,
+    FD_FILE_MUST_EXIST,
+    FD_OPEN,
+    FD_OVERWRITE_PROMPT,
+    FD_SAVE,
+    FileDialog,
     FindWindowByName,
     Frame,
     HORIZONTAL,
     ICON_QUESTION,
     ID_ANY,
+    ID_OK,
     ID_YES,
     MessageDialog,
     NB_LEFT,
@@ -34,10 +41,10 @@ from wxpy_rofi_config.gui import (
 )
 
 
-class ConfigFrame(Frame):
+class ConfigFrame(Frame):  # pylint: disable=too-many-public-methods
     """ConfigFrame is used as the primary app context"""
 
-    BOUND_ACTIONS = 10
+    BOUND_ACTIONS = 12
 
     PROMPTS = {
         'dirty_values': 'You have unsaved changes. ',
@@ -62,10 +69,10 @@ class ConfigFrame(Frame):
         self.construct_gui()
         self.bind_events()
 
-    def construct_config(self):
+    def construct_config(self, config_path=None):
         """Constucts the Rofi config object and parses its groups"""
         self.config = Rofi()
-        self.config.build()
+        self.config.build(config_path)
         self.groups = {}
         for _, entry in self.config.config.items():
             if entry.group in self.groups:
@@ -102,6 +109,11 @@ class ConfigFrame(Frame):
         """Binds events on ConfigFrame"""
         self.Bind(
             EVT_MENU,
+            self.open,
+            self.menu_bar.open_menu_item
+        )
+        self.Bind(
+            EVT_MENU,
             self.force_refresh_config,
             self.menu_bar.refresh_menu_item
         )
@@ -109,6 +121,11 @@ class ConfigFrame(Frame):
             EVT_MENU,
             self.restore,
             self.menu_bar.restore_menu_item
+        )
+        self.Bind(
+            EVT_MENU,
+            self.save_as,
+            self.menu_bar.save_as_menu_item
         )
         self.Bind(
             EVT_MENU,
@@ -172,14 +189,14 @@ class ConfigFrame(Frame):
         """Enables/disables the restore menu item"""
         self.menu_bar.restore_menu_item.Enable(self.config.can_restore())
 
-    def refresh_config(self, event=None):  # pylint: disable=unused-argument
+    def refresh_config(self, event=None, config_path=None):  # pylint: disable=unused-argument
         """Refreshes the config object and controls"""
         current_page = self.notebook.GetSelection()
-        self.construct_config()
+        self.construct_config(config_path)
         while self.notebook.GetPageCount() > 0:
             self.notebook.DeletePage(0)
         self.construct_tabs()
-        if current_page and current_page < self.notebook.GetPageCount():
+        if current_page >= 0 and current_page < self.notebook.GetPageCount():
             self.notebook.SetSelection(current_page)
         self.toggle_refresh()
         self.toggle_restoration()
@@ -242,3 +259,37 @@ class ConfigFrame(Frame):
         elif self.config.probably_modified():
             if self.ignore_dirty_state(self.PROMPTS['probably_modified']):
                 self.refresh_config()
+
+    def file_dialog(self, style=None):
+        """Opens a dialog to find a file"""
+        with FileDialog(
+            None,
+            'Choose a file',
+            dirname(self.config.active_file),
+            wildcard='Rasi files (*.rasi)|*.rasi|All Files (*.*)|*.*',
+            style=style
+        ) as dialog:
+            if ID_OK == dialog.ShowModal():
+                return dialog.GetPath()
+        return None
+
+    def pick_save_file(self):
+        """Launches a dialog to pick the save location"""
+        return self.file_dialog(FD_SAVE | FD_OVERWRITE_PROMPT)
+
+    def save_as(self, event=None):  # pylint: disable=unused-argument
+        """Saves the config as an arbitrary file"""
+        new_location = self.pick_save_file()
+        if new_location:
+            self.config.active_file = new_location
+        self.save()
+
+    def pick_open_file(self):
+        """Launches a dialog to pick the open location"""
+        return self.file_dialog(FD_OPEN | FD_FILE_MUST_EXIST)
+
+    def open(self, event=None):  # pylint: disable=unused-argument
+        """Opens the chosen config for editing"""
+        new_location = self.pick_open_file()
+        if new_location:
+            self.refresh_config(config_path=new_location)
