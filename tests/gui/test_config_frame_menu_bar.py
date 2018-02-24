@@ -52,3 +52,14 @@ class ConstructorUnitTests(ConfigFrameMenuBarTestCase):
     def test_construction(self):
         self.mock_menu_bar.assert_called_once()
         self.mock_construct_gui.assert_called_once_with()
+
+
+class ConstructFileMenuUnitTests(ConfigFrameMenuBarTestCase):
+
+    @patch.object(ConfigFrameMenuBar, 'Append')
+    def test_construction(self, mock_append):
+        mock_append.assert_not_called()
+        self.assertIsNone(self.menu_bar.exit_menu_item)
+        self.menu_bar.construct_file_menu()
+        mock_append.assert_called_once()
+        self.assertIsNotNone(self.menu_bar.exit_menu_item)
