@@ -388,3 +388,61 @@ class UpdateControlsUnitTests(ConfigFrameTestCase):
         mock_update.assert_not_called()
         self.frame.update_controls()
         mock_update.assert_has_calls(self.CALLS)
+
+
+class RestoreUnitTests(ConfigFrameTestCase):
+
+    def setUp(self):
+        ConfigFrameTestCase.setUp(self)
+        self.mock_can_restore = MagicMock()
+        self.mock_backup = MagicMock()
+        self.frame.config = MagicMock(
+            can_restore=self.mock_can_restore,
+            backup=self.mock_backup,
+        )
+        construct_config_patcher = patch.object(
+            ConfigFrame,
+            'construct_config'
+        )
+        self.mock_construct_config = construct_config_patcher.start()
+        self.addCleanup(construct_config_patcher.stop)
+        update_controls_patcher = patch.object(
+            ConfigFrame,
+            'update_controls'
+        )
+        self.mock_update_controls = update_controls_patcher.start()
+        self.addCleanup(update_controls_patcher.stop)
+        toggle_restoration_patcher = patch.object(
+            ConfigFrame,
+            'toggle_restoration'
+        )
+        self.mock_toggle_restoration = toggle_restoration_patcher.start()
+        self.addCleanup(toggle_restoration_patcher.stop)
+
+    def test_without_restoration(self):
+        self.mock_can_restore.return_value = False
+        self.mock_can_restore.assert_not_called()
+        self.mock_backup.assert_not_called()
+        self.mock_construct_config.assert_not_called()
+        self.mock_update_controls.assert_not_called()
+        self.mock_toggle_restoration.assert_not_called()
+        self.frame.restore()
+        self.mock_can_restore.assert_called_once_with()
+        self.mock_backup.assert_not_called()
+        self.mock_construct_config.assert_not_called()
+        self.mock_update_controls.assert_not_called()
+        self.mock_toggle_restoration.assert_not_called()
+
+    def test_with_restoration(self):
+        self.mock_can_restore.return_value = True
+        self.mock_can_restore.assert_not_called()
+        self.mock_backup.assert_not_called()
+        self.mock_construct_config.assert_not_called()
+        self.mock_update_controls.assert_not_called()
+        self.mock_toggle_restoration.assert_not_called()
+        self.frame.restore()
+        self.mock_can_restore.assert_called_once_with()
+        self.mock_backup.assert_called_once_with(restore=True)
+        self.mock_construct_config.assert_called_once_with()
+        self.mock_update_controls.assert_called_once_with()
+        self.mock_toggle_restoration.assert_called_once_with()
