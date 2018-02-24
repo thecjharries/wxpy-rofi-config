@@ -24,14 +24,18 @@ class ConfigFrameMenuBar(MenuBar):
         MenuBar.__init__(self)
         self.construct_gui()
 
-    def construct_gui(self):
-        """Construct the MenuBar GUI"""
+    def construct_file_menu(self):
+        """Constructs the file menu"""
         file_menu = Menu()
         self.exit_menu_item = file_menu.Append(
             ID_EXIT,
             'E&xit\tCtrl+w'
         )
         self.Append(file_menu, '&File')
+
+    def construct_gui(self):
+        """Construct the MenuBar GUI"""
+        self.construct_file_menu()
         docs_menu = Menu()
         self.help_values_menu_item = docs_menu.Append(
             NewId(),
