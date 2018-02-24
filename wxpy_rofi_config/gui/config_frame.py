@@ -204,13 +204,18 @@ class ConfigFrame(Frame):
                 for key in self.dirty_values
                 if control_name != key
             ]
+        self.menu_bar.refresh_menu_item.Enable(
+            len(self.dirty_values) > 0
+            or
+            self.config.probably_modified()
+        )
 
     @staticmethod
-    def ignore_dirty_state():
+    def ignore_dirty_state(prompt=None):
         """Checks if dirty state can be abandoned"""
         with MessageDialog(
             None,
-            'You have unsaved changes. Continue?',
+            "%sContinue?" % prompt,
             'Confirm overwrite',
             YES_NO | ICON_QUESTION
         ) as dialog:
@@ -221,5 +226,8 @@ class ConfigFrame(Frame):
     def force_refresh_config(self, event=None):  # pylint: disable=unused-argument
         """Forces a config refresh"""
         if self.dirty_values:
-            if self.ignore_dirty_state():
+            if self.ignore_dirty_state('You have unsaved changes. '):
+                self.refresh_config()
+        elif self.config.probably_modified():
+            if self.ignore_dirty_state('File has changed on disk. '):
                 self.refresh_config()
