@@ -267,16 +267,15 @@ class UpdateConfigEntryUnitTests(ConfigFrameTestCase):
 
 
 class UpdateConfigUnitTests(ConfigFrameTestCase):
-    CONFIG = {
-        'one': 'one entry',
-        'two': 'two entry',
-        'three': 'three entry'
-    }
+    CONFIG = OrderedDict()
+    CONFIG['one'] = 'one entry'
+    CONFIG['two'] = 'two entry'
+    CONFIG['three'] = 'three entry'
 
     CALLS = [
-        call('three', 'three entry'),
-        call('two', 'two entry'),
         call('one', 'one entry'),
+        call('two', 'two entry'),
+        call('three', 'three entry'),
     ]
 
     @patch.object(ConfigFrame, 'update_config_entry')
