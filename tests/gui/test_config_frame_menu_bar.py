@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from unittest import TestCase
 
-from mock import patch
+from mock import MagicMock, patch
 
 from wxpy_rofi_config.gui import ConfigFrameMenuBar
 
@@ -33,7 +33,8 @@ class ConfigFrameMenuBarTestCase(TestCase):
             'wxpy_rofi_config.gui.config_frame_menu_bar.NewId')
         self.mock_new_id = new_id_patcher.start()
         self.addCleanup(new_id_patcher.stop)
-        pub_patcher = patch('wxpy_rofi_config.gui.config_frame_menu_bar.pub')
+        pub_patcher = patch(
+            'wxpy_rofi_config.gui.config_frame_menu_bar.pub.sendMessage')
         self.mock_pub = pub_patcher.start()
         self.addCleanup(pub_patcher.stop)
 
@@ -93,6 +94,48 @@ class ConstructGuiUnitTests(ConfigFrameMenuBarTestCase):
         self.menu_bar.construct_gui()
         mock_file.assert_called_once_with()
         mock_docs.assert_called_once_with()
+
+
+class ToggleDisplayUnitTests(ConfigFrameMenuBarTestCase):
+    HELP_ID = 47
+    MAN_ID = 99
+
+    TESTS = [
+        [
+            MagicMock(
+                Id=HELP_ID,
+                IsChecked=MagicMock(return_value=True)
+            ),
+            True,
+            'toggle_display_help_value',
+            {'data': True}
+        ],
+        [
+            MagicMock(
+                Id=MAN_ID,
+                IsChecked=MagicMock(return_value=False)
+            ),
+            True,
+            'toggle_display_man',
+            {'data': False}
+        ],
+        [
+            MagicMock(),
+            False
+        ]
+    ]
+
+    def test_parameters(self):
+        self.menu_bar.help_values_menu_item = MagicMock(Id=self.HELP_ID)
+        self.menu_bar.man_values_menu_item = MagicMock(Id=self.MAN_ID)
+        for entry in self.TESTS:
+            self.mock_pub.assert_not_called()
+            self.menu_bar.toggle_display(entry[0])
+            if entry[1]:
+                self.mock_pub.assert_called_once_with(entry[2], **entry[3])
+            else:
+                self.mock_pub.assert_not_called()
+            self.mock_pub.reset_mock()
 
 
 class ExitUnitTests(ConfigFrameMenuBarTestCase):
