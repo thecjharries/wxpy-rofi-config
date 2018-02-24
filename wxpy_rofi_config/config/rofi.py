@@ -71,7 +71,7 @@ class Rofi(object):
         ),
         'HELP_ACTIVE_FILE': re_compile(
             r"^.*?configuration\s+file:\s+(?P<file_path>.*?)$",
-            MULTILINE
+            MULTILINE | IGNORECASE
         )
     }
 
