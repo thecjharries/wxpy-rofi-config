@@ -97,6 +97,11 @@ class ConfigFrame(Frame):
         """Binds events on ConfigFrame"""
         self.Bind(
             EVT_MENU,
+            self.force_refresh_config,
+            self.menu_bar.refresh_menu_item
+        )
+        self.Bind(
+            EVT_MENU,
             self.restore,
             self.menu_bar.restore_menu_item
         )
