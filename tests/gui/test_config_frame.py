@@ -224,3 +224,18 @@ class UpdateConfigEntryUnitTests(ConfigFrameTestCase):
             self.VALUE,
             self.frame.config.config[self.KEY_NAME].current
         )
+
+    def test_with_label(self):
+        self.mock_findwindow.return_value = MagicMock(
+            spec=['GetLabel'],
+            GetLabel=MagicMock(return_value=self.LABEL)
+        )
+        self.assertEqual(
+            self.PRE,
+            self.frame.config.config[self.KEY_NAME].current
+        )
+        self.frame.update_config_entry(self.KEY_NAME, MagicMock())
+        self.assertEqual(
+            self.LABEL,
+            self.frame.config.config[self.KEY_NAME].current
+        )
