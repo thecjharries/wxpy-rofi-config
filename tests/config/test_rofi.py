@@ -274,6 +274,25 @@ class ParseHelpModiUnitTests(RofiTestCase):
         )
 
 
+class ParseHelpModiBlockUnitTests(RofiTestCase):
+    WITH_MODI = '''
+Detected modi:
+
+Compile time options:
+'''
+    WITHOUT_MODI = ''
+
+    @patch.object(Rofi, 'parse_help_modi')
+    def test_with_config(self, mock_parse):
+        self.rofi.parse_help_modi_block(self.WITH_MODI)
+        mock_parse.assert_called_once()
+
+    @patch.object(Rofi, 'parse_help_modi')
+    def test_without_config(self, mock_parse):
+        self.rofi.parse_help_modi_block(self.WITHOUT_MODI)
+        mock_parse.assert_not_called()
+
+
 class ParseHelpActiveFileUnitTests(RofiTestCase):
     INPUT = """
       Configuration file: /path/to/rofi/config.rasi
