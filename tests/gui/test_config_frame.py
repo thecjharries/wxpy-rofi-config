@@ -513,3 +513,44 @@ class IgnoreDirtyStateUnitTests(ConfigFrameTestCase):
     @patch('wxpy_rofi_config.gui.config_frame.MessageDialog')
     def test_no_modal(self, mock_message):
         self.assertFalse(self.frame.ignore_dirty_state())
+
+
+class ForceRefreshConfigUnitTests(ConfigFrameTestCase):
+
+    def setUp(self):
+        ConfigFrameTestCase.setUp(self)
+        refresh_config_patcher = patch.object(
+            ConfigFrame,
+            'refresh_config'
+        )
+        self.mock_refresh_config = refresh_config_patcher.start()
+        self.addCleanup(refresh_config_patcher.stop)
+        ignore_dirty_state_patcher = patch.object(
+            ConfigFrame,
+            'ignore_dirty_state'
+        )
+        self.mock_ignore_dirty_state = ignore_dirty_state_patcher.start()
+        self.addCleanup(ignore_dirty_state_patcher.stop)
+        self.frame.dirty_values = []
+        self.mock_modified = MagicMock()
+        self.frame.config = MagicMock(probably_modified=self.mock_modified)
+
+    def test_dirty_values(self):
+        self.frame.dirty_values = ['one']
+        self.mock_ignore_dirty_state.assert_not_called()
+        self.mock_refresh_config.assert_not_called()
+        self.frame.force_refresh_config()
+        self.mock_ignore_dirty_state.assert_called_once_with(
+            ConfigFrame.PROMPTS['dirty_values']
+        )
+        self.mock_refresh_config.assert_called_once_with()
+
+    def test_probably_modified(self):
+        self.mock_modified.return_value = True
+        self.mock_ignore_dirty_state.assert_not_called()
+        self.mock_refresh_config.assert_not_called()
+        self.frame.force_refresh_config()
+        self.mock_ignore_dirty_state.assert_called_once_with(
+            ConfigFrame.PROMPTS['probably_modified']
+        )
+        self.mock_refresh_config.assert_called_once_with()
