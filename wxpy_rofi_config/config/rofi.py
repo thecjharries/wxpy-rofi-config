@@ -73,6 +73,14 @@ class Rofi(object):
         'HELP_ACTIVE_FILE': re_compile(
             r"^.*?configuration\s+file:\s+(?P<file_path>.*?)$",
             MULTILINE | IGNORECASE
+        ),
+        'HELP_AVAILABLE_MODI_BLOCK': re_compile(
+            r"(?:detected modi:)(?P<modi>.*?\n)\n",
+            DOTALL | IGNORECASE
+        ),
+        'HELP_MODI': re_compile(
+            r"^\s+\*\s+\+?(?P<modi>.*?)$",
+            MULTILINE | IGNORECASE
         )
     }
 
