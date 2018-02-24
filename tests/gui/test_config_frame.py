@@ -205,6 +205,17 @@ class BindEventsUnitTests(ConfigFrameTestCase):
         )
 
 
+class ModiLauncherUnitTests(ConfigFrameTestCase):
+    MODI = ['one', 'two']
+
+    @patch('wxpy_rofi_config.gui.config_frame.ModiLauncher')
+    def test_construction(self, mock_modi):
+        self.frame.config = MagicMock(available_modi=self.MODI)
+        mock_modi.assert_not_called()
+        self.frame.modi_launcher()
+        mock_modi.assert_called_once_with(self.MODI)
+
+
 class UpdateConfigEntryUnitTests(ConfigFrameTestCase):
     KEY_NAME = 'qqq'
     PRE = 9
