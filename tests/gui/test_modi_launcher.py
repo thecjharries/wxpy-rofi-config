@@ -23,7 +23,7 @@ class ModiLauncherTestCase(TestCase):
 
     def patch_wx(self):
         singlechoice_patcher = patch(
-            'wxpy_rofi_config.gui.modi_launcherSingleChoiceDialog'
+            'wxpy_rofi_config.gui.modi_launcher.SingleChoiceDialog'
         )
         self.mock_singlechoice = singlechoice_patcher.start()
         self.addCleanup(singlechoice_patcher.stop)
@@ -33,3 +33,9 @@ class ModiLauncherTestCase(TestCase):
         self.mock_runner = runner_patcher.start()
         self.modi = ModiLauncher(None)
         runner_patcher.stop()
+
+
+class ConstructorUnitTests(ModiLauncherTestCase):
+
+    def test_calls(self):
+        self.mock_runner.assert_called_once_with()
