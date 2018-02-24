@@ -217,12 +217,16 @@ class Rofi(object):
         ):
             self.parse_help_entry(discovered_entry)
 
+    def parse_help_config_block(self, raw_help):
+        """Parses the help config block"""
+        possible_config = search(self.PATTERNS['HELP_BLOCK'], raw_help)
+        if possible_config:
+            self.parse_help_config(possible_config)
+
     def load_help(self):
         """Loads rofi --help in an attempt to parse it"""
         raw = check_output(['rofi', '--help'])
-        possible_config = search(self.PATTERNS['HELP_BLOCK'], raw)
-        if possible_config:
-            self.parse_help_config(possible_config)
+        self.parse_help_config_block(raw)
         self.parse_help_active_file(raw)
 
     def build(self):
