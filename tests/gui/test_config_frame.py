@@ -195,4 +195,32 @@ class BindEventsUnitTests(ConfigFrameTestCase):
         )
 
 
-# class UpdateConfigEntryUnitTests(ConfigFrameTestCase):
+class UpdateConfigEntryUnitTests(ConfigFrameTestCase):
+    KEY_NAME = 'qqq'
+    PRE = 9
+    VALUE = 10
+    LABEL = 12
+    CURRENT = 13
+
+    def setUp(self):
+        ConfigFrameTestCase.setUp(self)
+        self.frame.config = MagicMock(
+            config={
+                self.KEY_NAME: MagicMock(current=self.PRE)
+            }
+        )
+
+    def test_with_value(self):
+        self.mock_findwindow.return_value = MagicMock(
+            spec=['GetValue'],
+            GetValue=MagicMock(return_value=self.VALUE)
+        )
+        self.assertEqual(
+            self.PRE,
+            self.frame.config.config[self.KEY_NAME].current
+        )
+        self.frame.update_config_entry(self.KEY_NAME, MagicMock())
+        self.assertEqual(
+            self.VALUE,
+            self.frame.config.config[self.KEY_NAME].current
+        )
