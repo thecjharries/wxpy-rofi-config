@@ -59,6 +59,7 @@ Once all of these are finished, I'll release `v1`. Until then, `v0` should be us
 |      0% | Backup existing `rofi` config |
 |      0% | Validate `rofi` config (before/during/after save) |
 |      0% | Only save changed values (i.e. not the original `rofi` default) |
+|      0% | Fix sizing glitches (e.g. too much at top of scroll) |
 
 ### Eventual features
 
