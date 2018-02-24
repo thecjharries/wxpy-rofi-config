@@ -23,8 +23,6 @@ from wxpy_rofi_config.config import Entry
 class Rofi(object):
     """Rofi holds all the config for rofi"""
 
-    DEFAULT_PATH = expanduser(join('~', '.config', 'rofi', 'config.rasi'))
-
     PATTERNS = {
         'RASI_ENTRY': re_compile(
             r"^.*?(?:\s|\/|\*)(?P<key>[a-z][a-z0-9-]*):\s*(?P<value>.*?);.*?$",
@@ -237,7 +235,7 @@ class Rofi(object):
     def save(self, path=None):
         """Saves the config file"""
         if path is None:
-            path = self.DEFAULT_PATH
+            path = self.create_default_path()
         with open(path, 'w') as rasi_file:
             rasi_file.write(self.to_rasi())
 
