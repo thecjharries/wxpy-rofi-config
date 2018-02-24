@@ -93,3 +93,12 @@ class ConstructGuiUnitTests(ConfigFrameMenuBarTestCase):
         self.menu_bar.construct_gui()
         mock_file.assert_called_once_with()
         mock_docs.assert_called_once_with()
+
+
+class ExitUnitTests(ConfigFrameMenuBarTestCase):
+
+    @patch.object(ConfigFrameMenuBar, 'GetTopLevelParent')
+    def test_call(self, mock_top):
+        mock_top.assert_not_called()
+        self.menu_bar.exit()
+        mock_top.assert_called_once_with()
