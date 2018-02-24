@@ -44,7 +44,7 @@ from wxpy_rofi_config.gui import (
 class ConfigFrame(Frame):  # pylint: disable=too-many-public-methods
     """ConfigFrame is used as the primary app context"""
 
-    BOUND_ACTIONS = 11
+    BOUND_ACTIONS = 12
 
     PROMPTS = {
         'dirty_values': 'You have unsaved changes. ',
@@ -107,6 +107,11 @@ class ConfigFrame(Frame):  # pylint: disable=too-many-public-methods
 
     def bind_events(self):
         """Binds events on ConfigFrame"""
+        self.Bind(
+            EVT_MENU,
+            self.open,
+            self.menu_bar.open_menu_item
+        )
         self.Bind(
             EVT_MENU,
             self.force_refresh_config,
