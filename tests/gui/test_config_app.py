@@ -23,7 +23,8 @@ class ConfigAppTestCase(TestCase):
 
     def patch_wx(self):
         app_patcher = patch(
-            'wxpy_rofi_config.gui.config_app.App'
+            'wxpy_rofi_config.gui.config_app.App.__init__',
+            return_value=None
         )
         self.mock_app = app_patcher.start()
         self.addCleanup(app_patcher.stop)
