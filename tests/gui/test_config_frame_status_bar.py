@@ -8,6 +8,8 @@ from unittest import TestCase
 
 from mock import call, patch
 
+from pydispatch.dispatcher import Any
+
 from wxpy_rofi_config.gui import ConfigFrameStatusBar
 
 
@@ -30,7 +32,7 @@ class ConfigFrameStatusBarTestCase(TestCase):
         self.mock_status_bar = status_bar_patcher.start()
         self.addCleanup(status_bar_patcher.stop)
         pub_patcher = patch(
-            'wxpy_rofi_config.gui.config_frame_status_bar.subscribe')
+            'wxpy_rofi_config.gui.config_frame_status_bar.connect')
         self.mock_pub = pub_patcher.start()
         self.addCleanup(pub_patcher.stop)
 
@@ -44,8 +46,8 @@ class ConstructorUnitTests(ConfigFrameStatusBarTestCase):
         self.mock_status_bar.assert_called_once()
         self.mock_pub.assert_has_calls(
             [
-                call(self.status_bar.update, 'status_update'),
-                call(self.status_bar.clear, 'status_clear')
+                call(self.status_bar.update, signal='status_update', sender=Any),
+                call(self.status_bar.clear, signal='status_clear', sender=Any)
             ],
             True
         )
