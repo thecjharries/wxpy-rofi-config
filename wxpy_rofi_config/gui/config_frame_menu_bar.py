@@ -22,6 +22,7 @@ class ConfigFrameMenuBar(MenuBar):
     help_values_menu_item = None
     launch_menu_item = None
     man_values_menu_item = None
+    restore_menu_item = None
     save_menu_item = None
 
     def __init__(self):
@@ -31,6 +32,10 @@ class ConfigFrameMenuBar(MenuBar):
     def construct_file_menu(self):
         """Constructs the file menu"""
         file_menu = Menu()
+        self.restore_menu_item = file_menu.Append(
+            NewId(),
+            'Restore Backup Config'
+        )
         self.save_menu_item = file_menu.Append(
             ID_SAVE,
             '&Save\tCtrl+s'
