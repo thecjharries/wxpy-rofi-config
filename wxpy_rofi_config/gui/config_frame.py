@@ -29,6 +29,8 @@ from wxpy_rofi_config.gui import (
 class ConfigFrame(Frame):
     """ConfigFrame is used as the primary app context"""
 
+    BOUND_ACTIONS = 5
+
     config = None
     groups = None
     menu_bar = None
