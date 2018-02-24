@@ -454,7 +454,7 @@ class BuildUnitTests(RofiTestCase):
     @patch.object(Rofi, 'load_help')
     @patch.object(Rofi, 'load_man')
     @patch.object(Rofi, 'process_config')
-    def test_call(  # pylint: disable=too-many-arguments
+    def test_without_path(  # pylint: disable=too-many-arguments
             self,
             mock_process,
             mock_man,
@@ -472,6 +472,34 @@ class BuildUnitTests(RofiTestCase):
         mock_holder.assert_has_calls([
             call.load_default_config(),
             call.load_current_config(),
+            call.load_help(),
+            call.load_man(),
+            call.process_config()
+        ])
+
+    @patch.object(Rofi, 'load_default_config')
+    @patch.object(Rofi, 'load_arbitrary_config')
+    @patch.object(Rofi, 'load_help')
+    @patch.object(Rofi, 'load_man')
+    @patch.object(Rofi, 'process_config')
+    def test_with_path(  # pylint: disable=too-many-arguments
+            self,
+            mock_process,
+            mock_man,
+            mock_help,
+            mock_arbitrary,
+            mock_default
+    ):
+        mock_holder = MagicMock()
+        mock_holder.attach_mock(mock_default, 'load_default_config')
+        mock_holder.attach_mock(mock_arbitrary, 'load_arbitrary_config')
+        mock_holder.attach_mock(mock_help, 'load_help')
+        mock_holder.attach_mock(mock_man, 'load_man')
+        mock_holder.attach_mock(mock_process, 'process_config')
+        self.rofi.build('qqq')
+        mock_holder.assert_has_calls([
+            call.load_default_config(),
+            call.load_arbitrary_config('qqq'),
             call.load_help(),
             call.load_man(),
             call.process_config()
