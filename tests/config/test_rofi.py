@@ -406,3 +406,32 @@ def test_save(mock_rasi, mock_open):
     rofi = Rofi()
     rofi.save()
     mock_rasi.assert_called_once_with()
+
+
+@patch('wxpy_rofi_config.config.rofi.join')
+@patch('wxpy_rofi_config.config.rofi.expanduser')
+@patch(
+    'wxpy_rofi_config.config.rofi.environ',
+    {},
+)
+def test_without_xdg(mock_expand, mock_join):
+    mock_expand.assert_not_called()
+    mock_join.assert_not_called()
+    Rofi.create_default_path()
+    mock_expand.assert_called_once()
+    assert mock_join.call_count == 2
+
+
+@patch('wxpy_rofi_config.config.rofi.join')
+@patch('wxpy_rofi_config.config.rofi.expanduser')
+@patch(
+    'wxpy_rofi_config.config.rofi.environ',
+    {'XDG_USER_CONFIG_DIR': 'cool'},
+)
+def test_with_xdg(mock_expand, mock_join):
+    mock_expand.assert_not_called()
+    mock_join.assert_not_called()
+    Rofi.create_default_path()
+    mock_expand.assert_called_once()
+    mock_join.assert_called_once()
+    # assert mock_join.call_count == 2
