@@ -3,6 +3,7 @@
 """This file provides the Rofi class"""
 
 from collections import OrderedDict
+from os import environ
 from os.path import expanduser, join
 from re import (
     compile as re_compile,
@@ -239,3 +240,12 @@ class Rofi(object):
             path = self.DEFAULT_PATH
         with open(path, 'w') as rasi_file:
             rasi_file.write(self.to_rasi())
+
+    @staticmethod
+    def create_default_path():
+        """Creates the default save path"""
+        if 'XDG_USER_CONFIG_DIR' in environ:
+            lead = environ['XDG_USER_CONFIG_DIR']
+        else:
+            lead = join('~', '.config')
+        return expanduser(join(lead, 'rofi', 'config.rasi'))
