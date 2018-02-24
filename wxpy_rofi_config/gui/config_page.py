@@ -60,7 +60,7 @@ class ConfigPage(Panel):
         sizer = BoxSizer(HORIZONTAL)
         label = HidableAutoWrapStaticText(
             parent=self.scrolled_panel,
-            label=u"%s" % value.decode('utf8', 'ignore'),
+            label=value,
             kind=kind,
         )
         sizer.Add(label, -1, EXPAND)
