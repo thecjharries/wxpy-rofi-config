@@ -9,7 +9,7 @@ from unittest import TestCase
 
 from mock import call, MagicMock, patch
 
-from wx import ID_YES  # pylint: disable=no-name-in-module
+from wx import ID_OK, ID_YES  # pylint: disable=no-name-in-module
 
 from wxpy_rofi_config.gui import ConfigFrame
 
@@ -562,3 +562,44 @@ class ForceRefreshConfigUnitTests(ConfigFrameTestCase):
             ConfigFrame.PROMPTS['probably_modified']
         )
         self.mock_refresh_config.assert_called_once_with()
+
+
+class PickSaveFileUnitTests(ConfigFrameTestCase):
+
+    PATH = 'qqq'
+
+    @patch('wxpy_rofi_config.gui.config_frame.dirname')
+    @patch('wxpy_rofi_config.gui.config_frame.FileDialog')
+    def test_yes_modal(self, mock_file, mock_dir):
+        self.frame.config = MagicMock()
+        mock_file.return_value = MagicMock(
+            __enter__=MagicMock(
+                return_value=MagicMock(
+                    ShowModal=MagicMock(return_value=ID_OK),
+                    GetPath=MagicMock(return_value=self.PATH)
+                )
+            )
+        )
+        self.assertEquals(
+            self.PATH,
+            self.frame.pick_save_file()
+        )
+
+    @patch('wxpy_rofi_config.gui.config_frame.dirname')
+    @patch('wxpy_rofi_config.gui.config_frame.FileDialog')
+    def test_no_modal(self, mock_file, mock_dir):
+        self.frame.config = MagicMock()
+        self.assertIsNone(self.frame.pick_save_file())
+
+
+class SaveAsUnitTests(ConfigFrameTestCase):
+
+    @patch.object(ConfigFrame, 'pick_save_file')
+    @patch.object(ConfigFrame, 'save')
+    def test_calls(self, mock_save, mock_pick):
+        self.frame.config = MagicMock()
+        mock_pick.assert_not_called()
+        mock_save.assert_not_called()
+        self.frame.save_as()
+        mock_pick.assert_called_once_with()
+        mock_save.assert_called_once_with()

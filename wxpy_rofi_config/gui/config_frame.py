@@ -4,6 +4,7 @@
 
 # pylint: disable=too-many-ancestors
 
+from os.path import dirname
 from wx import (
     BoxSizer,
     EVT_CHECKBOX,
@@ -11,11 +12,15 @@ from wx import (
     EVT_SPINCTRL,
     EVT_TEXT,
     EXPAND,
+    FD_SAVE,
+    FD_OVERWRITE_PROMPT,
+    FileDialog,
     FindWindowByName,
     Frame,
     HORIZONTAL,
     ICON_QUESTION,
     ID_ANY,
+    ID_OK,
     ID_YES,
     MessageDialog,
     NB_LEFT,
@@ -37,7 +42,7 @@ from wxpy_rofi_config.gui import (
 class ConfigFrame(Frame):
     """ConfigFrame is used as the primary app context"""
 
-    BOUND_ACTIONS = 10
+    BOUND_ACTIONS = 11
 
     PROMPTS = {
         'dirty_values': 'You have unsaved changes. ',
@@ -109,6 +114,11 @@ class ConfigFrame(Frame):
             EVT_MENU,
             self.restore,
             self.menu_bar.restore_menu_item
+        )
+        self.Bind(
+            EVT_MENU,
+            self.save_as,
+            self.menu_bar.save_as_menu_item
         )
         self.Bind(
             EVT_MENU,
@@ -242,3 +252,23 @@ class ConfigFrame(Frame):
         elif self.config.probably_modified():
             if self.ignore_dirty_state(self.PROMPTS['probably_modified']):
                 self.refresh_config()
+
+    def pick_save_file(self):
+        """Launches a dialog to pick the save location"""
+        with FileDialog(
+            None,
+            'Choose a file',
+            dirname(self.config.active_file),
+            wildcard='Rasi files (*.rasi)|*.rasi|All Files (*.*)|*.*',
+            style=FD_SAVE | FD_OVERWRITE_PROMPT
+        ) as dialog:
+            if ID_OK == dialog.ShowModal():
+                return dialog.GetPath()
+        return None
+
+    def save_as(self, event=None):  # pylint: disable=unused-argument
+        """Saves the config as an arbitrary file"""
+        new_location = self.pick_save_file()
+        if new_location:
+            self.config.active_file = new_location
+        self.save()
