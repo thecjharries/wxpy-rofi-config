@@ -148,24 +148,19 @@ class ConfigFrame(Frame):
         """Enables/disables the restore menu item"""
         self.menu_bar.restore_menu_item.Enable(self.config.can_restore())
 
-    @staticmethod
-    def update_entry_control(entry):
-        """Updates the control for a single config entry"""
-        widget = FindWindowByName(entry.key_name)
-        if hasattr(widget, 'SetValue'):
-            widget.SetValue(entry.current)
-        elif hasattr(widget, 'SetLabel'):
-            widget.SetLabel(entry.current)
-
-    def update_controls(self):
-        """Updates all the controls"""
-        for _, entry in self.config.config.items():
-            self.update_entry_control(entry)
+    def refresh_config(self, event=None):  # pylint: disable=unused-argument
+        """Refreshes the config object and controls"""
+        current_page = self.notebook.GetSelection()
+        self.construct_config()
+        while self.notebook.GetPageCount() > 0:
+            self.notebook.DeletePage(0)
+        self.construct_tabs()
+        if current_page and current_page < self.notebook.GetPageCount():
+            self.notebook.SetSelection(current_page)
+        self.toggle_restoration()
 
     def restore(self, event=None):  # pylint: disable=unused-argument
         """Restores a previously backed up config"""
         if self.config.can_restore():
             self.config.backup(restore=True)
-            self.construct_config()
-            self.update_controls()
-            self.toggle_restoration()
+            self.refresh_config()
