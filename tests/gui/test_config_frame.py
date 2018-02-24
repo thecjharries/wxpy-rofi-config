@@ -590,3 +590,16 @@ class PickSaveFileUnitTests(ConfigFrameTestCase):
     def test_no_modal(self, mock_file, mock_dir):
         self.frame.config = MagicMock()
         self.assertIsNone(self.frame.pick_save_file())
+
+
+class SaveAsUnitTests(ConfigFrameTestCase):
+
+    @patch.object(ConfigFrame, 'pick_save_file')
+    @patch.object(ConfigFrame, 'save')
+    def test_calls(self, mock_save, mock_pick):
+        self.frame.config = MagicMock()
+        mock_pick.assert_not_called()
+        mock_save.assert_not_called()
+        self.frame.save_as()
+        mock_pick.assert_called_once_with()
+        mock_save.assert_called_once_with()
