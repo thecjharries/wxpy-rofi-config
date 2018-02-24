@@ -79,6 +79,7 @@ class Rofi(object):
     def __init__(self):
         self.config = OrderedDict()
         self.groups = []
+        self.active_file = None
 
     def assign_rasi_entry(self, key_value_match, destination='default'):
         """
@@ -178,6 +179,15 @@ class Rofi(object):
         possible_config = search(self.PATTERNS['MAN_CONFIG_BLOCK'], raw)
         if possible_config:
             self.parse_man_config(possible_config.group())
+
+    def parse_help_active_file(self, raw_help):
+        """Parses help for the active config file"""
+        possible_file = search(
+            self.PATTERNS['HELP_ACTIVE_FILE'],
+            raw_help
+        )
+        if possible_file:
+            self.active_file = possible_file.group('file_path')
 
     def parse_help_entry(self, help_entry_match):
         """Parses a single help entry"""
