@@ -136,7 +136,7 @@ class Rofi(object):
                 contents,
                 0
             )
-        return contents
+        return contents.decode('utf8', 'ignore')
 
     def parse_man_entry(self, group, man_entry_match):
         """Looks for a single man entry"""

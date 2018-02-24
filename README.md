@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/thecjharries/wxpy-rofi-config.svg?branch=master)](https://travis-ci.org/thecjharries/wxpy-rofi-config) [![Coverage Status](https://coveralls.io/repos/github/thecjharries/wxpy-rofi-config/badge.svg)](https://coveralls.io/github/thecjharries/wxpy-rofi-config)
 
-**NOTE**: The builds use the latest GTK3 wheel and might not test everything.
+**NOTE**: The builds use the latest GTK3 wheel and might not test everything to wxPython. They will, however, test everything the app needs (I think).
 
 <!-- MarkdownTOC -->
 
@@ -59,6 +59,7 @@ Once all of these are finished, I'll release `v1`. Until then, `v0` should be us
 |      0% | Backup existing `rofi` config |
 |      0% | Validate `rofi` config (before/during/after save) |
 |      0% | Only save changed values (i.e. not the original `rofi` default) |
+|      0% | Fix sizing glitches (e.g. too much at top of scroll) |
 
 ### Eventual features
 
