@@ -30,7 +30,7 @@ from wxpy_rofi_config.gui import (
 class ConfigFrame(Frame):
     """ConfigFrame is used as the primary app context"""
 
-    BOUND_ACTIONS = 5
+    BOUND_ACTIONS = 6
 
     config = None
     groups = None
@@ -85,6 +85,11 @@ class ConfigFrame(Frame):
 
     def bind_events(self):
         """Binds events on ConfigFrame"""
+        self.Bind(
+            EVT_MENU,
+            self.restore,
+            self.menu_bar.restore_menu_item
+        )
         self.Bind(
             EVT_MENU,
             self.save,
