@@ -100,3 +100,10 @@ class SelectAndLaunchUnitTests(ModiLauncherTestCase):
         self.modi.select_and_launch()
         mock_select.assert_called_once_with()
         mock_launch.assert_not_called()
+
+
+@patch('wxpy_rofi_config.gui.modi_launcher.call')
+def test_launch_modi(mock_call):
+    mock_call.assert_not_called()
+    ModiLauncher.launch_modi('qqq')
+    mock_call.assert_called_once_with(['rofi', '-show', 'qqq'])
