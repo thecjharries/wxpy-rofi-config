@@ -469,18 +469,20 @@ class BackupUnitTests(RofiTestCase):
         [None, None],
         ['qqq', None],
         [None, 'zzz'],
-        ['qqq', 'zzz']
+        ['qqq', 'zzz'],
+        ['qqq', 'zzz', True]
     ]
     RESULTS = [
         [ACTIVE_FILE, ACTIVE_FILE_BAK],
         ['qqq', 'qqq.bak'],
         [ACTIVE_FILE, 'zzz'],
-        ['qqq', 'zzz']
+        ['qqq', 'zzz'],
+        ['zzz', 'qqq']
     ]
 
     def test_results(self):
         self.rofi.active_file = self.ACTIVE_FILE
-        for index in range(0, 4):
+        for index in range(0, len(self.INPUT)):
             self.mock_copyfile.assert_not_called()
             self.rofi.backup(*self.INPUT[index])
             self.mock_copyfile.assert_called_once_with(*self.RESULTS[index])
@@ -505,6 +507,7 @@ class SaveUnitTests(RofiTestCase):
         self.rofi.save(backup=False)
         mock_config.assert_called_once_with(None)
         mock_backup.assert_not_called()
+        self.assertIsNone(self.rofi.active_backup)
 
     @patch.object(Rofi, 'backup')
     @patch.object(Rofi, 'write_config')
@@ -514,6 +517,7 @@ class SaveUnitTests(RofiTestCase):
         self.rofi.save()
         mock_config.assert_called_once_with(None)
         mock_backup.assert_called_once_with(None, None)
+        self.assertIsNone(self.rofi.active_backup)
 
 
 @patch('wxpy_rofi_config.config.rofi.join')
