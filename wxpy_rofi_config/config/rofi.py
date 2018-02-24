@@ -88,6 +88,7 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         self.config = OrderedDict()
         self.groups = []
         self.active_file = None
+        self.available_modi = []
 
     def assign_rasi_entry(self, key_value_match, destination='default'):
         """
