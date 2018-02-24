@@ -1,115 +1,126 @@
 # coding=utf8
 
-"""This file provides the ConfigFrame class"""
+"""This file provides ConfigFrame"""
 
-# pylint:disable=too-many-ancestors
+# pylint: disable=too-many-ancestors
 
 from wx import (
     BoxSizer,
-    EVT_INIT_DIALOG,
     EVT_MENU,
     EXPAND,
+    FindWindowByName,
     Frame,
-    ITEM_CHECK,
-    Menu,
-    MenuBar,
-    NewId,
+    HORIZONTAL,
+    ID_ANY,
+    NB_LEFT,
+    Notebook,
     Panel,
-    PostEvent,
-    SizeEvent,
-    VERTICAL,
+)
+from wx.lib.pubsub import pub
+
+from wxpy_rofi_config.config import Rofi
+from wxpy_rofi_config.gui import (
+    ConfigFrameMenuBar,
+    ConfigFrameStatusBar,
+    ConfigPage
 )
 
 
-# from wxpy_rofi_config.config import Rofi
-from wxpy_rofi_config.gui import SettingsNotebook
-
-
 class ConfigFrame(Frame):
-    """ConfigFrame is responsible for booting the app and running its menus"""
+    """ConfigFrame is used as the primary app context"""
 
-    def __init__(self):
+    config = None
+    groups = None
+    menu_bar = None
+    notebook = None
+
+    def __init__(self, parent, title=""):
         Frame.__init__(
             self,
-            None,
-            title='rofi Config',
-            size=(600, 600)
+            parent=parent,
+            id=ID_ANY,
+            size=(800, 640),
+            title=title
         )
-        self.create_menu()
-        self.create_panel()
+        self.construct_config()
+        self.construct_gui()
         self.bind_events()
 
-    def create_panel(self):
-        """Creates the main app panel"""
-        panel = Panel(self)
-        sizer = BoxSizer(VERTICAL)
-        self.notebook = SettingsNotebook(panel)
-        sizer.Add(self.notebook, -1, EXPAND)
-        panel.SetSizer(sizer)
-        self.Layout()
-        self.Center()
+    def construct_config(self):
+        """Constucts the Rofi config object and parses its groups"""
+        self.config = Rofi()
+        self.config.build()
+        self.groups = {}
+        for _, entry in self.config.config.items():
+            if entry.group in self.groups:
+                self.groups[entry.group].append(entry)
+            else:
+                self.groups[entry.group] = [entry]
 
-    def create_menu(self):
-        """Creates the app menu"""
-        menu_bar = MenuBar()
-        file_menu = Menu()
-        self.save_menu_item = file_menu.Append(NewId(), '&Save\tCtrl+s')
-        self.exit_menu_item = file_menu.Append(NewId(), 'E&xit\tCtrl+w')
-        menu_bar.Append(file_menu, '&File')
-        docs_menu = Menu()
-        self.show_help_menu_item = docs_menu.Append(
-            NewId(),
-            'rofi --help',
-            'Show or hide pertinent rofi --help info',
-            ITEM_CHECK
-        )
-        self.show_help_menu_item.Check(True)
-        self.show_man_menu_item = docs_menu.Append(
-            NewId(),
-            'man rofi',
-            'Show or hide pertinent man rofi info',
-            ITEM_CHECK
-        )
-        self.show_man_menu_item.Check(True)
-        menu_bar.Append(docs_menu, '&Docs')
-        self.SetMenuBar(menu_bar)
+    def construct_tabs(self):
+        """Constructs all available tabs"""
+        for key, config_list in self.groups.items():
+            page = ConfigPage(self.notebook, config_list)
+            self.notebook.AddPage(page, key)
+
+    def construct_notebook(self):
+        """Constructs the main Notebook panel"""
+        panel = Panel(self)
+        self.notebook = Notebook(panel, style=NB_LEFT)
+        self.construct_tabs()
+        sizer = BoxSizer(HORIZONTAL)
+        sizer.Add(self.notebook, 1, EXPAND)
+        panel.SetSizer(sizer)
+
+    def construct_gui(self):
+        """Constructs ConfigFrame's GUI"""
+        self.menu_bar = ConfigFrameMenuBar()
+        self.SetMenuBar(self.menu_bar)
+        self.status_bar = ConfigFrameStatusBar(self)
+        self.SetStatusBar(self.status_bar)
+        self.construct_notebook()
 
     def bind_events(self):
-        """Binds all useful events"""
-        self.Bind(EVT_INIT_DIALOG, self.boot)
-        self.Bind(EVT_MENU, self.save, self.save_menu_item)
-        self.Bind(EVT_MENU, self.exit, self.exit_menu_item)
+        """Binds events on ConfigFrame"""
         self.Bind(
             EVT_MENU,
-            self.change_display_state,
-            self.show_help_menu_item
+            self.save,
+            self.menu_bar.save_menu_item
         )
         self.Bind(
             EVT_MENU,
-            self.change_display_state,
-            self.show_man_menu_item
+            self.menu_bar.exit,
+            self.menu_bar.exit_menu_item
+        )
+        self.Bind(
+            EVT_MENU,
+            self.menu_bar.toggle_display,
+            self.menu_bar.help_values_menu_item
+        )
+        self.Bind(
+            EVT_MENU,
+            self.menu_bar.toggle_display,
+            self.menu_bar.man_values_menu_item
         )
 
-    def boot(self, event=None):  # pylint:disable=unused-argument
-        """Sends a resize request to app to coddle StaticTexts"""
-        PostEvent(self.notebook, SizeEvent((-1, -1)))
-
-    def change_display_state(self, event=None):
-        """Process display state changes"""
-        if self.show_help_menu_item.Id == event.Id:
-            target = 'help_value'
-        elif self.show_man_menu_item.Id == event.Id:
-            target = 'man'
+    def update_config_entry(self, key_name, entry):
+        """Updates the value for a single entry"""
+        widget = FindWindowByName(key_name)
+        if hasattr(widget, 'GetValue'):
+            value = widget.GetValue()
+        elif hasattr(widget, 'GetLabel'):
+            value = widget.GetLabel()
         else:
-            target = None
-            event.Skip()
-        if target:
-            self.notebook.change_display_state(target, event.IsChecked())
+            value = entry.current
+        self.config.config[key_name].current = value
 
-    def save(self, event=None):  # pylint:disable=unused-argument
-        """Fires a save event"""
-        self.notebook.save()
+    def update_config(self):
+        """Updates the entire config object"""
+        for key_name, entry in self.config.config.items():
+            self.update_config_entry(key_name, entry)
 
-    def exit(self, event=None):  # pylint:disable=unused-argument
-        """Exits the app"""
-        self.Close()
+    def save(self, event=None):  # pylint: disable=unused-argument
+        """Saves the config file"""
+        self.update_config()
+        self.config.save()
+        pub.sendMessage('status_update', data='Saved!')
