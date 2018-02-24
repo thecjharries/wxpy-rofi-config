@@ -52,9 +52,9 @@ Once all of these are finished, I'll release `v1`. Until then, `v0` should be us
 | Progess | Feature |
 | ------: | ------- |
 |     90% | Load default `rofi` config |
-|     90% | Save default `rofi` config |
+|    100% | Save default `rofi` config |
 |      0% | Load arbitrary `rofi` config |
-|      0% | Save arbitrary `rofi` config |
+|    100% | Save arbitrary `rofi` config |
 |     13% | Style UI |
 |     90% | Backup existing `rofi` config |
 |     10% | Validate `rofi` config (before/during/after save) |
