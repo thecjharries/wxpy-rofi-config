@@ -94,6 +94,11 @@ class ConfigFrame(Frame):
         )
         self.Bind(
             EVT_MENU,
+            self.modi_launcher,
+            self.menu_bar.launch_menu_item
+        )
+        self.Bind(
+            EVT_MENU,
             self.menu_bar.toggle_display,
             self.menu_bar.help_values_menu_item
         )
@@ -102,6 +107,11 @@ class ConfigFrame(Frame):
             self.menu_bar.toggle_display,
             self.menu_bar.man_values_menu_item
         )
+
+    def modi_launcher(self, event=None):  # pylint: disable=unused-argument
+        """Launches a modi selection dialog"""
+        print(event)
+        print(self)
 
     def update_config_entry(self, key_name, entry):
         """Updates the value for a single entry"""
