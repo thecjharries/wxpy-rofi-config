@@ -251,8 +251,11 @@ class Rofi(object):
         with open(path, 'w') as rasi_file:
             rasi_file.write(self.to_rasi())
 
-    def save(self, path=None):
+    def save(self, path=None, backup_path=None, backup=True):
         """Saves the config file"""
+        if backup:
+            self.backup(path, backup_path)
+        self.write_config(path)
 
     @staticmethod
     def create_default_path():
