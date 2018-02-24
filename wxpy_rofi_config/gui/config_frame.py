@@ -14,10 +14,14 @@ from wx import (
     FindWindowByName,
     Frame,
     HORIZONTAL,
+    ICON_QUESTION,
     ID_ANY,
+    ID_YES,
+    MessageDialog,
     NB_LEFT,
     Notebook,
     Panel,
+    YES_NO,
 )
 from wx.lib.pubsub import pub
 
@@ -91,6 +95,11 @@ class ConfigFrame(Frame):
 
     def bind_events(self):
         """Binds events on ConfigFrame"""
+        self.Bind(
+            EVT_MENU,
+            self.force_refresh_config,
+            self.menu_bar.refresh_menu_item
+        )
         self.Bind(
             EVT_MENU,
             self.restore,
@@ -195,3 +204,30 @@ class ConfigFrame(Frame):
                 for key in self.dirty_values
                 if control_name != key
             ]
+        self.menu_bar.refresh_menu_item.Enable(
+            len(self.dirty_values) > 0
+            or
+            self.config.probably_modified()
+        )
+
+    @staticmethod
+    def ignore_dirty_state(prompt=None):
+        """Checks if dirty state can be abandoned"""
+        with MessageDialog(
+            None,
+            "%sContinue?" % prompt,
+            'Confirm overwrite',
+            YES_NO | ICON_QUESTION
+        ) as dialog:
+            if ID_YES == dialog.ShowModal():
+                return True
+        return False
+
+    def force_refresh_config(self, event=None):  # pylint: disable=unused-argument
+        """Forces a config refresh"""
+        if self.dirty_values:
+            if self.ignore_dirty_state('You have unsaved changes. '):
+                self.refresh_config()
+        elif self.config.probably_modified():
+            if self.ignore_dirty_state('File has changed on disk. '):
+                self.refresh_config()

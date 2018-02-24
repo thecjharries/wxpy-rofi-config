@@ -4,7 +4,7 @@
 
 from collections import OrderedDict
 from filecmp import cmp as file_cmp
-from os import environ
+from os import environ, stat as file_stat
 from os.path import exists, expanduser, join
 from re import (
     compile as re_compile,
@@ -89,6 +89,7 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         self.config = OrderedDict()
         self.groups = []
         self.active_file = None
+        self.last_mtime = None
         self.active_backup = None
         self.available_modi = []
 
@@ -144,6 +145,7 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
                 self.groups.append(entry.group)
         if not self.active_file:
             self.active_file = self.create_default_path()
+        self.update_mtime()
 
     def clean_entry_man(self, contents):
         """Cleans a single man entry"""
@@ -282,6 +284,7 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
             copyfile(destination, source)
         else:
             copyfile(source, destination)
+        self.update_mtime()
 
     def write_config(self, path=None):
         """Writes the config to a file"""
@@ -289,6 +292,7 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
             path = self.active_file
         with open(path, 'w') as rasi_file:
             rasi_file.write(self.to_rasi())
+        self.update_mtime()
 
     def save(self, path=None, backup_path=None, backup=True):
         """Saves the config file"""
@@ -310,6 +314,18 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         if not exists(backup):
             return False
         return not file_cmp(active, backup)
+
+    def get_mtime(self):
+        """Polls the last modification time on the active config file"""
+        return file_stat(self.active_file)[8]
+
+    def update_mtime(self):
+        """Updates the stored mtime"""
+        self.last_mtime = self.get_mtime()
+
+    def probably_modified(self):
+        """Checks modification time as a metric for file changes"""
+        return self.last_mtime != self.get_mtime()
 
     @staticmethod
     def create_default_path():
