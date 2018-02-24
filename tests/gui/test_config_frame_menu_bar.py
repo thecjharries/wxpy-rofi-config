@@ -26,7 +26,7 @@ class ConfigFrameMenuBarTestCase(TestCase):
         self.mock_menu = menu_patcher.start()
         self.addCleanup(menu_patcher.stop)
         menu_bar_patcher = patch(
-            'wxpy_rofi_config.gui.config_frame_menu_bar.MenuBar')
+            'wxpy_rofi_config.gui.config_frame_menu_bar.MenuBar.__init__')
         self.mock_menu_bar = menu_bar_patcher.start()
         self.addCleanup(menu_bar_patcher.stop)
         new_id_patcher = patch(
@@ -45,3 +45,10 @@ class ConfigFrameMenuBarTestCase(TestCase):
         self.mock_construct_gui = construct_gui_patcher.start()
         self.menu_bar = ConfigFrameMenuBar()
         construct_gui_patcher.stop()
+
+
+class ConstructorUnitTests(ConfigFrameMenuBarTestCase):
+
+    def test_construction(self):
+        self.mock_menu_bar.assert_called_once()
+        self.mock_construct_gui.assert_called_once_with()
