@@ -2,8 +2,9 @@
 
 # pylint:disable=missing-docstring
 
-from .fitted_static_text import FittedStaticText
-from .settings_panel import SettingsPanel
-from .settings_notebook import SettingsNotebook
+from .hidable_auto_wrap_static_test import HidableAutoWrapStaticText
+from .config_page import ConfigPage
+from .config_frame_menu_bar import ConfigFrameMenuBar
+from .config_frame_status_bar import ConfigFrameStatusBar
 from .config_frame import ConfigFrame
 from .config_app import ConfigApp

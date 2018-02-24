@@ -1,27 +1,33 @@
 # coding=utf8
 
-"""This file provides the ConfigApp class and cli access"""
+"""This file provides ConfigApp"""
 
-from wx import (
-    App
-)
+# pylint: disable=too-many-ancestors
+
+from wx import App
+from wx.lib.mixins.inspection import InspectionMixin
 
 from wxpy_rofi_config.gui import ConfigFrame
 
 
-class ConfigApp(App):
-    """ConfigApp provides the main GUI"""
+class ConfigApp(App, InspectionMixin):
+    """This class runs the main application"""
 
-    def __init__(self):
-        App.__init__(self)
-        frame = ConfigFrame()
-        frame.Show()
+    DEFAULT_TITLE = "rofi Configuration"
 
+    frame = None
 
-def cli():
-    """Checks if the module has been loaded via the CLI"""
-    if '__main__' == __name__:
-        app = ConfigApp()
-        app.MainLoop()
+    def OnInit(self):  # pylint:disable=invalid-name
+        """
+        The OnInit is used instead of __init__ to properly handle the wxPython
+        boot and InspectionMixin
+        """
+        self.Init()  # initialize the inspection tool
+        self.construct_gui()
+        return True
 
-cli()
+    def construct_gui(self):
+        """Constructs the primary GUI"""
+        self.frame = ConfigFrame(None, title=self.DEFAULT_TITLE)
+        self.frame.Show()
+        self.SetTopWindow(self.frame)
