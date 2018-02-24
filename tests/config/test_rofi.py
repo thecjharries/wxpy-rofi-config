@@ -250,6 +250,30 @@ q
         mock_parse.assert_not_called()
 
 
+class ParseHelpModiUnitTests(RofiTestCase):
+    INPUT = """
+        * +window
+"""
+    RESULT = ['window']
+
+    def test_parse(self):
+        if hasattr(self, 'assertCountEqual'):
+            assertion_to_make = 'assertCountEqual'
+        elif hasattr(self, 'assertItemsEqual'):
+            assertion_to_make = 'assertItemsEqual'
+        else:
+            assert 0
+        getattr(self, assertion_to_make)(
+            [],
+            self.rofi.available_modi
+        )
+        self.rofi.parse_help_modi(self.INPUT)
+        getattr(self, assertion_to_make)(
+            self.RESULT,
+            self.rofi.available_modi
+        )
+
+
 class ParseHelpActiveFileUnitTests(RofiTestCase):
     INPUT = """
       Configuration file: /path/to/rofi/config.rasi
