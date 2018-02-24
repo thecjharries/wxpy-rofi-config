@@ -428,6 +428,14 @@ class BackupUnitTests(RofiTestCase):
             self.mock_copyfile.reset_mock()
 
 
+@patch('wxpy_rofi_config.config.rofi.open', return_value=MagicMock())
+@patch.object(Rofi, 'to_rasi')
+def test_save(mock_rasi, mock_open):
+    rofi = Rofi()
+    rofi.write_config()
+    mock_rasi.assert_called_once_with()
+
+
 @patch('wxpy_rofi_config.config.rofi.join')
 @patch('wxpy_rofi_config.config.rofi.expanduser')
 @patch(
