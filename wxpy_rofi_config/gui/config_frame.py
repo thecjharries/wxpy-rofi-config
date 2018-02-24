@@ -82,6 +82,7 @@ class ConfigFrame(Frame):
         self.status_bar = ConfigFrameStatusBar(self)
         self.SetStatusBar(self.status_bar)
         self.construct_notebook()
+        self.toggle_restoration()
 
     def bind_events(self):
         """Binds events on ConfigFrame"""
@@ -141,6 +142,7 @@ class ConfigFrame(Frame):
         self.update_config()
         self.config.save(backup=self.menu_bar.backup_on_menu_item.IsChecked())
         pub.sendMessage('status_update', data='Saved!')
+        self.toggle_restoration()
 
     def toggle_restoration(self, event=None):  # pylint: disable=unused-argument
         """Enables/disables the restore menu item"""
