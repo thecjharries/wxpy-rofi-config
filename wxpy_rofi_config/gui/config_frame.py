@@ -39,6 +39,11 @@ class ConfigFrame(Frame):
 
     BOUND_ACTIONS = 10
 
+    PROMPTS = {
+        'dirty_values': 'You have unsaved changes. ',
+        'probably_modified': 'File has been modified. '
+    }
+
     config = None
     dirty_values = []
     groups = None
@@ -226,8 +231,8 @@ class ConfigFrame(Frame):
     def force_refresh_config(self, event=None):  # pylint: disable=unused-argument
         """Forces a config refresh"""
         if self.dirty_values:
-            if self.ignore_dirty_state('You have unsaved changes. '):
+            if self.ignore_dirty_state(self.PROMPTS['dirty_values']):
                 self.refresh_config()
         elif self.config.probably_modified():
-            if self.ignore_dirty_state('File has changed on disk. '):
+            if self.ignore_dirty_state(self.PROMPTS['probably_modified']):
                 self.refresh_config()
