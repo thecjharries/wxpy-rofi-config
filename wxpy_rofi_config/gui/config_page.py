@@ -86,7 +86,7 @@ class ConfigPage(Panel):
         )
         self.grid_sizer.Add(current_value, -1, EXPAND)
 
-    def construct_entry_rows(self, entry, index=0):
+    def construct_entry_row(self, entry, index=0):
         """Constructs all the necessary rows for a single entry"""
         if index > 0:
             self.construct_horizontal_rule()
@@ -105,7 +105,7 @@ class ConfigPage(Panel):
         self.main_sizer = BoxSizer(HORIZONTAL)
         self.grid_sizer = FlexGridSizer(2, 10, 10)
         for index, entry in enumerate(self.config):
-            self.construct_entry_rows(entry, index)
+            self.construct_entry_row(entry, index)
         self.grid_sizer.AddGrowableCol(1, 1)
         scroll_sizer = BoxSizer(HORIZONTAL)
         scroll_sizer.Add(self.grid_sizer, 1, EXPAND | ALL, 10)
