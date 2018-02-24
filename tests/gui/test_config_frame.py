@@ -631,3 +631,16 @@ class PickOpenFileUnitTests(ConfigFrameTestCase):
     def test_no_modal(self, mock_file, mock_dir):
         self.frame.config = MagicMock()
         self.assertIsNone(self.frame.pick_open_file())
+
+
+class OpenUnitTests(ConfigFrameTestCase):
+
+    @patch.object(ConfigFrame, 'pick_open_file', return_value='qqq')
+    @patch.object(ConfigFrame, 'refresh_config')
+    def test_calls(self, mock_refresh, mock_pick):
+        self.frame.config = MagicMock()
+        mock_pick.assert_not_called()
+        mock_refresh.assert_not_called()
+        self.frame.open()
+        mock_pick.assert_called_once_with()
+        mock_refresh.assert_called_once_with(config_path='qqq')
