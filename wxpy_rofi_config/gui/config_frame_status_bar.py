@@ -7,7 +7,7 @@
 from wx import (
     StatusBar,
 )
-from wx.lib.pubsub import pub
+from wx.lib.pubsub.pub import subscribe
 
 
 class ConfigFrameStatusBar(StatusBar):
@@ -15,8 +15,8 @@ class ConfigFrameStatusBar(StatusBar):
 
     def __init__(self, parent):
         StatusBar.__init__(self, parent)
-        pub.subscribe(self.update, 'status_update')
-        pub.subscribe(self.clear, 'status_clear')
+        subscribe(self.update, 'status_update')
+        subscribe(self.clear, 'status_clear')
 
     def update(self, data):
         """Updates the status bar text"""

@@ -34,7 +34,8 @@ class ConfigFrameMenuBarTestCase(TestCase):
         self.mock_new_id = new_id_patcher.start()
         self.addCleanup(new_id_patcher.stop)
         pub_patcher = patch(
-            'wxpy_rofi_config.gui.config_frame_menu_bar.pub.sendMessage')
+            'wxpy_rofi_config.gui.config_frame_menu_bar.sendMessage'
+        )
         self.mock_pub = pub_patcher.start()
         self.addCleanup(pub_patcher.stop)
 

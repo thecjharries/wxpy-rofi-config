@@ -30,7 +30,7 @@ class ConfigFrameStatusBarTestCase(TestCase):
         self.mock_status_bar = status_bar_patcher.start()
         self.addCleanup(status_bar_patcher.stop)
         pub_patcher = patch(
-            'wxpy_rofi_config.gui.config_frame_menu_bar.pub.subscribe')
+            'wxpy_rofi_config.gui.config_frame_status_bar.subscribe')
         self.mock_pub = pub_patcher.start()
         self.addCleanup(pub_patcher.stop)
 

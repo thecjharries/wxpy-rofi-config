@@ -30,7 +30,7 @@ from wx import (
     Panel,
     YES_NO,
 )
-from wx.lib.pubsub import pub
+from wx.lib.pubsub.pub import sendMessage
 
 from wxpy_rofi_config.config import Rofi
 from wxpy_rofi_config.gui import (
@@ -180,7 +180,7 @@ class ConfigFrame(Frame):  # pylint: disable=too-many-public-methods
         """Saves the config file"""
         self.update_config()
         self.config.save(backup=self.menu_bar.backup_on_menu_item.IsChecked())
-        pub.sendMessage('status_update', data='Saved!')
+        sendMessage('status_update', data='Saved!')
         self.clean_edit_state()
         self.toggle_refresh()
         self.toggle_restoration()
