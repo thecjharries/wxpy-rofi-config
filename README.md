@@ -4,11 +4,13 @@
 
 **NOTE**: The builds use the latest GTK3 wheel and might not test everything.
 
-## Sample
+<!-- MarkdownTOC -->
 
-I'm using [vanilla Equilux](https://github.com/ddnexus/equilux-theme). It uses native bindings so it should theme like your OS.
+- [Overview](#overview)
+- [Sample](#sample)
+- [Links](#links)
 
-![Sample Screenshot](assets/sample.png)
+<!-- /MarkdownTOC -->
 
 ## Overview
 
@@ -24,6 +26,12 @@ At the moment, I'm able to
 * provide a tabbed interface with settings
 * include inline documentation
 * save a rudimentary config file in an easy location
+
+## Sample
+
+I'm using [vanilla Equilux](https://github.com/ddnexus/equilux-theme). It uses native bindings so it should theme like your OS.
+
+![Sample Screenshot](assets/sample.png)
 
 ## Links
 
