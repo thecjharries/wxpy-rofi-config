@@ -566,7 +566,13 @@ class UpdateMtimeUnitTests(RofiTestCase):
 
 
 class ProbablyModifiedUnitTests(RofiTestCase):
-    """"""
+    LAST = 2
+    CURRENT = 4
+
+    @patch.object(Rofi, 'get_mtime', return_value=CURRENT)
+    def test_call(self, mock_time):
+        self.rofi.last_mtime = self.LAST
+        self.assertTrue(self.rofi.probably_modified())
 
 
 @patch('wxpy_rofi_config.config.rofi.join')
