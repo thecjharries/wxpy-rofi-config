@@ -276,6 +276,7 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
             source = self.active_file
         if destination is None:
             destination = "%s.bak" % source
+        self.active_backup = destination
         if restore:
             copyfile(destination, source)
         else:
@@ -290,6 +291,7 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
 
     def save(self, path=None, backup_path=None, backup=True):
         """Saves the config file"""
+        self.active_backup = None
         if backup:
             self.backup(path, backup_path)
         self.write_config(path)
