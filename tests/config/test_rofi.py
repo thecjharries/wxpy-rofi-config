@@ -105,6 +105,36 @@ class LoadCurrentConfigUnitTests(RofiTestCase):
         mock_parse.assert_called_once_with(self.RESULT, 'current')
 
 
+class LoadArbitraryConfigUnitTests(RofiTestCase):
+    OUTPUT = '''
+ modi/* something */: qqq;
+// something
+ display-window: "stuff";
+'''
+    RESULT = r'''
+ modi: qqq;
+
+ display-window: "stuff";
+'''
+
+    @patch(
+        'wxpy_rofi_config.config.rofi.open',
+        return_value=MagicMock(
+            __enter__=MagicMock(
+                return_value=MagicMock(
+                    read=MagicMock(
+                        return_value=OUTPUT
+                    )
+                )
+            )
+        )
+    )
+    @patch.object(Rofi, 'parse_rasi')
+    def test_calls(self, mock_parse, mock_open):
+        self.rofi.load_arbitrary_config('qqq')
+        mock_parse.assert_called_once_with(self.RESULT, 'current')
+
+
 class ProcessConfigUnitTests(RofiTestCase):
     INPUT = {
         'one': MagicMock(group='one'),
