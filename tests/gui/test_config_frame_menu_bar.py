@@ -84,6 +84,17 @@ class ConstructDocsMenuUnitTests(ConfigFrameMenuBarTestCase):
         self.assertIsNotNone(self.menu_bar.man_values_menu_item)
 
 
+class ConstructPrefsMenuUnitTests(ConfigFrameMenuBarTestCase):
+
+    @patch.object(ConfigFrameMenuBar, 'Append')
+    def test_construction(self, mock_append):
+        mock_append.assert_not_called()
+        self.assertIsNone(self.menu_bar.backup_on_menu_item)
+        self.menu_bar.construct_prefs_menu()
+        mock_append.assert_called_once()
+        self.assertIsNotNone(self.menu_bar.backup_on_menu_item)
+
+
 class ConstructGuiUnitTests(ConfigFrameMenuBarTestCase):
 
     @patch.object(ConfigFrameMenuBar, 'construct_file_menu')
