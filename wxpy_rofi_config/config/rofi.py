@@ -212,6 +212,7 @@ class Rofi(object):
         possible_config = search(self.PATTERNS['HELP_BLOCK'], raw)
         if possible_config:
             self.parse_help_config(possible_config)
+        self.parse_help_active_file(raw)
 
     def build(self):
         """
