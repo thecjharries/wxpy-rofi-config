@@ -150,6 +150,7 @@ class ConfigFrame(Frame):
         self.update_config()
         self.config.save(backup=self.menu_bar.backup_on_menu_item.IsChecked())
         pub.sendMessage('status_update', data='Saved!')
+        self.clean_edit_state()
         self.toggle_restoration()
 
     def toggle_restoration(self, event=None):  # pylint: disable=unused-argument
