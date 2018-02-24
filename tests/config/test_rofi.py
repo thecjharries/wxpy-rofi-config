@@ -403,12 +403,29 @@ class ToRasiUnitTests(RofiTestCase):
         )
 
 
-@patch('wxpy_rofi_config.config.rofi.open', return_value=MagicMock())
-@patch.object(Rofi, 'to_rasi')
-def test_save(mock_rasi, mock_open):
-    rofi = Rofi()
-    rofi.save()
-    mock_rasi.assert_called_once_with()
+class BackupUnitTests(RofiTestCase):
+    ACTIVE_FILE = '/path/to/file'
+    ACTIVE_FILE_BAK = '/path/to/file.bak'
+    INPUT = [
+        [None, None],
+        ['qqq', None],
+        [None, 'zzz'],
+        ['qqq', 'zzz']
+    ]
+    RESULTS = [
+        [ACTIVE_FILE, ACTIVE_FILE_BAK],
+        ['qqq', 'qqq.bak'],
+        [ACTIVE_FILE, 'zzz'],
+        ['qqq', 'zzz']
+    ]
+
+    def test_results(self):
+        self.rofi.active_file = self.ACTIVE_FILE
+        for index in range(0, 4):
+            self.mock_copyfile.assert_not_called()
+            self.rofi.backup(*self.INPUT[index])
+            self.mock_copyfile.assert_called_once_with(*self.RESULTS[index])
+            self.mock_copyfile.reset_mock()
 
 
 @patch('wxpy_rofi_config.config.rofi.join')
