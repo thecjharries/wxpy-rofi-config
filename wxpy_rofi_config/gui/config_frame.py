@@ -168,4 +168,4 @@ class ConfigFrame(Frame):
             self.config.backup(restore=True)
             self.construct_config()
             self.update_controls()
-        self.toggle_restoration()
+            self.toggle_restoration()
