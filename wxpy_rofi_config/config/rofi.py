@@ -244,12 +244,15 @@ class Rofi(object):
             destination = "%s.bak" % source
         copyfile(source, destination)
 
-    def save(self, path=None):
-        """Saves the config file"""
+    def write_config(self, path=None):
+        """Writes the config to a file"""
         if path is None:
             path = self.active_file
         with open(path, 'w') as rasi_file:
             rasi_file.write(self.to_rasi())
+
+    def save(self, path=None):
+        """Saves the config file"""
 
     @staticmethod
     def create_default_path():
