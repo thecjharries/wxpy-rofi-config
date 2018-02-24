@@ -136,3 +136,12 @@ class ConfigFrame(Frame):
         self.update_config()
         self.config.save(backup=self.menu_bar.backup_on_menu_item.IsChecked())
         pub.sendMessage('status_update', data='Saved!')
+
+    @staticmethod
+    def update_entry_control(entry):
+        """Updates the control for a single config entry"""
+        widget = FindWindowByName(entry.key_name)
+        if hasattr(widget, 'SetValue'):
+            widget.SetValue(entry.current)
+        elif hasattr(widget, 'SetLabel'):
+            widget.SetLabel(entry.current)
