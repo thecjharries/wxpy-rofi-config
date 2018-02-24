@@ -368,7 +368,7 @@ class RefreshConfigUnitTests(ConfigFrameTestCase):
         self.mock_toggle_restoration.assert_not_called()
         self.mock_toggle_refresh.assert_not_called()
         self.frame.refresh_config()
-        self.mock_construct_config.assert_called_once_with()
+        self.mock_construct_config.assert_called_once_with(None)
         self.mock_construct_tabs.assert_called_once_with()
         self.mock_toggle_restoration.assert_called_once_with()
         self.mock_toggle_refresh.assert_called_once_with()
@@ -603,3 +603,44 @@ class SaveAsUnitTests(ConfigFrameTestCase):
         self.frame.save_as()
         mock_pick.assert_called_once_with()
         mock_save.assert_called_once_with()
+
+
+class PickOpenFileUnitTests(ConfigFrameTestCase):
+
+    PATH = 'qqq'
+
+    @patch('wxpy_rofi_config.gui.config_frame.dirname')
+    @patch('wxpy_rofi_config.gui.config_frame.FileDialog')
+    def test_yes_modal(self, mock_file, mock_dir):
+        self.frame.config = MagicMock()
+        mock_file.return_value = MagicMock(
+            __enter__=MagicMock(
+                return_value=MagicMock(
+                    ShowModal=MagicMock(return_value=ID_OK),
+                    GetPath=MagicMock(return_value=self.PATH)
+                )
+            )
+        )
+        self.assertEquals(
+            self.PATH,
+            self.frame.pick_open_file()
+        )
+
+    @patch('wxpy_rofi_config.gui.config_frame.dirname')
+    @patch('wxpy_rofi_config.gui.config_frame.FileDialog')
+    def test_no_modal(self, mock_file, mock_dir):
+        self.frame.config = MagicMock()
+        self.assertIsNone(self.frame.pick_open_file())
+
+
+class OpenUnitTests(ConfigFrameTestCase):
+
+    @patch.object(ConfigFrame, 'pick_open_file', return_value='qqq')
+    @patch.object(ConfigFrame, 'refresh_config')
+    def test_calls(self, mock_refresh, mock_pick):
+        self.frame.config = MagicMock()
+        mock_pick.assert_not_called()
+        mock_refresh.assert_not_called()
+        self.frame.open()
+        mock_pick.assert_called_once_with()
+        mock_refresh.assert_called_once_with(config_path='qqq')
