@@ -21,7 +21,6 @@ from wx import (
     StaticText,
     TextCtrl,
     TOP,
-    VERTICAL,
 )
 from wx.lib.scrolledpanel import ScrolledPanel
 
