@@ -93,7 +93,7 @@ class ConfigPage(Panel):
         if entry.help_value:
             self.construct_docs_label('help_value', entry.help_value)
         self.construct_entry_label(entry.key_name)
-        self.construct_entry_label(entry)
+        self.construct_entry_control(entry)
         if entry.man:
             self.construct_docs_label('man', entry.man)
 
