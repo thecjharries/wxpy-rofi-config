@@ -62,6 +62,7 @@ Once all of these are finished, I'll release `v1`. Until then, `v0` should be us
 |     90% | Fix sizing glitches (e.g. too much at top of scroll) |
 |     90% | Refresh config in place |
 |     90% | Launch available modi from app |
+|      0% | Provide status bar updates |
 
 ### Eventual features
 
@@ -77,3 +78,4 @@ These are things I'd like to add, but probably won't be included in `v1`. If not
 |      0% | Validate available `modi` |
 |      0% | Add `path` type and validate |
 |      0% | Reduce levels of data binding |
+|      0% | Break status bar into several sections |
