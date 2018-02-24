@@ -15,6 +15,7 @@ from re import (
     sub,
     VERBOSE
 )
+from shutil import copyfile
 from subprocess import check_output
 
 from wxpy_rofi_config.config import Entry
@@ -235,12 +236,26 @@ class Rofi(object):
         output += "}\n"
         return output
 
-    def save(self, path=None):
-        """Saves the config file"""
+    def backup(self, source=None, destination=None):
+        """Backs up the provided config file"""
+        if source is None:
+            source = self.active_file
+        if destination is None:
+            destination = "%s.bak" % source
+        copyfile(source, destination)
+
+    def write_config(self, path=None):
+        """Writes the config to a file"""
         if path is None:
             path = self.active_file
         with open(path, 'w') as rasi_file:
             rasi_file.write(self.to_rasi())
+
+    def save(self, path=None, backup_path=None, backup=True):
+        """Saves the config file"""
+        if backup:
+            self.backup(path, backup_path)
+        self.write_config(path)
 
     @staticmethod
     def create_default_path():
