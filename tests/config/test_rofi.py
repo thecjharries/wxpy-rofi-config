@@ -544,6 +544,22 @@ class CanRestoreUnitTests(RofiTestCase):
         self.assertFalse(self.rofi.can_restore())
 
 
+class GetMtimeUnitTests(RofiTestCase):
+
+    def test_call(self):
+        self.mock_stat.assert_not_called()
+        self.rofi.get_mtime()
+        self.mock_stat.assert_called_once_with(None)
+
+
+class UpdateMtimeUnitTests(RofiTestCase):
+    """"""
+
+
+class ProbablyModifiedUnitTests(RofiTestCase):
+    """"""
+
+
 @patch('wxpy_rofi_config.config.rofi.join')
 @patch('wxpy_rofi_config.config.rofi.expanduser')
 @patch(
