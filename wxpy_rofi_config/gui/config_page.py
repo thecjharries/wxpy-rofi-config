@@ -123,7 +123,7 @@ class ConfigPage(Panel):
             self.construct_entry_row(entry, index)
         self.grid_sizer.AddGrowableCol(0, 1)
         scroll_sizer = BoxSizer(HORIZONTAL)
-        scroll_sizer.Add(self.grid_sizer, 1, EXPAND | ALL, 10)
+        scroll_sizer.Add(self.grid_sizer, 1, EXPAND | ALL, 20)
         self.scrolled_panel.SetSizer(scroll_sizer)
         self.main_sizer.Add(self.scrolled_panel, 1, EXPAND)
         self.SetSizer(self.main_sizer)
