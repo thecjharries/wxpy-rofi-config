@@ -68,7 +68,7 @@ class ConfigFrameMenuBar(MenuBar):
             ITEM_CHECK
         )
         self.man_values_menu_item.Check(True)
-        self.Append(docs_menu, '&Docs')
+        return docs_menu
 
     def construct_prefs_menu(self):
         """Creates the preferences menu"""
@@ -80,13 +80,13 @@ class ConfigFrameMenuBar(MenuBar):
             ITEM_CHECK
         )
         self.backup_on_menu_item.Check(True)
+        prefs_menu.AppendSubMenu(self.construct_docs_menu(), '&Docs')
         self.Append(prefs_menu, '&Preferences')
 
     def construct_gui(self):
         """Construct the MenuBar GUI"""
         self.construct_file_menu()
         self.construct_rofi_menu()
-        self.construct_docs_menu()
         self.construct_prefs_menu()
 
     def toggle_display(self, event):
