@@ -469,18 +469,20 @@ class BackupUnitTests(RofiTestCase):
         [None, None],
         ['qqq', None],
         [None, 'zzz'],
-        ['qqq', 'zzz']
+        ['qqq', 'zzz'],
+        ['qqq', 'zzz', True]
     ]
     RESULTS = [
         [ACTIVE_FILE, ACTIVE_FILE_BAK],
         ['qqq', 'qqq.bak'],
         [ACTIVE_FILE, 'zzz'],
-        ['qqq', 'zzz']
+        ['qqq', 'zzz'],
+        ['zzz', 'qqq']
     ]
 
     def test_results(self):
         self.rofi.active_file = self.ACTIVE_FILE
-        for index in range(0, 4):
+        for index in range(0, len(self.INPUT)):
             self.mock_copyfile.assert_not_called()
             self.rofi.backup(*self.INPUT[index])
             self.mock_copyfile.assert_called_once_with(*self.RESULTS[index])
