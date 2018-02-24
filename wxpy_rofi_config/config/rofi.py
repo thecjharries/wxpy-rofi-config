@@ -201,6 +201,15 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
             if modi:
                 self.available_modi.append(modi)
 
+    def parse_help_modi_block(self, raw_help):
+        """Parses help for the modi block"""
+        possible_modi = search(
+            self.PATTERNS['HELP_AVAILABLE_MODI_BLOCK'],
+            raw_help
+        )
+        if possible_modi:
+            self.parse_help_modi(possible_modi.group('modi'))
+
     def parse_help_active_file(self, raw_help):
         """Parses help for the active config file"""
         possible_file = search(
