@@ -247,6 +247,21 @@ q
         mock_parse.assert_not_called()
 
 
+class ParseHelpActiveFileUnitTests(RofiTestCase):
+    INPUT = """
+      Configuration file: /path/to/rofi/config.rasi
+"""
+    RESULT = '/path/to/rofi/config.rasi'
+
+    def test_parse(self):
+        self.assertIsNone(self.rofi.active_file)
+        self.rofi.parse_help_active_file(self.INPUT)
+        self.assertEquals(
+            self.rofi.active_file,
+            self.RESULT
+        )
+
+
 class ParseHelpEntryUnitTests(RofiTestCase):
 
     def get(self, key):
