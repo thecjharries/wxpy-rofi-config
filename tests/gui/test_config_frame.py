@@ -368,3 +368,23 @@ class UpdateEntryControlUnitTests(ConfigFrameTestCase):
         )
         self.SET_VALUE.assert_not_called()
         self.SET_LABEL.assert_called_once_with(self.LABEL)
+
+
+class UpdateControlsUnitTests(ConfigFrameTestCase):
+    CONFIG = OrderedDict()
+    CONFIG['one'] = 'one entry'
+    CONFIG['two'] = 'two entry'
+    CONFIG['three'] = 'three entry'
+
+    CALLS = [
+        call('one entry'),
+        call('two entry'),
+        call('three entry'),
+    ]
+
+    @patch.object(ConfigFrame, 'update_entry_control')
+    def test_calls(self, mock_update):
+        self.frame.config = MagicMock(config=self.CONFIG)
+        mock_update.assert_not_called()
+        self.frame.update_controls()
+        mock_update.assert_has_calls(self.CALLS)
