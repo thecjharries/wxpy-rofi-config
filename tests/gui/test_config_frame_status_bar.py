@@ -59,3 +59,12 @@ class UpdateUnitTests(ConfigFrameStatusBarTestCase):
         mock_set.assert_not_called()
         self.status_bar.update(self.STATUS)
         mock_set.assert_called_once_with(self.STATUS, self.STATUS_ID)
+
+
+class ClearUnitTests(ConfigFrameStatusBarTestCase):
+
+    @patch.object(ConfigFrameStatusBar, 'SetStatusText')
+    def test_update(self, mock_set):
+        mock_set.assert_not_called()
+        self.status_bar.clear()
+        mock_set.assert_called_once_with('', self.STATUS_ID)
