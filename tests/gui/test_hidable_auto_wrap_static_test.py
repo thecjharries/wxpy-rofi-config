@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from unittest import TestCase
 
-from mock import patch
+from mock import MagicMock, patch
 
 from wxpy_rofi_config.gui import HidableAutoWrapStaticText
 
@@ -48,4 +48,28 @@ class ConstructorUnitTests(HidableAutoWrapStaticTextTestCase):
 
 
 class ToggleDisplayUnitTests(HidableAutoWrapStaticTextTestCase):
-    """"""
+
+    HIDE = MagicMock()
+    SHOW = MagicMock()
+
+    TESTS = [
+        [True, SHOW, HIDE],
+        [False, HIDE, SHOW]
+    ]
+
+    def setUp(self):
+        HidableAutoWrapStaticTextTestCase.setUp(self)
+        self.text.Show = self.SHOW
+        self.text.Hide = self.HIDE
+        self.text.GetParent = MagicMock()
+
+    def test_toggle(self):
+        for entry in self.TESTS:
+            print(entry)
+            self.SHOW.assert_not_called()
+            self.HIDE.assert_not_called()
+            self.text.toggle_display(entry[0])
+            entry[1].assert_called_once_with()
+            entry[2].assert_not_called()
+            self.SHOW.reset_mock()
+            self.HIDE.reset_mock()
