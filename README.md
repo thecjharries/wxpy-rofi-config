@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/thecjharries/wxpy-rofi-config.svg?branch=master)](https://travis-ci.org/thecjharries/wxpy-rofi-config) [![Coverage Status](https://coveralls.io/repos/github/thecjharries/wxpy-rofi-config/badge.svg)](https://coveralls.io/github/thecjharries/wxpy-rofi-config)
 
-**NOTE**: The builds use the latest GTK3 wheel and might not test everything.
+**NOTE**: The builds use the latest GTK3 wheel and might not test everything to wxPython. They will, however, test everything the app needs (I think).
 
 <!-- MarkdownTOC -->
 
