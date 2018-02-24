@@ -4,6 +4,7 @@
 
 # pylint: disable=too-many-ancestors
 
+from os.path import dirname
 from wx import (
     BoxSizer,
     EVT_CHECKBOX,
@@ -11,11 +12,15 @@ from wx import (
     EVT_SPINCTRL,
     EVT_TEXT,
     EXPAND,
+    FD_SAVE,
+    FD_OVERWRITE_PROMPT,
+    FileDialog,
     FindWindowByName,
     Frame,
     HORIZONTAL,
     ICON_QUESTION,
     ID_ANY,
+    ID_OK,
     ID_YES,
     MessageDialog,
     NB_LEFT,
@@ -242,3 +247,16 @@ class ConfigFrame(Frame):
         elif self.config.probably_modified():
             if self.ignore_dirty_state(self.PROMPTS['probably_modified']):
                 self.refresh_config()
+
+    def pick_save_file(self):
+        """Launches a dialog to pick the save location"""
+        with FileDialog(
+            None,
+            'Choose a file',
+            dirname(self.config.active_file),
+            wildcard='Rasi files (*.rasi)|*.rasi|All Files (*.*)|*.*',
+            style=FD_SAVE | FD_OVERWRITE_PROMPT
+        ) as dialog:
+            if ID_OK == dialog.ShowModal():
+                return dialog.GetPath()
+        return None
