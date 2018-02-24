@@ -6,12 +6,29 @@ from __future__ import print_function
 
 from unittest import TestCase
 
-from mock import MagicMock, patch
+from mock import call, MagicMock, patch
 
 from wxpy_rofi_config.gui import ConfigFrame
 
 
 class ConfigFrameTestCase(TestCase):
+
+    ONE = MagicMock(group='one')
+    TWO = MagicMock(group='two')
+    THREE = MagicMock(group='two')
+
+    CONFIG = {
+        'one': ONE,
+        'two': TWO,
+        'three': THREE
+    }
+
+    GROUPS = {
+        'one': [ONE],
+        'two': [THREE, TWO]
+    }
+
+    NOTEBOOK = MagicMock()
 
     def setUp(self):
         self.patch_wx()
@@ -67,21 +84,6 @@ class ConstructorUnitTests(ConfigFrameTestCase):
 
 class ConstructConfigUnitTests(ConfigFrameTestCase):
 
-    ONE = MagicMock(group='one')
-    TWO = MagicMock(group='two')
-    THREE = MagicMock(group='two')
-
-    CONFIG = {
-        'one': ONE,
-        'two': TWO,
-        'three': THREE
-    }
-
-    RESULT = {
-        'one': [ONE],
-        'two': [THREE, TWO]
-    }
-
     @patch('wxpy_rofi_config.gui.config_frame.Rofi')
     def test_construction(self, mock_rofi):
         mock_rofi.assert_not_called()
@@ -91,12 +93,28 @@ class ConstructConfigUnitTests(ConfigFrameTestCase):
     @patch(
         'wxpy_rofi_config.gui.config_frame.Rofi',
         return_value=MagicMock(
-            config=CONFIG
+            config=ConfigFrameTestCase.CONFIG
         )
     )
     def test_grouping(self, mock_rofi):
         self.frame.construct_config()
         self.assertDictEqual(
             self.frame.groups,
-            self.RESULT
+            self.GROUPS
         )
+
+
+class ConstructTabsUnitTests(ConfigFrameTestCase):
+
+    def setUp(self):
+        ConfigFrameTestCase.setUp(self)
+        self.frame.groups = self.GROUPS
+        self.frame.notebook = self.NOTEBOOK
+
+    @patch('wxpy_rofi_config.gui.config_frame.ConfigPage')
+    def test_page_construction(self, mock_page):
+        self.frame.construct_tabs()
+        mock_page.assert_has_calls([
+            call(self.NOTEBOOK, [self.THREE, self.TWO]),
+            call(self.NOTEBOOK, [self.ONE]),
+        ])
