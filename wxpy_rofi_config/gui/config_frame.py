@@ -180,6 +180,8 @@ class ConfigFrame(Frame):
 
     def dirty_edit_state(self, event=None):
         """Updates the dirty value list"""
+        if event is None:
+            return
         control_value = event.EventObject.GetValue()
         control_name = event.EventObject.GetName()
         config_value = self.config.config[control_name].current
