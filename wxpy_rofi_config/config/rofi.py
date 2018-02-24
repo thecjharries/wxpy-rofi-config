@@ -4,7 +4,7 @@
 
 from collections import OrderedDict
 from os import environ
-from os.path import expanduser, join
+from os.path import exists, expanduser, join
 from re import (
     compile as re_compile,
     DOTALL,
@@ -295,6 +295,20 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         if backup:
             self.backup(path, backup_path)
         self.write_config(path)
+
+    def can_restore(self):
+        """Checks if the config can be restored"""
+        active = self.active_file
+        if active is None:
+            active = Rofi.create_default_path()
+        if not exists(active):
+            return False
+        backup = self.active_backup
+        if backup is None:
+            backup = "%s.bak" % active
+        if not exists(backup):
+            return False
+        return True
 
     @staticmethod
     def create_default_path():
