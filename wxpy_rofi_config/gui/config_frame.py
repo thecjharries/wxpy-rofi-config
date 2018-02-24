@@ -212,3 +212,9 @@ class ConfigFrame(Frame):
             if ID_YES == dialog.ShowModal():
                 return True
         return False
+
+    def force_refresh_config(self, event=None):  # pylint: disable=unused-argument
+        """Forces a config refresh"""
+        if self.dirty_values:
+            if self.ignore_dirty_state():
+                self.refresh_config()
