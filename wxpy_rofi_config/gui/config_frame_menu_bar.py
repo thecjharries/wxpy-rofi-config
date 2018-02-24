@@ -6,6 +6,7 @@
 
 from wx import (
     ID_EXIT,
+    ID_SAVE,
     ITEM_CHECK,
     Menu,
     MenuBar,
@@ -19,6 +20,7 @@ class ConfigFrameMenuBar(MenuBar):
     exit_menu_item = None
     help_values_menu_item = None
     man_values_menu_item = None
+    save_menu_item = None
 
     def __init__(self):
         MenuBar.__init__(self)
@@ -27,6 +29,10 @@ class ConfigFrameMenuBar(MenuBar):
     def construct_file_menu(self):
         """Constructs the file menu"""
         file_menu = Menu()
+        self.save_menu_item = file_menu.Append(
+            ID_SAVE,
+            '&Save\tCtrl+s'
+        )
         self.exit_menu_item = file_menu.Append(
             ID_EXIT,
             'E&xit\tCtrl+w'
