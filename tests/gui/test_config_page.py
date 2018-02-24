@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name
 # pylint: disable=missing-docstring
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=unused-argument
@@ -106,3 +107,41 @@ class ConstructEntryControlUnitTests(ConfigPageTestCase):
         self.mock_textctrl.assert_not_called()
         self.page.construct_entry_control(MagicMock(current='qqq'))
         self.mock_textctrl.assert_called_once()
+
+
+class ConstructEntryRowUnitTests(ConfigPageTestCase):
+
+    def setUp(self):
+        ConfigPageTestCase.setUp(self)
+        construct_horizontal_rule_patcher = patch.object(
+            ConfigPage,
+            'construct_horizontal_rule'
+        )
+        self.mock_construct_horizontal_rule = construct_horizontal_rule_patcher.start()
+        self.addCleanup(construct_horizontal_rule_patcher.stop)
+        construct_docs_label_patcher = patch.object(
+            ConfigPage,
+            'construct_docs_label'
+        )
+        self.mock_construct_docs_label = construct_docs_label_patcher.start()
+        self.addCleanup(construct_docs_label_patcher.stop)
+        construct_entry_label_patcher = patch.object(
+            ConfigPage,
+            'construct_entry_label'
+        )
+        self.mock_construct_entry_label = construct_entry_label_patcher.start()
+        self.addCleanup(construct_entry_label_patcher.stop)
+        construct_entry_control_patcher = patch.object(
+            ConfigPage,
+            'construct_entry_control'
+        )
+        self.mock_construct_entry_control = construct_entry_control_patcher.start()
+        self.addCleanup(construct_entry_control_patcher.stop)
+        self.entry = MagicMock()
+
+    def test_hr_generation(self):
+        self.mock_construct_horizontal_rule.assert_not_called()
+        self.page.construct_entry_row(self.entry, 0)
+        self.mock_construct_horizontal_rule.assert_not_called()
+        self.page.construct_entry_row(self.entry, 1)
+        self.mock_construct_horizontal_rule.assert_called_once_with()
