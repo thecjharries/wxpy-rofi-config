@@ -4,7 +4,7 @@
 
 # pylint: disable=too-many-ancestors
 
-from wx.lib.pubsub import pub
+from wx.lib.pubsub.pub import subscribe
 from wx.lib.agw.infobar import AutoWrapStaticText
 
 
@@ -18,7 +18,7 @@ class HidableAutoWrapStaticText(AutoWrapStaticText):
 
     def __init__(self, parent=None, label="", kind=DEFAULT_KIND):
         AutoWrapStaticText.__init__(self, parent, label)
-        pub.subscribe(self.toggle_display, "toggle_display_%s" % kind)
+        subscribe(self.toggle_display, "toggle_display_%s" % kind)
 
     def toggle_display(self, data):
         """Shows or hides the control based on the published message"""

@@ -23,7 +23,7 @@ class HidableAutoWrapStaticTextTestCase(TestCase):
 
     def patch_wx(self):
         pub_patcher = patch(
-            'wxpy_rofi_config.gui.hidable_auto_wrap_static_test.pub.subscribe'
+            'wxpy_rofi_config.gui.hidable_auto_wrap_static_test.subscribe'
         )
         self.mock_pub = pub_patcher.start()
         self.addCleanup(pub_patcher.stop)
