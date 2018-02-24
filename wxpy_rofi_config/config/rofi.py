@@ -3,6 +3,7 @@
 """This file provides the Rofi class"""
 
 from collections import OrderedDict
+from os import environ
 from os.path import expanduser, join
 from re import (
     compile as re_compile,
@@ -21,8 +22,6 @@ from wxpy_rofi_config.config import Entry
 
 class Rofi(object):
     """Rofi holds all the config for rofi"""
-
-    DEFAULT_PATH = expanduser(join('~', '.config', 'rofi', 'config.rasi'))
 
     PATTERNS = {
         'RASI_ENTRY': re_compile(
@@ -69,12 +68,17 @@ class Rofi(object):
             \s+(?P<help_value>.*?)$         # The short help string
             """,
             MULTILINE | VERBOSE
+        ),
+        'HELP_ACTIVE_FILE': re_compile(
+            r"^.*?configuration\s+file:\s+(?P<file_path>.*?)$",
+            MULTILINE | IGNORECASE
         )
     }
 
     def __init__(self):
         self.config = OrderedDict()
         self.groups = []
+        self.active_file = None
 
     def assign_rasi_entry(self, key_value_match, destination='default'):
         """
@@ -126,6 +130,8 @@ class Rofi(object):
             entry.process_entry()
             if not entry.group in self.groups:
                 self.groups.append(entry.group)
+        if not self.active_file:
+            self.active_file = self.create_default_path()
 
     def clean_entry_man(self, contents):
         """Cleans a single man entry"""
@@ -175,6 +181,15 @@ class Rofi(object):
         if possible_config:
             self.parse_man_config(possible_config.group())
 
+    def parse_help_active_file(self, raw_help):
+        """Parses help for the active config file"""
+        possible_file = search(
+            self.PATTERNS['HELP_ACTIVE_FILE'],
+            raw_help
+        )
+        if possible_file:
+            self.active_file = possible_file.group('file_path')
+
     def parse_help_entry(self, help_entry_match):
         """Parses a single help entry"""
         key = help_entry_match.group('key')
@@ -199,6 +214,7 @@ class Rofi(object):
         possible_config = search(self.PATTERNS['HELP_BLOCK'], raw)
         if possible_config:
             self.parse_help_config(possible_config)
+        self.parse_help_active_file(raw)
 
     def build(self):
         """
@@ -222,6 +238,15 @@ class Rofi(object):
     def save(self, path=None):
         """Saves the config file"""
         if path is None:
-            path = self.DEFAULT_PATH
+            path = self.active_file
         with open(path, 'w') as rasi_file:
             rasi_file.write(self.to_rasi())
+
+    @staticmethod
+    def create_default_path():
+        """Creates the default save path"""
+        if 'XDG_USER_CONFIG_DIR' in environ:
+            lead = environ['XDG_USER_CONFIG_DIR']
+        else:
+            lead = join('~', '.config')
+        return expanduser(join(lead, 'rofi', 'config.rasi'))
