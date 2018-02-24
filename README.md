@@ -62,6 +62,7 @@ Once all of these are finished, I'll release `v1`. Until then, `v0` should be us
 |    100% | Refresh config in place |
 |     90% | Launch available modi from app |
 |      0% | Provide status bar updates |
+|    100% | Refactor `pubsub` with `pydispatch` to overcome [an old `pyinstaller` bug](https://github.com/pyinstaller/pyinstaller/issues/2215) |
 
 ### Eventual features
 
