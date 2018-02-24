@@ -17,6 +17,7 @@ from wx.lib.pubsub import pub
 
 class ConfigFrameMenuBar(MenuBar):
     """ConfigFrameMenuBar collects menu construction and actions"""
+    backup_on_menu_item = None
     exit_menu_item = None
     help_values_menu_item = None
     man_values_menu_item = None
@@ -58,10 +59,23 @@ class ConfigFrameMenuBar(MenuBar):
         self.man_values_menu_item.Check(True)
         self.Append(docs_menu, '&Docs')
 
+    def construct_prefs_menu(self):
+        """Creates the preferences menu"""
+        prefs_menu = Menu()
+        self.backup_on_menu_item = prefs_menu.Append(
+            NewId(),
+            'Backup pre save',
+            'Backs up the existing config before saving',
+            ITEM_CHECK
+        )
+        self.backup_on_menu_item.Check(True)
+        self.Append(prefs_menu, '&Preferences')
+
     def construct_gui(self):
         """Construct the MenuBar GUI"""
         self.construct_file_menu()
         self.construct_docs_menu()
+        self.construct_prefs_menu()
 
     def toggle_display(self, event):
         """Publishes show/hide messages via pub"""
