@@ -118,3 +118,14 @@ class ConstructTabsUnitTests(ConfigFrameTestCase):
             call(self.NOTEBOOK, [self.THREE, self.TWO]),
             call(self.NOTEBOOK, [self.ONE]),
         ])
+
+
+class ConstructNotebookUnitTests(ConfigFrameTestCase):
+
+    @patch.object(ConfigFrame, 'construct_tabs')
+    def test_construction(self, mock_tabs):
+        self.mock_notebook.assert_not_called()
+        mock_tabs.assert_not_called()
+        self.frame.construct_notebook()
+        self.mock_notebook.assert_called_once()
+        mock_tabs.assert_called_once()
