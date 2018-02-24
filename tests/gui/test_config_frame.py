@@ -254,3 +254,24 @@ class UpdateConfigEntryUnitTests(ConfigFrameTestCase):
             self.CURRENT,
             self.frame.config.config[self.KEY_NAME].current
         )
+
+
+class UpdateConfigUnitTests(ConfigFrameTestCase):
+    CONFIG = {
+        'one': 'one entry',
+        'two': 'two entry',
+        'three': 'three entry'
+    }
+
+    CALLS = [
+        call('three', 'three entry'),
+        call('two', 'two entry'),
+        call('one', 'one entry'),
+    ]
+
+    @patch.object(ConfigFrame, 'update_config_entry')
+    def test_calls(self, mock_update):
+        self.frame.config = MagicMock(config=self.CONFIG)
+        mock_update.assert_not_called()
+        self.frame.update_config()
+        mock_update.assert_has_calls(self.CALLS)
