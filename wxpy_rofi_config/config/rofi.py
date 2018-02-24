@@ -3,6 +3,7 @@
 """This file provides the Rofi class"""
 
 from collections import OrderedDict
+from filecmp import cmp as file_cmp
 from os import environ
 from os.path import exists, expanduser, join
 from re import (
@@ -308,7 +309,7 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
             backup = "%s.bak" % active
         if not exists(backup):
             return False
-        return True
+        return not file_cmp(active, backup)
 
     @staticmethod
     def create_default_path():
