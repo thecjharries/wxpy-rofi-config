@@ -20,6 +20,12 @@ class RofiTestCase(TestCase):
         del self.rofi
 
     def construct_rofi(self):
+        copyfile_patcher = patch('wxpy_rofi_config.config.rofi.copyfile')
+        self.mock_copyfile = copyfile_patcher.start()
+        self.addCleanup(copyfile_patcher.stop)
+        stat_patcher = patch('wxpy_rofi_config.config.rofi.file_stat')
+        self.mock_stat = stat_patcher.start()
+        self.addCleanup(stat_patcher.stop)
         self.rofi = Rofi()
 
 
@@ -247,6 +253,64 @@ q
         mock_parse.assert_not_called()
 
 
+class ParseHelpModiUnitTests(RofiTestCase):
+    INPUT = """
+        * +window
+"""
+    RESULT = ['window']
+
+    def test_parse(self):
+        if hasattr(self, 'assertCountEqual'):
+            assertion_to_make = 'assertCountEqual'
+        elif hasattr(self, 'assertItemsEqual'):
+            assertion_to_make = 'assertItemsEqual'
+        else:
+            assert 0
+        getattr(self, assertion_to_make)(
+            [],
+            self.rofi.available_modi
+        )
+        self.rofi.parse_help_modi(self.INPUT)
+        getattr(self, assertion_to_make)(
+            self.RESULT,
+            self.rofi.available_modi
+        )
+
+
+class ParseHelpModiBlockUnitTests(RofiTestCase):
+    WITH_MODI = '''
+Detected modi:
+
+Compile time options:
+'''
+    WITHOUT_MODI = ''
+
+    @patch.object(Rofi, 'parse_help_modi')
+    def test_with_config(self, mock_parse):
+        self.rofi.parse_help_modi_block(self.WITH_MODI)
+        mock_parse.assert_called_once()
+
+    @patch.object(Rofi, 'parse_help_modi')
+    def test_without_config(self, mock_parse):
+        self.rofi.parse_help_modi_block(self.WITHOUT_MODI)
+        mock_parse.assert_not_called()
+
+
+class ParseHelpActiveFileUnitTests(RofiTestCase):
+    INPUT = """
+      Configuration file: /path/to/rofi/config.rasi
+"""
+    RESULT = '/path/to/rofi/config.rasi'
+
+    def test_parse(self):
+        self.assertIsNone(self.rofi.active_file)
+        self.rofi.parse_help_active_file(self.INPUT)
+        self.assertEquals(
+            self.rofi.active_file,
+            self.RESULT
+        )
+
+
 class ParseHelpEntryUnitTests(RofiTestCase):
 
     def get(self, key):
@@ -311,30 +375,46 @@ class ParseHelpConfigUnitTests(RofiTestCase):
         )
 
 
-class LoadHelpUnitTests(RofiTestCase):
-
-    @patch(
-        'wxpy_rofi_config.config.rofi.check_output',
-        return_value='''
+class ParseHelpConfigBlockUnitTests(RofiTestCase):
+    WITH_CONFIG = '''
 Global Options:
     stuff
 
 Monitor
 '''
-    )
+    WITHOUT_CONFIG = ''
+
     @patch.object(Rofi, 'parse_help_config')
-    def test_with_config(self, mock_parse, mock_output):
-        self.rofi.load_help()
+    def test_with_config(self, mock_parse):
+        self.rofi.parse_help_config_block(self.WITH_CONFIG)
         mock_parse.assert_called_once()
+
+    @patch.object(Rofi, 'parse_help_config')
+    def test_without_config(self, mock_parse):
+        self.rofi.parse_help_config_block(self.WITHOUT_CONFIG)
+        mock_parse.assert_not_called()
+
+
+class LoadHelpUnitTests(RofiTestCase):
+    PARSED = 'qqq'
 
     @patch(
         'wxpy_rofi_config.config.rofi.check_output',
-        return_value=''
+        return_value=PARSED
     )
-    @patch.object(Rofi, 'parse_help_config')
-    def test_without_config(self, mock_parse, mock_output):
+    @patch.object(Rofi, 'parse_help_config_block')
+    @patch.object(Rofi, 'parse_help_active_file')
+    @patch.object(Rofi, 'parse_help_modi_block')
+    def test_calls(self, mock_modi, mock_file, mock_config, mock_sub):
+        mock_sub.assert_not_called()
+        mock_file.assert_not_called()
+        mock_config.assert_not_called()
+        mock_modi.assert_not_called()
         self.rofi.load_help()
-        mock_parse.assert_not_called()
+        mock_sub.assert_called_once()
+        mock_file.assert_called_once_with(self.PARSED)
+        mock_config.assert_called_once_with(self.PARSED)
+        mock_modi.assert_called_once_with(self.PARSED)
 
 
 class BuildUnitTests(RofiTestCase):
@@ -385,9 +465,140 @@ class ToRasiUnitTests(RofiTestCase):
         )
 
 
+class BackupUnitTests(RofiTestCase):
+    ACTIVE_FILE = '/path/to/file'
+    ACTIVE_FILE_BAK = '/path/to/file.bak'
+    INPUT = [
+        [None, None],
+        ['qqq', None],
+        [None, 'zzz'],
+        ['qqq', 'zzz'],
+        ['qqq', 'zzz', True]
+    ]
+    RESULTS = [
+        [ACTIVE_FILE, ACTIVE_FILE_BAK],
+        ['qqq', 'qqq.bak'],
+        [ACTIVE_FILE, 'zzz'],
+        ['qqq', 'zzz'],
+        ['zzz', 'qqq']
+    ]
+
+    def test_results(self):
+        self.rofi.active_file = self.ACTIVE_FILE
+        for index in range(0, len(self.INPUT)):
+            self.mock_copyfile.assert_not_called()
+            self.rofi.backup(*self.INPUT[index])
+            self.mock_copyfile.assert_called_once_with(*self.RESULTS[index])
+            self.mock_copyfile.reset_mock()
+
+
 @patch('wxpy_rofi_config.config.rofi.open', return_value=MagicMock())
 @patch.object(Rofi, 'to_rasi')
-def test_save(mock_rasi, mock_open):
+@patch.object(Rofi, 'update_mtime')
+def test_write_config(mock_time, mock_rasi, mock_open):
     rofi = Rofi()
-    rofi.save()
+    rofi.write_config()
     mock_rasi.assert_called_once_with()
+    mock_time.assert_called_once_with()
+
+
+class SaveUnitTests(RofiTestCase):
+
+    @patch.object(Rofi, 'backup')
+    @patch.object(Rofi, 'write_config')
+    def test_without_backup(self, mock_config, mock_backup):
+        mock_config.assert_not_called()
+        mock_backup.assert_not_called()
+        self.rofi.save(backup=False)
+        mock_config.assert_called_once_with(None)
+        mock_backup.assert_not_called()
+        self.assertIsNone(self.rofi.active_backup)
+
+    @patch.object(Rofi, 'backup')
+    @patch.object(Rofi, 'write_config')
+    def test_with_backup(self, mock_config, mock_backup):
+        mock_config.assert_not_called()
+        mock_backup.assert_not_called()
+        self.rofi.save()
+        mock_config.assert_called_once_with(None)
+        mock_backup.assert_called_once_with(None, None)
+        self.assertIsNone(self.rofi.active_backup)
+
+
+class CanRestoreUnitTests(RofiTestCase):
+
+    @patch('wxpy_rofi_config.config.rofi.exists', return_value=False)
+    def test_nonexistent_active(self, mock_exists):
+        self.assertFalse(self.rofi.can_restore())
+
+    @patch(
+        'wxpy_rofi_config.config.rofi.exists',
+        side_effect=lambda x: not x.endswith('bak')
+    )
+    def test_nonexistent_backup(self, mock_exists):
+        self.assertFalse(self.rofi.can_restore())
+
+    @patch('wxpy_rofi_config.config.rofi.exists', return_value=True)
+    @patch('wxpy_rofi_config.config.rofi.file_cmp', return_value=True)
+    def test_file_comparison(self, mock_cmp, mock_exists):
+        self.assertFalse(self.rofi.can_restore())
+
+
+class GetMtimeUnitTests(RofiTestCase):
+
+    def test_call(self):
+        self.mock_stat.assert_not_called()
+        self.rofi.get_mtime()
+        self.mock_stat.assert_called_once_with(None)
+
+
+class UpdateMtimeUnitTests(RofiTestCase):
+    TIME = 2
+
+    @patch.object(Rofi, 'get_mtime', return_value=TIME)
+    def test_call(self, mock_time):
+        self.assertIsNone(self.rofi.last_mtime)
+        self.rofi.update_mtime()
+        self.assertEquals(
+            self.TIME,
+            self.rofi.last_mtime,
+        )
+
+
+class ProbablyModifiedUnitTests(RofiTestCase):
+    LAST = 2
+    CURRENT = 4
+
+    @patch.object(Rofi, 'get_mtime', return_value=CURRENT)
+    def test_call(self, mock_time):
+        self.rofi.last_mtime = self.LAST
+        self.assertTrue(self.rofi.probably_modified())
+
+
+@patch('wxpy_rofi_config.config.rofi.join')
+@patch('wxpy_rofi_config.config.rofi.expanduser')
+@patch(
+    'wxpy_rofi_config.config.rofi.environ',
+    {},
+)
+def test_without_xdg(mock_expand, mock_join):
+    mock_expand.assert_not_called()
+    mock_join.assert_not_called()
+    Rofi.create_default_path()
+    mock_expand.assert_called_once()
+    assert mock_join.call_count == 2
+
+
+@patch('wxpy_rofi_config.config.rofi.join')
+@patch('wxpy_rofi_config.config.rofi.expanduser')
+@patch(
+    'wxpy_rofi_config.config.rofi.environ',
+    {'XDG_USER_CONFIG_DIR': 'cool'},
+)
+def test_with_xdg(mock_expand, mock_join):
+    mock_expand.assert_not_called()
+    mock_join.assert_not_called()
+    Rofi.create_default_path()
+    mock_expand.assert_called_once()
+    mock_join.assert_called_once()
+    # assert mock_join.call_count == 2

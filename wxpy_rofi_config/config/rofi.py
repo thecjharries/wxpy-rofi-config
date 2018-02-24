@@ -3,7 +3,9 @@
 """This file provides the Rofi class"""
 
 from collections import OrderedDict
-from os.path import expanduser, join
+from filecmp import cmp as file_cmp
+from os import environ, stat as file_stat
+from os.path import exists, expanduser, join
 from re import (
     compile as re_compile,
     DOTALL,
@@ -14,15 +16,14 @@ from re import (
     sub,
     VERBOSE
 )
+from shutil import copyfile
 from subprocess import check_output
 
 from wxpy_rofi_config.config import Entry
 
 
-class Rofi(object):
+class Rofi(object):  # pylint: disable=too-many-public-methods
     """Rofi holds all the config for rofi"""
-
-    DEFAULT_PATH = expanduser(join('~', '.config', 'rofi', 'config.rasi'))
 
     PATTERNS = {
         'RASI_ENTRY': re_compile(
@@ -69,12 +70,28 @@ class Rofi(object):
             \s+(?P<help_value>.*?)$         # The short help string
             """,
             MULTILINE | VERBOSE
+        ),
+        'HELP_ACTIVE_FILE': re_compile(
+            r"^.*?configuration\s+file:\s+(?P<file_path>.*?)$",
+            MULTILINE | IGNORECASE
+        ),
+        'HELP_AVAILABLE_MODI_BLOCK': re_compile(
+            r"(?:detected modi:)(?P<modi>.*?\n)\n",
+            DOTALL | IGNORECASE
+        ),
+        'HELP_MODI': re_compile(
+            r"^\s+\*\s+\+?(?P<modi>.*?)$",
+            MULTILINE | IGNORECASE
         )
     }
 
     def __init__(self):
         self.config = OrderedDict()
         self.groups = []
+        self.active_file = None
+        self.last_mtime = None
+        self.active_backup = None
+        self.available_modi = []
 
     def assign_rasi_entry(self, key_value_match, destination='default'):
         """
@@ -126,6 +143,9 @@ class Rofi(object):
             entry.process_entry()
             if not entry.group in self.groups:
                 self.groups.append(entry.group)
+        if not self.active_file:
+            self.active_file = self.create_default_path()
+        self.update_mtime()
 
     def clean_entry_man(self, contents):
         """Cleans a single man entry"""
@@ -175,6 +195,34 @@ class Rofi(object):
         if possible_config:
             self.parse_man_config(possible_config.group())
 
+    def parse_help_modi(self, modi_group):
+        """Parses out all available modi"""
+        for discovered_modi in finditer(
+                self.PATTERNS['HELP_MODI'],
+                modi_group
+        ):
+            modi = discovered_modi.group('modi')
+            if modi:
+                self.available_modi.append(modi)
+
+    def parse_help_modi_block(self, raw_help):
+        """Parses help for the modi block"""
+        possible_modi = search(
+            self.PATTERNS['HELP_AVAILABLE_MODI_BLOCK'],
+            raw_help
+        )
+        if possible_modi:
+            self.parse_help_modi(possible_modi.group('modi'))
+
+    def parse_help_active_file(self, raw_help):
+        """Parses help for the active config file"""
+        possible_file = search(
+            self.PATTERNS['HELP_ACTIVE_FILE'],
+            raw_help
+        )
+        if possible_file:
+            self.active_file = possible_file.group('file_path')
+
     def parse_help_entry(self, help_entry_match):
         """Parses a single help entry"""
         key = help_entry_match.group('key')
@@ -193,12 +241,18 @@ class Rofi(object):
         ):
             self.parse_help_entry(discovered_entry)
 
+    def parse_help_config_block(self, raw_help):
+        """Parses help for the config block"""
+        possible_config = search(self.PATTERNS['HELP_BLOCK'], raw_help)
+        if possible_config:
+            self.parse_help_config(possible_config)
+
     def load_help(self):
         """Loads rofi --help in an attempt to parse it"""
         raw = check_output(['rofi', '--help'])
-        possible_config = search(self.PATTERNS['HELP_BLOCK'], raw)
-        if possible_config:
-            self.parse_help_config(possible_config)
+        self.parse_help_config_block(raw)
+        self.parse_help_active_file(raw)
+        self.parse_help_modi_block(raw)
 
     def build(self):
         """
@@ -219,9 +273,65 @@ class Rofi(object):
         output += "}\n"
         return output
 
-    def save(self, path=None):
-        """Saves the config file"""
+    def backup(self, source=None, destination=None, restore=False):
+        """Backs up the provided config file"""
+        if source is None:
+            source = self.active_file
+        if destination is None:
+            destination = "%s.bak" % source
+        self.active_backup = destination
+        if restore:
+            copyfile(destination, source)
+        else:
+            copyfile(source, destination)
+        self.update_mtime()
+
+    def write_config(self, path=None):
+        """Writes the config to a file"""
         if path is None:
-            path = self.DEFAULT_PATH
+            path = self.active_file
         with open(path, 'w') as rasi_file:
             rasi_file.write(self.to_rasi())
+        self.update_mtime()
+
+    def save(self, path=None, backup_path=None, backup=True):
+        """Saves the config file"""
+        self.active_backup = None
+        if backup:
+            self.backup(path, backup_path)
+        self.write_config(path)
+
+    def can_restore(self):
+        """Checks if the config can be restored"""
+        active = self.active_file
+        if active is None:
+            active = Rofi.create_default_path()
+        if not exists(active):
+            return False
+        backup = self.active_backup
+        if backup is None:
+            backup = "%s.bak" % active
+        if not exists(backup):
+            return False
+        return not file_cmp(active, backup)
+
+    def get_mtime(self):
+        """Polls the last modification time on the active config file"""
+        return file_stat(self.active_file)[8]
+
+    def update_mtime(self):
+        """Updates the stored mtime"""
+        self.last_mtime = self.get_mtime()
+
+    def probably_modified(self):
+        """Checks modification time as a metric for file changes"""
+        return self.last_mtime != self.get_mtime()
+
+    @staticmethod
+    def create_default_path():
+        """Creates the default save path"""
+        if 'XDG_USER_CONFIG_DIR' in environ:
+            lead = environ['XDG_USER_CONFIG_DIR']
+        else:
+            lead = join('~', '.config')
+        return expanduser(join(lead, 'rofi', 'config.rasi'))
