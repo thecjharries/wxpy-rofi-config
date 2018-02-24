@@ -55,10 +55,10 @@ Once all of these are finished, I'll release `v1`. Until then, `v0` should be us
 |    100% | Save default `rofi` config |
 |    100% | Load arbitrary `rofi` config |
 |    100% | Save arbitrary `rofi` config |
-|     90% | Style UI |
+|     95% | Style UI |
 |    100% | Backup existing `rofi` config |
 |    100% | Only save changed values (i.e. not the original `rofi` default) |
-|     90% | Fix sizing glitches (e.g. too much at top of scroll) |
+|     99% | Fix sizing glitches (e.g. too much at top of scroll) |
 |    100% | Refresh config in place |
 |     90% | Launch available modi from app |
 |      0% | Provide status bar updates |
