@@ -9,6 +9,8 @@ from unittest import TestCase
 
 from mock import call, MagicMock, patch
 
+from wx import ID_YES  # pylint: disable=no-name-in-module
+
 from wxpy_rofi_config.gui import ConfigFrame
 
 
@@ -323,71 +325,53 @@ class SaveUnitTests(ConfigFrameTestCase):
             mock_update.reset_mock()
 
 
-class UpdateEntryControlUnitTests(ConfigFrameTestCase):
-    KEY_NAME = 'qqq'
-    PRE = 9
-    VALUE = 10
-    LABEL = 12
+class RefreshConfigUnitTests(ConfigFrameTestCase):
 
-    SET_VALUE = MagicMock()
-    SET_LABEL = MagicMock()
+    PAGES = [10, 0, 1, 2]
 
     def setUp(self):
+        pages = self.PAGES[0:]
         ConfigFrameTestCase.setUp(self)
-        self.SET_VALUE.reset_mock()
-        self.SET_LABEL.reset_mock()
-
-    def test_with_value(self):
-        self.mock_findwindow.return_value = MagicMock(
-            spec=['SetValue'],
-            SetValue=self.SET_VALUE
+        construct_config_patcher = patch.object(
+            ConfigFrame,
+            'construct_config'
         )
-        self.SET_VALUE.assert_not_called()
-        self.SET_LABEL.assert_not_called()
-        self.frame.update_entry_control(
-            MagicMock(
-                key_name=self.KEY_NAME,
-                current=self.VALUE
-            )
+        self.mock_construct_config = construct_config_patcher.start()
+        self.addCleanup(construct_config_patcher.stop)
+        construct_tabs_patcher = patch.object(
+            ConfigFrame,
+            'construct_tabs'
         )
-        self.SET_VALUE.assert_called_once_with(self.VALUE)
-        self.SET_LABEL.assert_not_called()
-
-    def test_with_label(self):
-        self.mock_findwindow.return_value = MagicMock(
-            spec=['SetLabel'],
-            SetLabel=self.SET_LABEL
+        self.mock_construct_tabs = construct_tabs_patcher.start()
+        self.addCleanup(construct_tabs_patcher.stop)
+        toggle_restoration_patcher = patch.object(
+            ConfigFrame,
+            'toggle_restoration'
         )
-        self.SET_VALUE.assert_not_called()
-        self.SET_LABEL.assert_not_called()
-        self.frame.update_entry_control(
-            MagicMock(
-                key_name=self.KEY_NAME,
-                current=self.LABEL
-            )
+        self.mock_toggle_restoration = toggle_restoration_patcher.start()
+        self.addCleanup(toggle_restoration_patcher.stop)
+        self.mock_delete = MagicMock()
+        self.frame.notebook = MagicMock(
+            DeletePage=self.mock_delete,
+            GetPageCount=pages.pop,
         )
-        self.SET_VALUE.assert_not_called()
-        self.SET_LABEL.assert_called_once_with(self.LABEL)
 
+    def test_single_calls(self):
+        self.mock_construct_config.assert_not_called()
+        self.mock_construct_tabs.assert_not_called()
+        self.mock_toggle_restoration.assert_not_called()
+        self.frame.refresh_config()
+        self.mock_construct_config.assert_called_once_with()
+        self.mock_construct_tabs.assert_called_once_with()
+        self.mock_toggle_restoration.assert_called_once_with()
 
-class UpdateControlsUnitTests(ConfigFrameTestCase):
-    CONFIG = OrderedDict()
-    CONFIG['one'] = 'one entry'
-    CONFIG['two'] = 'two entry'
-    CONFIG['three'] = 'three entry'
-
-    CALLS = [
-        call('one entry'),
-        call('two entry'),
-        call('three entry'),
-    ]
-
-    @patch.object(ConfigFrame, 'update_entry_control')
-    def test_calls(self, mock_update):
-        self.frame.config = MagicMock(config=self.CONFIG)
-        mock_update.assert_not_called()
-        self.frame.update_controls()
-        mock_update.assert_has_calls(self.CALLS)
+    def test_delete_loop(self):
+        self.mock_delete.assert_not_called()
+        self.frame.refresh_config()
+        self.mock_delete.assert_has_calls([
+            call(0),
+            call(0),
+        ])
 
 
 class RestoreUnitTests(ConfigFrameTestCase):
@@ -400,49 +384,173 @@ class RestoreUnitTests(ConfigFrameTestCase):
             can_restore=self.mock_can_restore,
             backup=self.mock_backup,
         )
-        construct_config_patcher = patch.object(
+        refresh_config_patcher = patch.object(
             ConfigFrame,
-            'construct_config'
+            'refresh_config'
         )
-        self.mock_construct_config = construct_config_patcher.start()
-        self.addCleanup(construct_config_patcher.stop)
-        update_controls_patcher = patch.object(
-            ConfigFrame,
-            'update_controls'
-        )
-        self.mock_update_controls = update_controls_patcher.start()
-        self.addCleanup(update_controls_patcher.stop)
-        toggle_restoration_patcher = patch.object(
-            ConfigFrame,
-            'toggle_restoration'
-        )
-        self.mock_toggle_restoration = toggle_restoration_patcher.start()
-        self.addCleanup(toggle_restoration_patcher.stop)
+        self.mock_refresh_config = refresh_config_patcher.start()
+        self.addCleanup(refresh_config_patcher.stop)
 
     def test_without_restoration(self):
         self.mock_can_restore.return_value = False
         self.mock_can_restore.assert_not_called()
         self.mock_backup.assert_not_called()
-        self.mock_construct_config.assert_not_called()
-        self.mock_update_controls.assert_not_called()
-        self.mock_toggle_restoration.assert_not_called()
+        self.mock_refresh_config.assert_not_called()
         self.frame.restore()
         self.mock_can_restore.assert_called_once_with()
         self.mock_backup.assert_not_called()
-        self.mock_construct_config.assert_not_called()
-        self.mock_update_controls.assert_not_called()
-        self.mock_toggle_restoration.assert_not_called()
+        self.mock_refresh_config.assert_not_called()
 
     def test_with_restoration(self):
         self.mock_can_restore.return_value = True
         self.mock_can_restore.assert_not_called()
         self.mock_backup.assert_not_called()
-        self.mock_construct_config.assert_not_called()
-        self.mock_update_controls.assert_not_called()
-        self.mock_toggle_restoration.assert_not_called()
+        self.mock_refresh_config.assert_not_called()
         self.frame.restore()
         self.mock_can_restore.assert_called_once_with()
         self.mock_backup.assert_called_once_with(restore=True)
-        self.mock_construct_config.assert_called_once_with()
-        self.mock_update_controls.assert_called_once_with()
-        self.mock_toggle_restoration.assert_called_once_with()
+        self.mock_refresh_config.assert_called_once_with()
+
+
+class CleanEditStateUnitTests(ConfigFrameTestCase):
+    DIRTY = ['one']
+
+    def test_wipe(self):
+        self.frame.dirty_values = self.DIRTY
+        self.assertListEqual(
+            self.DIRTY,
+            self.frame.dirty_values
+        )
+        self.frame.clean_edit_state()
+        self.assertListEqual(
+            [],
+            self.frame.dirty_values
+        )
+
+
+class DirtyEditState(ConfigFrameTestCase):
+
+    KEY_NAME = 'location'
+    DIRTY_VALUE = 13
+    CLEAN_VALUE = 19
+
+    DIRTY_EVENT = MagicMock(
+        EventObject=MagicMock(
+            GetName=MagicMock(
+                return_value=KEY_NAME
+            ),
+            GetValue=MagicMock(
+                return_value=DIRTY_VALUE
+            )
+        ),
+    )
+
+    CLEAN_EVENT = MagicMock(
+        EventObject=MagicMock(
+            GetName=MagicMock(
+                return_value=KEY_NAME
+            ),
+            GetValue=MagicMock(
+                return_value=CLEAN_VALUE
+            )
+        ),
+    )
+
+    CONFIG = {
+        KEY_NAME: MagicMock(current=CLEAN_VALUE)
+    }
+
+    def setUp(self):
+        ConfigFrameTestCase.setUp(self)
+        self.frame.config = MagicMock(config=self.CONFIG)
+        self.frame.dirty_values = []
+        self.frame.menu_bar = MagicMock()
+
+    def test_without_event(self):
+        self.frame.dirty_edit_state()
+        self.assertListEqual(
+            [],
+            self.frame.dirty_values
+        )
+
+    def test_dirty_event(self):
+        self.assertListEqual(
+            [],
+            self.frame.dirty_values
+        )
+        self.frame.dirty_edit_state(self.DIRTY_EVENT)
+        self.assertListEqual(
+            [self.KEY_NAME],
+            self.frame.dirty_values
+        )
+
+    def test_clean_event(self):
+        self.frame.dirty_values = [self.KEY_NAME]
+        self.assertListEqual(
+            [self.KEY_NAME],
+            self.frame.dirty_values
+        )
+        self.frame.dirty_edit_state(self.CLEAN_EVENT)
+        self.assertListEqual(
+            [],
+            self.frame.dirty_values
+        )
+
+
+class IgnoreDirtyStateUnitTests(ConfigFrameTestCase):
+
+    @patch('wxpy_rofi_config.gui.config_frame.MessageDialog')
+    def test_yes_modal(self, mock_message):
+        mock_message.return_value = MagicMock(
+            __enter__=MagicMock(
+                return_value=MagicMock(
+                    ShowModal=MagicMock(return_value=ID_YES),
+                )
+            )
+        )
+        self.assertTrue(self.frame.ignore_dirty_state())
+
+    @patch('wxpy_rofi_config.gui.config_frame.MessageDialog')
+    def test_no_modal(self, mock_message):
+        self.assertFalse(self.frame.ignore_dirty_state())
+
+
+class ForceRefreshConfigUnitTests(ConfigFrameTestCase):
+
+    def setUp(self):
+        ConfigFrameTestCase.setUp(self)
+        refresh_config_patcher = patch.object(
+            ConfigFrame,
+            'refresh_config'
+        )
+        self.mock_refresh_config = refresh_config_patcher.start()
+        self.addCleanup(refresh_config_patcher.stop)
+        ignore_dirty_state_patcher = patch.object(
+            ConfigFrame,
+            'ignore_dirty_state'
+        )
+        self.mock_ignore_dirty_state = ignore_dirty_state_patcher.start()
+        self.addCleanup(ignore_dirty_state_patcher.stop)
+        self.frame.dirty_values = []
+        self.mock_modified = MagicMock()
+        self.frame.config = MagicMock(probably_modified=self.mock_modified)
+
+    def test_dirty_values(self):
+        self.frame.dirty_values = ['one']
+        self.mock_ignore_dirty_state.assert_not_called()
+        self.mock_refresh_config.assert_not_called()
+        self.frame.force_refresh_config()
+        self.mock_ignore_dirty_state.assert_called_once_with(
+            ConfigFrame.PROMPTS['dirty_values']
+        )
+        self.mock_refresh_config.assert_called_once_with()
+
+    def test_probably_modified(self):
+        self.mock_modified.return_value = True
+        self.mock_ignore_dirty_state.assert_not_called()
+        self.mock_refresh_config.assert_not_called()
+        self.frame.force_refresh_config()
+        self.mock_ignore_dirty_state.assert_called_once_with(
+            ConfigFrame.PROMPTS['probably_modified']
+        )
+        self.mock_refresh_config.assert_called_once_with()
