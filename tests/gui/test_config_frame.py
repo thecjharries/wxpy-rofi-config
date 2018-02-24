@@ -350,6 +350,12 @@ class RefreshConfigUnitTests(ConfigFrameTestCase):
         )
         self.mock_toggle_restoration = toggle_restoration_patcher.start()
         self.addCleanup(toggle_restoration_patcher.stop)
+        toggle_refresh_patcher = patch.object(
+            ConfigFrame,
+            'toggle_refresh'
+        )
+        self.mock_toggle_refresh = toggle_refresh_patcher.start()
+        self.addCleanup(toggle_refresh_patcher.stop)
         self.mock_delete = MagicMock()
         self.frame.notebook = MagicMock(
             DeletePage=self.mock_delete,
@@ -360,10 +366,12 @@ class RefreshConfigUnitTests(ConfigFrameTestCase):
         self.mock_construct_config.assert_not_called()
         self.mock_construct_tabs.assert_not_called()
         self.mock_toggle_restoration.assert_not_called()
+        self.mock_toggle_refresh.assert_not_called()
         self.frame.refresh_config()
         self.mock_construct_config.assert_called_once_with()
         self.mock_construct_tabs.assert_called_once_with()
         self.mock_toggle_restoration.assert_called_once_with()
+        self.mock_toggle_refresh.assert_called_once_with()
 
     def test_delete_loop(self):
         self.mock_delete.assert_not_called()
