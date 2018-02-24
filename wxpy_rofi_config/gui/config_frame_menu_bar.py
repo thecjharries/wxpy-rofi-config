@@ -20,6 +20,7 @@ class ConfigFrameMenuBar(MenuBar):
     backup_on_menu_item = None
     exit_menu_item = None
     help_values_menu_item = None
+    launch_menu_item = None
     man_values_menu_item = None
     save_menu_item = None
 
@@ -84,6 +85,7 @@ class ConfigFrameMenuBar(MenuBar):
     def construct_gui(self):
         """Construct the MenuBar GUI"""
         self.construct_file_menu()
+        self.construct_rofi_menu()
         self.construct_docs_menu()
         self.construct_prefs_menu()
 
