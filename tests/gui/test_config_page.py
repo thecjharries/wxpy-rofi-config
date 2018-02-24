@@ -58,3 +58,10 @@ class ConfigPageTestCase(TestCase):
         self.mock_construct_gui = construct_gui_patcher.start()
         self.page = ConfigPage(None, None)
         construct_gui_patcher.stop()
+
+
+class ConstructorUnitTests(ConfigPageTestCase):
+
+    def test_calls(self):
+        self.mock_panel.assert_called_once()
+        self.mock_construct_gui.assert_called_once_with()
