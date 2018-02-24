@@ -33,9 +33,8 @@ class ConfigFrameMenuBar(MenuBar):
         )
         self.Append(file_menu, '&File')
 
-    def construct_gui(self):
-        """Construct the MenuBar GUI"""
-        self.construct_file_menu()
+    def construct_docs_menu(self):
+        """Constructs the docs menu"""
         docs_menu = Menu()
         self.help_values_menu_item = docs_menu.Append(
             NewId(),
@@ -52,6 +51,11 @@ class ConfigFrameMenuBar(MenuBar):
         )
         self.man_values_menu_item.Check(True)
         self.Append(docs_menu, '&Docs')
+
+    def construct_gui(self):
+        """Construct the MenuBar GUI"""
+        self.construct_file_menu()
+        self.construct_docs_menu()
 
     def toggle_display(self, event):
         """Publishes show/hide messages via pub"""
