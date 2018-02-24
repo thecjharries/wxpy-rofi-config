@@ -171,3 +171,12 @@ class ConstructEntryRowUnitTests(ConfigPageTestCase):
             'man',
             'qqq'
         )
+
+    def test_label_and_control_generation(self):
+        self.mock_construct_entry_label.assert_not_called()
+        self.mock_construct_entry_control.assert_not_called()
+        self.page.construct_entry_row(self.entry, 0)
+        self.mock_construct_entry_label.assert_called_once_with(
+            self.entry.key_name
+        )
+        self.mock_construct_entry_control.assert_called_once_with(self.entry)
