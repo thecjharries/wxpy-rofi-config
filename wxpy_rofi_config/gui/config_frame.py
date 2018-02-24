@@ -14,10 +14,14 @@ from wx import (
     FindWindowByName,
     Frame,
     HORIZONTAL,
+    ICON_QUESTION,
     ID_ANY,
+    ID_YES,
+    MessageDialog,
     NB_LEFT,
     Notebook,
     Panel,
+    YES_NO,
 )
 from wx.lib.pubsub import pub
 
@@ -195,3 +199,16 @@ class ConfigFrame(Frame):
                 for key in self.dirty_values
                 if control_name != key
             ]
+
+    @staticmethod
+    def ignore_dirty_state():
+        """Checks if dirty state can be abandoned"""
+        with MessageDialog(
+            None,
+            'You have unsaved changes. Continue?',
+            'Confirm overwrite',
+            YES_NO | ICON_QUESTION
+        ) as dialog:
+            if ID_YES == dialog.ShowModal():
+                return True
+        return False
