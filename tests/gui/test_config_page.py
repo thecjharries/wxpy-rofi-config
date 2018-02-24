@@ -160,3 +160,14 @@ class ConstructEntryRowUnitTests(ConfigPageTestCase):
             'help_value',
             'qqq'
         )
+
+    def test_man_generation(self):
+        self.mock_construct_docs_label.assert_not_called()
+        self.page.construct_entry_row(self.entry, 0)
+        self.mock_construct_docs_label.assert_not_called()
+        self.entry.man = 'qqq'
+        self.page.construct_entry_row(self.entry, 0)
+        self.mock_construct_docs_label.assert_called_once_with(
+            'man',
+            'qqq'
+        )
