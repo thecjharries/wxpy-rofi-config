@@ -162,8 +162,10 @@ class ConstructGuiUnitTests(ConfigFrameTestCase):
     )
     @patch.object(ConfigFrame, 'SetStatusBar')
     @patch.object(ConfigFrame, 'construct_notebook')
+    @patch.object(ConfigFrame, 'toggle_restoration')
     def test_construction(  # pylint: disable=too-many-arguments
             self,
+            mock_restoration,
             mock_notebook,
             mock_set_status,
             mock_status,
@@ -176,6 +178,7 @@ class ConstructGuiUnitTests(ConfigFrameTestCase):
         mock_holder.attach_mock(mock_status, 'ConfigFrameStatusBar')
         mock_holder.attach_mock(mock_set_status, 'SetStatusBar')
         mock_holder.attach_mock(mock_notebook, 'construct_notebook')
+        mock_holder.attach_mock(mock_restoration, 'toggle_restoration')
         mock_holder.assert_not_called()
         self.frame.construct_gui()
         print(mock_holder.mock_calls)
@@ -185,7 +188,8 @@ class ConstructGuiUnitTests(ConfigFrameTestCase):
                 call.SetMenuBar(self.MENU_BAR),
                 call.ConfigFrameStatusBar(self.frame),
                 call.SetStatusBar(self.STATUS_BAR),
-                call.construct_notebook()
+                call.construct_notebook(),
+                call.toggle_restoration()
             ],
             True
         )
