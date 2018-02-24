@@ -4,6 +4,7 @@
 
 from __future__ import print_function
 
+from collections import OrderedDict
 from unittest import TestCase
 
 from mock import call, MagicMock, patch
@@ -17,16 +18,23 @@ class ConfigFrameTestCase(TestCase):
     TWO = MagicMock(group='two')
     THREE = MagicMock(group='two')
 
-    CONFIG = {
-        'one': ONE,
-        'two': TWO,
-        'three': THREE
-    }
+    CONFIG = OrderedDict()
+    CONFIG['one'] = ONE
+    CONFIG['two'] = TWO
+    CONFIG['three'] = THREE
+    # {
+    #     'one': ONE,
+    #     'two': TWO,
+    #     'three': THREE
+    # }
 
-    GROUPS = {
-        'one': [ONE],
-        'two': [THREE, TWO]
-    }
+    GROUPS = OrderedDict()
+    GROUPS['one'] = [ONE]
+    GROUPS['two'] = [TWO, THREE]
+    # {
+    #     'one': [ONE],
+    #     'two': [TWO, THREE]
+    # }
 
     NOTEBOOK = MagicMock()
 
@@ -103,10 +111,12 @@ class ConstructConfigUnitTests(ConfigFrameTestCase):
     )
     def test_grouping(self, mock_rofi):
         self.frame.construct_config()
-        self.assertDictEqual(
-            self.frame.groups,
-            self.GROUPS
-        )
+        for group_key in self.GROUPS:
+            for index, value in enumerate(self.GROUPS[group_key]):
+                self.assertEqual(
+                    value,
+                    self.frame.groups[group_key][index]
+                )
 
 
 class ConstructTabsUnitTests(ConfigFrameTestCase):
