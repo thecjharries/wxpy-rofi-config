@@ -174,3 +174,17 @@ class ConstructGuiUnitTests(ConfigFrameTestCase):
             ],
             True
         )
+
+
+class BindEventsUnitTests(ConfigFrameTestCase):
+    MENU_BAR = MagicMock()
+
+    @patch.object(ConfigFrame, 'Bind')
+    def test_binds(self, mock_bind):
+        self.frame.menu_bar = self.MENU_BAR
+        mock_bind.assert_not_called()
+        self.frame.bind_events()
+        self.assertEqual(
+            3,
+            mock_bind.call_count
+        )
