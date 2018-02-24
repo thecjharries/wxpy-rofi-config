@@ -20,6 +20,9 @@ class RofiTestCase(TestCase):
         del self.rofi
 
     def construct_rofi(self):
+        copyfile_patcher = patch('wxpy_rofi_config.config.rofi.copyfile')
+        self.mock_copyfile = copyfile_patcher.start()
+        self.addCleanup(copyfile_patcher.stop)
         self.rofi = Rofi()
 
 
