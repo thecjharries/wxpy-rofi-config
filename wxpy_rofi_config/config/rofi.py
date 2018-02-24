@@ -69,6 +69,10 @@ class Rofi(object):
             \s+(?P<help_value>.*?)$         # The short help string
             """,
             MULTILINE | VERBOSE
+        ),
+        'HELP_ACTIVE_FILE': re_compile(
+            r"^.*?configuration\s+file:\s+(?P<file_path>.*?)$",
+            MULTILINE
         )
     }
 
