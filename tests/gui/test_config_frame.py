@@ -462,6 +462,7 @@ class DirtyEditState(ConfigFrameTestCase):
         ConfigFrameTestCase.setUp(self)
         self.frame.config = MagicMock(config=self.CONFIG)
         self.frame.dirty_values = []
+        self.frame.menu_bar = MagicMock()
 
     def test_without_event(self):
         self.frame.dirty_edit_state()
