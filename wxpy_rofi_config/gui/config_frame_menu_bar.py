@@ -14,7 +14,7 @@ from wx import (
     MenuBar,
     NewId,
 )
-from wx.lib.pubsub.pub import sendMessage
+from pydispatch.dispatcher import send
 
 
 class ConfigFrameMenuBar(MenuBar):  # pylint:disable=too-many-instance-attributes
@@ -122,7 +122,7 @@ class ConfigFrameMenuBar(MenuBar):  # pylint:disable=too-many-instance-attribute
         else:
             kind = None
         if kind:
-            sendMessage("toggle_display_%s" % kind, data=event.IsChecked())
+            send("toggle_display_%s" % kind, message=event.IsChecked())
 
     def exit(self, event=None):  # pylint: disable=unused-argument
         """Kills the app"""
