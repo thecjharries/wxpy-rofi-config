@@ -79,10 +79,8 @@ class ConstructRofiMenuUnitTests(ConfigFrameMenuBarTestCase):
 
 class ConstructDocsMenuUnitTests(ConfigFrameMenuBarTestCase):
 
-    @patch.object(ConfigFrameMenuBar, 'Append')
-    def test_construction(self, mock_append):
+    def test_construction(self):
         self.mock_new_id.assert_not_called()
-        mock_append.assert_not_called()
         self.assertIsNone(self.menu_bar.help_values_menu_item)
         self.assertIsNone(self.menu_bar.man_values_menu_item)
         self.menu_bar.construct_docs_menu()
@@ -90,19 +88,21 @@ class ConstructDocsMenuUnitTests(ConfigFrameMenuBarTestCase):
             2,
             self.mock_new_id.call_count
         )
-        mock_append.assert_called_once()
         self.assertIsNotNone(self.menu_bar.help_values_menu_item)
         self.assertIsNotNone(self.menu_bar.man_values_menu_item)
 
 
 class ConstructPrefsMenuUnitTests(ConfigFrameMenuBarTestCase):
 
+    @patch.object(ConfigFrameMenuBar, 'construct_docs_menu')
     @patch.object(ConfigFrameMenuBar, 'Append')
-    def test_construction(self, mock_append):
+    def test_construction(self, mock_append, mock_docs):
+        mock_docs.assert_not_called()
         mock_append.assert_not_called()
         self.assertIsNone(self.menu_bar.backup_on_menu_item)
         self.menu_bar.construct_prefs_menu()
         mock_append.assert_called_once()
+        mock_docs.assert_called_once_with()
         self.assertIsNotNone(self.menu_bar.backup_on_menu_item)
 
 
@@ -110,17 +110,14 @@ class ConstructGuiUnitTests(ConfigFrameMenuBarTestCase):
 
     @patch.object(ConfigFrameMenuBar, 'construct_file_menu')
     @patch.object(ConfigFrameMenuBar, 'construct_rofi_menu')
-    @patch.object(ConfigFrameMenuBar, 'construct_docs_menu')
     @patch.object(ConfigFrameMenuBar, 'construct_prefs_menu')
-    def test_calls(self, mock_prefs, mock_docs, mock_rofi, mock_file):
+    def test_calls(self, mock_prefs, mock_rofi, mock_file):
         mock_file.assert_not_called()
         mock_rofi.assert_not_called()
-        mock_docs.assert_not_called()
         mock_prefs.assert_not_called()
         self.menu_bar.construct_gui()
         mock_file.assert_called_once_with()
         mock_rofi.assert_called_once_with()
-        mock_docs.assert_called_once_with()
         mock_prefs.assert_called_once_with()
 
 
