@@ -392,6 +392,28 @@ Monitor
         mock_parse.assert_not_called()
 
 
+class LoadHelpUnitTests(RofiTestCase):
+    PARSED = 'qqq'
+
+    @patch(
+        'wxpy_rofi_config.config.rofi.check_output',
+        return_value=PARSED
+    )
+    @patch.object(Rofi, 'parse_help_config_block')
+    @patch.object(Rofi, 'parse_help_active_file')
+    @patch.object(Rofi, 'parse_help_modi_block')
+    def test_calls(self, mock_modi, mock_file, mock_config, mock_sub):
+        mock_sub.assert_not_called()
+        mock_file.assert_not_called()
+        mock_config.assert_not_called()
+        mock_modi.assert_not_called()
+        self.rofi.load_help()
+        mock_sub.assert_called_once()
+        mock_file.assert_called_once_with(self.PARSED)
+        mock_config.assert_called_once_with(self.PARSED)
+        mock_modi.assert_called_once_with(self.PARSED)
+
+
 class BuildUnitTests(RofiTestCase):
 
     @patch.object(Rofi, 'load_default_config')
