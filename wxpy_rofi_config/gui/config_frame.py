@@ -117,6 +117,11 @@ class ConfigFrame(Frame):
         )
         self.Bind(
             EVT_MENU,
+            self.save_as,
+            self.menu_bar.save_as_menu_item
+        )
+        self.Bind(
+            EVT_MENU,
             self.save,
             self.menu_bar.save_menu_item
         )
@@ -260,3 +265,10 @@ class ConfigFrame(Frame):
             if ID_OK == dialog.ShowModal():
                 return dialog.GetPath()
         return None
+
+    def save_as(self, event=None):  # pylint: disable=unused-argument
+        """Saves the config as an arbitrary file"""
+        new_location = self.pick_save_file()
+        if new_location:
+            self.config.active_file = new_location
+        self.save()
