@@ -37,10 +37,12 @@ class ConfigFrameMenuBar(MenuBar):  # pylint:disable=too-many-instance-attribute
             NewId(),
             '&Refresh Config\tCtrl+r'
         )
+        self.refresh_menu_item.Enable(False)
         self.restore_menu_item = file_menu.Append(
             NewId(),
             'Restore Backup Config'
         )
+        self.restore_menu_item.Enable(False)
         self.save_menu_item = file_menu.Append(
             ID_SAVE,
             '&Save\tCtrl+s'
