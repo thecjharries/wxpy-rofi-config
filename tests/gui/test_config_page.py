@@ -28,6 +28,11 @@ class ConfigPageTestCase(TestCase):
         )
         self.mock_boxsizer = boxsizer_patcher.start()
         self.addCleanup(boxsizer_patcher.stop)
+        checkbox_patcher = patch(
+            'wxpy_rofi_config.gui.config_page.CheckBox'
+        )
+        self.mock_checkbox = checkbox_patcher.start()
+        self.addCleanup(checkbox_patcher.stop)
         flexgridsizer_patcher = patch(
             'wxpy_rofi_config.gui.config_page.FlexGridSizer'
         )
@@ -43,6 +48,11 @@ class ConfigPageTestCase(TestCase):
         )
         self.mock_scrolledpanel = scrolledpanel_patcher.start()
         self.addCleanup(scrolledpanel_patcher.stop)
+        spinctrl_patcher = patch(
+            'wxpy_rofi_config.gui.config_page.SpinCtrl'
+        )
+        self.mock_spinctrl = spinctrl_patcher.start()
+        self.addCleanup(spinctrl_patcher.stop)
         staticline_patcher = patch(
             'wxpy_rofi_config.gui.config_page.StaticLine'
         )
