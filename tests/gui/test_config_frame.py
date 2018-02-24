@@ -42,6 +42,11 @@ class ConfigFrameTestCase(TestCase):
         boxsizer_patcher = patch('wxpy_rofi_config.gui.config_frame.BoxSizer')
         self.mock_boxsizer = boxsizer_patcher.start()
         self.addCleanup(boxsizer_patcher.stop)
+        findwindow_patcher = patch(
+            'wxpy_rofi_config.gui.config_frame.FindWindowByName'
+        )
+        self.mock_findwindow = findwindow_patcher.start()
+        self.addCleanup(findwindow_patcher.stop)
         frame_patcher = patch('wxpy_rofi_config.gui.config_frame.Frame')
         self.mock_frame = frame_patcher.start()
         self.addCleanup(frame_patcher.stop)
@@ -188,3 +193,6 @@ class BindEventsUnitTests(ConfigFrameTestCase):
             4,
             mock_bind.call_count
         )
+
+
+# class UpdateConfigEntryUnitTests(ConfigFrameTestCase):
