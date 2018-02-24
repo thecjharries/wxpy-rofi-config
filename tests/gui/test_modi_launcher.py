@@ -6,7 +6,9 @@ from __future__ import print_function
 
 from unittest import TestCase
 
-from mock import patch
+from mock import MagicMock, patch
+
+from wx import ID_OK  # pylint: disable=no-name-in-module
 
 from wxpy_rofi_config.gui import ModiLauncher
 
@@ -39,3 +41,22 @@ class ConstructorUnitTests(ModiLauncherTestCase):
 
     def test_calls(self):
         self.mock_runner.assert_called_once_with()
+
+
+class SelectModiUnitTests(ModiLauncherTestCase):
+    MODI = 'window'
+
+    def test_ok_modal(self):
+        self.mock_singlechoice.return_value = MagicMock(
+            __enter__=MagicMock(
+                return_value=MagicMock(
+                    ShowModal=MagicMock(return_value=ID_OK),
+                    GetStringSelection=MagicMock(return_value=self.MODI)
+                )
+            )
+        )
+        result = self.modi.select_modi()
+        self.assertEquals(result, self.MODI)
+
+    def test_cancelled_modal(self):
+        self.assertIsNone(self.modi.select_modi())
