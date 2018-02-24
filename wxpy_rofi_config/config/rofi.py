@@ -268,8 +268,9 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
     def to_rasi(self):
         """Returns a rasi string composed of all its entries"""
         output = "configuration {\n"
-        for key in self.config:
-            output += "    %s\n" % self.config[key].to_rasi()
+        for key, entry in self.config.items():
+            if entry.current != entry.default:
+                output += "    %s\n" % self.config[key].to_rasi()
         output += "}\n"
         return output
 
