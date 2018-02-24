@@ -154,3 +154,11 @@ class ConfigFrame(Frame):
         """Updates all the controls"""
         for _, entry in self.config.config.items():
             self.update_entry_control(entry)
+
+    def restore(self, event=None):  # pylint: disable=unused-argument
+        """Restores a previously backed up config"""
+        if self.config.can_restore():
+            self.config.backup(restore=True)
+            self.construct_config()
+            self.update_controls()
+        self.toggle_restoration()
