@@ -22,7 +22,8 @@ from wxpy_rofi_config.config import Rofi
 from wxpy_rofi_config.gui import (
     ConfigFrameMenuBar,
     ConfigFrameStatusBar,
-    ConfigPage
+    ConfigPage,
+    ModiLauncher
 )
 
 
@@ -112,8 +113,7 @@ class ConfigFrame(Frame):
 
     def modi_launcher(self, event=None):  # pylint: disable=unused-argument
         """Launches a modi selection dialog"""
-        print(event)
-        print(self)
+        ModiLauncher(self.config.available_modi)
 
     def update_config_entry(self, key_name, entry):
         """Updates the value for a single entry"""
