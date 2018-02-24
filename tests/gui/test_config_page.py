@@ -117,10 +117,8 @@ class ConstructDocsLabelUnitTests(ConfigPageTestCase):
 class ConstructEntryLabelUnitTests(ConfigPageTestCase):
 
     def test_calls(self):
-        self.mock_boxsizer.assert_not_called()
         self.mock_statictext.assert_not_called()
         self.page.construct_entry_label('qqq')
-        self.mock_boxsizer.assert_called_once()
         self.mock_statictext.assert_called_once()
 
 
