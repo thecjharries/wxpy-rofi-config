@@ -12,8 +12,10 @@ from wx import (
     EVT_SPINCTRL,
     EVT_TEXT,
     EXPAND,
-    FD_SAVE,
+    FD_FILE_MUST_EXIST,
+    FD_OPEN,
     FD_OVERWRITE_PROMPT,
+    FD_SAVE,
     FileDialog,
     FindWindowByName,
     Frame,
@@ -39,7 +41,7 @@ from wxpy_rofi_config.gui import (
 )
 
 
-class ConfigFrame(Frame):
+class ConfigFrame(Frame):  # pylint: disable=too-many-public-methods
     """ConfigFrame is used as the primary app context"""
 
     BOUND_ACTIONS = 11
@@ -67,10 +69,10 @@ class ConfigFrame(Frame):
         self.construct_gui()
         self.bind_events()
 
-    def construct_config(self):
+    def construct_config(self, config_path=None):
         """Constucts the Rofi config object and parses its groups"""
         self.config = Rofi()
-        self.config.build()
+        self.config.build(config_path)
         self.groups = {}
         for _, entry in self.config.config.items():
             if entry.group in self.groups:
@@ -182,10 +184,10 @@ class ConfigFrame(Frame):
         """Enables/disables the restore menu item"""
         self.menu_bar.restore_menu_item.Enable(self.config.can_restore())
 
-    def refresh_config(self, event=None):  # pylint: disable=unused-argument
+    def refresh_config(self, event=None, config_path=None):  # pylint: disable=unused-argument
         """Refreshes the config object and controls"""
         current_page = self.notebook.GetSelection()
-        self.construct_config()
+        self.construct_config(config_path)
         while self.notebook.GetPageCount() > 0:
             self.notebook.DeletePage(0)
         self.construct_tabs()
@@ -253,18 +255,22 @@ class ConfigFrame(Frame):
             if self.ignore_dirty_state(self.PROMPTS['probably_modified']):
                 self.refresh_config()
 
-    def pick_save_file(self):
-        """Launches a dialog to pick the save location"""
+    def file_dialog(self, style=None):
+        """Opens a dialog to find a file"""
         with FileDialog(
             None,
             'Choose a file',
             dirname(self.config.active_file),
             wildcard='Rasi files (*.rasi)|*.rasi|All Files (*.*)|*.*',
-            style=FD_SAVE | FD_OVERWRITE_PROMPT
+            style=style
         ) as dialog:
             if ID_OK == dialog.ShowModal():
                 return dialog.GetPath()
         return None
+
+    def pick_save_file(self):
+        """Launches a dialog to pick the save location"""
+        return self.file_dialog(FD_SAVE | FD_OVERWRITE_PROMPT)
 
     def save_as(self, event=None):  # pylint: disable=unused-argument
         """Saves the config as an arbitrary file"""
@@ -272,3 +278,13 @@ class ConfigFrame(Frame):
         if new_location:
             self.config.active_file = new_location
         self.save()
+
+    def pick_open_file(self):
+        """Launches a dialog to pick the open location"""
+        return self.file_dialog(FD_OPEN | FD_FILE_MUST_EXIST)
+
+    def open(self):
+        """Opens the chosen config for editing"""
+        new_location = self.pick_open_file()
+        if new_location:
+            self.refresh_config(config_path=new_location)
