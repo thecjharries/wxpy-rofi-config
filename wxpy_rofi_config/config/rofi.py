@@ -248,6 +248,7 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         raw = check_output(['rofi', '--help'])
         self.parse_help_config_block(raw)
         self.parse_help_active_file(raw)
+        self.parse_help_modi_block(raw)
 
     def build(self):
         """
