@@ -145,3 +145,8 @@ class ConfigFrame(Frame):
             widget.SetValue(entry.current)
         elif hasattr(widget, 'SetLabel'):
             widget.SetLabel(entry.current)
+
+    def update_controls(self):
+        """Updates all the controls"""
+        for _, entry in self.config.config.items():
+            self.update_entry_control(entry)
