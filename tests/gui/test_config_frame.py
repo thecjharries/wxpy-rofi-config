@@ -66,10 +66,20 @@ class ConstructorUnitTests(ConfigFrameTestCase):
 
 
 class ConstructConfigUnitTests(ConfigFrameTestCase):
+
+    ONE = MagicMock(group='one')
+    TWO = MagicMock(group='two')
+    THREE = MagicMock(group='two')
+
     CONFIG = {
-        'one': MagicMock(group='one'),
-        'two': MagicMock(group='two'),
-        'three': MagicMock(group='two')
+        'one': ONE,
+        'two': TWO,
+        'three': THREE
+    }
+
+    RESULT = {
+        'one': [ONE],
+        'two': [THREE, TWO]
     }
 
     @patch('wxpy_rofi_config.gui.config_frame.Rofi')
@@ -77,3 +87,16 @@ class ConstructConfigUnitTests(ConfigFrameTestCase):
         mock_rofi.assert_not_called()
         self.frame.construct_config()
         mock_rofi.assert_called_once_with()
+
+    @patch(
+        'wxpy_rofi_config.gui.config_frame.Rofi',
+        return_value=MagicMock(
+            config=CONFIG
+        )
+    )
+    def test_grouping(self, mock_rofi):
+        self.frame.construct_config()
+        self.assertDictEqual(
+            self.frame.groups,
+            self.RESULT
+        )
