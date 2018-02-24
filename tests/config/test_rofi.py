@@ -23,6 +23,9 @@ class RofiTestCase(TestCase):
         copyfile_patcher = patch('wxpy_rofi_config.config.rofi.copyfile')
         self.mock_copyfile = copyfile_patcher.start()
         self.addCleanup(copyfile_patcher.stop)
+        stat_patcher = patch('wxpy_rofi_config.config.rofi.file_stat')
+        self.mock_stat = stat_patcher.start()
+        self.addCleanup(stat_patcher.stop)
         self.rofi = Rofi()
 
 
