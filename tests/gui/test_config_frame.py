@@ -9,6 +9,8 @@ from unittest import TestCase
 
 from mock import call, MagicMock, patch
 
+from wx import ID_YES  # pylint: disable=no-name-in-module
+
 from wxpy_rofi_config.gui import ConfigFrame
 
 
@@ -493,3 +495,21 @@ class DirtyEditState(ConfigFrameTestCase):
             [],
             self.frame.dirty_values
         )
+
+
+class IgnoreDirtyStateUnitTests(ConfigFrameTestCase):
+
+    @patch('wxpy_rofi_config.gui.config_frame.MessageDialog')
+    def test_yes_modal(self, mock_message):
+        mock_message.return_value = MagicMock(
+            __enter__=MagicMock(
+                return_value=MagicMock(
+                    ShowModal=MagicMock(return_value=ID_YES),
+                )
+            )
+        )
+        self.assertTrue(self.frame.ignore_dirty_state())
+
+    @patch('wxpy_rofi_config.gui.config_frame.MessageDialog')
+    def test_no_modal(self, mock_message):
+        self.assertFalse(self.frame.ignore_dirty_state())
