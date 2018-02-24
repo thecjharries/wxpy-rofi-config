@@ -6,7 +6,7 @@ from __future__ import print_function
 
 from unittest import TestCase
 
-from mock import patch
+from mock import MagicMock, patch
 
 from wxpy_rofi_config.gui import ConfigPage
 
@@ -65,3 +65,15 @@ class ConstructorUnitTests(ConfigPageTestCase):
     def test_calls(self):
         self.mock_panel.assert_called_once()
         self.mock_construct_gui.assert_called_once_with()
+
+
+class ConstructHorizontalRuleUnitTests(ConfigPageTestCase):
+
+    def test_calls(self):
+        self.page.grid_sizer = MagicMock()
+        self.mock_staticline.assert_not_called()
+        self.page.construct_horizontal_rule()
+        self.assertEqual(
+            2,
+            self.mock_staticline.call_count
+        )
