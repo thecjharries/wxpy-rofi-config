@@ -250,6 +250,49 @@ q
         mock_parse.assert_not_called()
 
 
+class ParseHelpModiUnitTests(RofiTestCase):
+    INPUT = """
+        * +window
+"""
+    RESULT = ['window']
+
+    def test_parse(self):
+        if hasattr(self, 'assertCountEqual'):
+            assertion_to_make = 'assertCountEqual'
+        elif hasattr(self, 'assertItemsEqual'):
+            assertion_to_make = 'assertItemsEqual'
+        else:
+            assert 0
+        getattr(self, assertion_to_make)(
+            [],
+            self.rofi.available_modi
+        )
+        self.rofi.parse_help_modi(self.INPUT)
+        getattr(self, assertion_to_make)(
+            self.RESULT,
+            self.rofi.available_modi
+        )
+
+
+class ParseHelpModiBlockUnitTests(RofiTestCase):
+    WITH_MODI = '''
+Detected modi:
+
+Compile time options:
+'''
+    WITHOUT_MODI = ''
+
+    @patch.object(Rofi, 'parse_help_modi')
+    def test_with_config(self, mock_parse):
+        self.rofi.parse_help_modi_block(self.WITH_MODI)
+        mock_parse.assert_called_once()
+
+    @patch.object(Rofi, 'parse_help_modi')
+    def test_without_config(self, mock_parse):
+        self.rofi.parse_help_modi_block(self.WITHOUT_MODI)
+        mock_parse.assert_not_called()
+
+
 class ParseHelpActiveFileUnitTests(RofiTestCase):
     INPUT = """
       Configuration file: /path/to/rofi/config.rasi
@@ -329,30 +372,46 @@ class ParseHelpConfigUnitTests(RofiTestCase):
         )
 
 
-class LoadHelpUnitTests(RofiTestCase):
-
-    @patch(
-        'wxpy_rofi_config.config.rofi.check_output',
-        return_value='''
+class ParseHelpConfigBlockUnitTests(RofiTestCase):
+    WITH_CONFIG = '''
 Global Options:
     stuff
 
 Monitor
 '''
-    )
+    WITHOUT_CONFIG = ''
+
     @patch.object(Rofi, 'parse_help_config')
-    def test_with_config(self, mock_parse, mock_output):
-        self.rofi.load_help()
+    def test_with_config(self, mock_parse):
+        self.rofi.parse_help_config_block(self.WITH_CONFIG)
         mock_parse.assert_called_once()
+
+    @patch.object(Rofi, 'parse_help_config')
+    def test_without_config(self, mock_parse):
+        self.rofi.parse_help_config_block(self.WITHOUT_CONFIG)
+        mock_parse.assert_not_called()
+
+
+class LoadHelpUnitTests(RofiTestCase):
+    PARSED = 'qqq'
 
     @patch(
         'wxpy_rofi_config.config.rofi.check_output',
-        return_value=''
+        return_value=PARSED
     )
-    @patch.object(Rofi, 'parse_help_config')
-    def test_without_config(self, mock_parse, mock_output):
+    @patch.object(Rofi, 'parse_help_config_block')
+    @patch.object(Rofi, 'parse_help_active_file')
+    @patch.object(Rofi, 'parse_help_modi_block')
+    def test_calls(self, mock_modi, mock_file, mock_config, mock_sub):
+        mock_sub.assert_not_called()
+        mock_file.assert_not_called()
+        mock_config.assert_not_called()
+        mock_modi.assert_not_called()
         self.rofi.load_help()
-        mock_parse.assert_not_called()
+        mock_sub.assert_called_once()
+        mock_file.assert_called_once_with(self.PARSED)
+        mock_config.assert_called_once_with(self.PARSED)
+        mock_modi.assert_called_once_with(self.PARSED)
 
 
 class BuildUnitTests(RofiTestCase):

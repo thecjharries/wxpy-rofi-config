@@ -21,7 +21,7 @@ from subprocess import check_output
 from wxpy_rofi_config.config import Entry
 
 
-class Rofi(object):
+class Rofi(object):  # pylint: disable=too-many-public-methods
     """Rofi holds all the config for rofi"""
 
     PATTERNS = {
@@ -73,6 +73,14 @@ class Rofi(object):
         'HELP_ACTIVE_FILE': re_compile(
             r"^.*?configuration\s+file:\s+(?P<file_path>.*?)$",
             MULTILINE | IGNORECASE
+        ),
+        'HELP_AVAILABLE_MODI_BLOCK': re_compile(
+            r"(?:detected modi:)(?P<modi>.*?\n)\n",
+            DOTALL | IGNORECASE
+        ),
+        'HELP_MODI': re_compile(
+            r"^\s+\*\s+\+?(?P<modi>.*?)$",
+            MULTILINE | IGNORECASE
         )
     }
 
@@ -80,6 +88,7 @@ class Rofi(object):
         self.config = OrderedDict()
         self.groups = []
         self.active_file = None
+        self.available_modi = []
 
     def assign_rasi_entry(self, key_value_match, destination='default'):
         """
@@ -182,6 +191,25 @@ class Rofi(object):
         if possible_config:
             self.parse_man_config(possible_config.group())
 
+    def parse_help_modi(self, modi_group):
+        """Parses out all available modi"""
+        for discovered_modi in finditer(
+                self.PATTERNS['HELP_MODI'],
+                modi_group
+        ):
+            modi = discovered_modi.group('modi')
+            if modi:
+                self.available_modi.append(modi)
+
+    def parse_help_modi_block(self, raw_help):
+        """Parses help for the modi block"""
+        possible_modi = search(
+            self.PATTERNS['HELP_AVAILABLE_MODI_BLOCK'],
+            raw_help
+        )
+        if possible_modi:
+            self.parse_help_modi(possible_modi.group('modi'))
+
     def parse_help_active_file(self, raw_help):
         """Parses help for the active config file"""
         possible_file = search(
@@ -209,13 +237,18 @@ class Rofi(object):
         ):
             self.parse_help_entry(discovered_entry)
 
+    def parse_help_config_block(self, raw_help):
+        """Parses help for the config block"""
+        possible_config = search(self.PATTERNS['HELP_BLOCK'], raw_help)
+        if possible_config:
+            self.parse_help_config(possible_config)
+
     def load_help(self):
         """Loads rofi --help in an attempt to parse it"""
         raw = check_output(['rofi', '--help'])
-        possible_config = search(self.PATTERNS['HELP_BLOCK'], raw)
-        if possible_config:
-            self.parse_help_config(possible_config)
+        self.parse_help_config_block(raw)
         self.parse_help_active_file(raw)
+        self.parse_help_modi_block(raw)
 
     def build(self):
         """

@@ -200,9 +200,20 @@ class BindEventsUnitTests(ConfigFrameTestCase):
         mock_bind.assert_not_called()
         self.frame.bind_events()
         self.assertEqual(
-            4,
+            ConfigFrame.BOUND_ACTIONS,
             mock_bind.call_count
         )
+
+
+class ModiLauncherUnitTests(ConfigFrameTestCase):
+    MODI = ['one', 'two']
+
+    @patch('wxpy_rofi_config.gui.config_frame.ModiLauncher')
+    def test_construction(self, mock_modi):
+        self.frame.config = MagicMock(available_modi=self.MODI)
+        mock_modi.assert_not_called()
+        self.frame.modi_launcher()
+        mock_modi.assert_called_once_with(self.MODI)
 
 
 class UpdateConfigEntryUnitTests(ConfigFrameTestCase):
