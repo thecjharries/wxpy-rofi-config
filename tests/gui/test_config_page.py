@@ -102,10 +102,7 @@ class ConstructHorizontalRuleUnitTests(ConfigPageTestCase):
     def test_calls(self):
         self.mock_staticline.assert_not_called()
         self.page.construct_horizontal_rule()
-        self.assertEqual(
-            2,
-            self.mock_staticline.call_count
-        )
+        self.mock_staticline.assert_called_once()
 
 
 class ConstructDocsLabelUnitTests(ConfigPageTestCase):
