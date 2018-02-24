@@ -541,13 +541,20 @@ class BackupUnitTests(RofiTestCase):
         ['zzz', 'qqq']
     ]
 
-    def test_results(self):
+    @patch('wxpy_rofi_config.config.rofi.exists', return_value=True)
+    def test_results(self, mock_exists):
         self.rofi.active_file = self.ACTIVE_FILE
         for index in range(0, len(self.INPUT)):
             self.mock_copyfile.assert_not_called()
             self.rofi.backup(*self.INPUT[index])
             self.mock_copyfile.assert_called_once_with(*self.RESULTS[index])
             self.mock_copyfile.reset_mock()
+
+    @patch('wxpy_rofi_config.config.rofi.exists', return_value=False)
+    def test_without_active(self, mock_exists):
+        self.mock_copyfile.assert_not_called()
+        self.rofi.backup()
+        self.mock_copyfile.assert_not_called()
 
 
 @patch('wxpy_rofi_config.config.rofi.open', return_value=MagicMock())
