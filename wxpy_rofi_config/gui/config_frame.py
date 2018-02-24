@@ -288,7 +288,7 @@ class ConfigFrame(Frame):  # pylint: disable=too-many-public-methods
         """Launches a dialog to pick the open location"""
         return self.file_dialog(FD_OPEN | FD_FILE_MUST_EXIST)
 
-    def open(self):
+    def open(self, event=None):  # pylint: disable=unused-argument
         """Opens the chosen config for editing"""
         new_location = self.pick_open_file()
         if new_location:
