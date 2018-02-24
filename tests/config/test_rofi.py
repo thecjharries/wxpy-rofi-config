@@ -505,6 +505,7 @@ class SaveUnitTests(RofiTestCase):
         self.rofi.save(backup=False)
         mock_config.assert_called_once_with(None)
         mock_backup.assert_not_called()
+        self.assertIsNone(self.rofi.active_backup)
 
     @patch.object(Rofi, 'backup')
     @patch.object(Rofi, 'write_config')
@@ -514,6 +515,7 @@ class SaveUnitTests(RofiTestCase):
         self.rofi.save()
         mock_config.assert_called_once_with(None)
         mock_backup.assert_called_once_with(None, None)
+        self.assertIsNone(self.rofi.active_backup)
 
 
 @patch('wxpy_rofi_config.config.rofi.join')
