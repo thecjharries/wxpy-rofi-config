@@ -13,6 +13,8 @@ from wxpy_rofi_config.gui import ConfigFrameStatusBar
 
 class ConfigFrameStatusBarTestCase(TestCase):
 
+    STATUS_ID = 0
+
     def setUp(self):
         self.patch_wx()
         self.construct_status_bar()
@@ -47,3 +49,13 @@ class ConstructorUnitTests(ConfigFrameStatusBarTestCase):
             ],
             True
         )
+
+
+class UpdateUnitTests(ConfigFrameStatusBarTestCase):
+    STATUS = 'qqq'
+
+    @patch.object(ConfigFrameStatusBar, 'SetStatusText')
+    def test_update(self, mock_set):
+        mock_set.assert_not_called()
+        self.status_bar.update(self.STATUS)
+        mock_set.assert_called_once_with(self.STATUS, self.STATUS_ID)
