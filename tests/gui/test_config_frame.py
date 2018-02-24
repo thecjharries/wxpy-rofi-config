@@ -200,7 +200,7 @@ class BindEventsUnitTests(ConfigFrameTestCase):
         mock_bind.assert_not_called()
         self.frame.bind_events()
         self.assertEqual(
-            4,
+            ConfigFrame.BOUND_ACTIONS,
             mock_bind.call_count
         )
 
