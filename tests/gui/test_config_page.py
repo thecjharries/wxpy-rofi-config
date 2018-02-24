@@ -38,6 +38,11 @@ class ConfigPageTestCase(TestCase):
         )
         self.mock_panel = panel_patcher.start()
         self.addCleanup(panel_patcher.stop)
+        scrolledpanel_patcher = patch(
+            'wxpy_rofi_config.gui.config_page.ScrolledPanel'
+        )
+        self.mock_scrolledpanel = scrolledpanel_patcher.start()
+        self.addCleanup(scrolledpanel_patcher.stop)
         staticline_patcher = patch(
             'wxpy_rofi_config.gui.config_page.StaticLine'
         )
@@ -180,3 +185,20 @@ class ConstructEntryRowUnitTests(ConfigPageTestCase):
             self.entry.key_name
         )
         self.mock_construct_entry_control.assert_called_once_with(self.entry)
+
+
+class ConstructGuiUnitTests(ConfigPageTestCase):
+    CONFIG = ['one', 'two', 'three']
+
+    @patch.object(ConfigPage, 'construct_entry_row')
+    @patch.object(ConfigPage, 'SetSizer')
+    def test_calls(self, mock_set, mock_construct):
+        self.page.config = self.CONFIG
+        mock_construct.assert_not_called()
+        mock_set.assert_not_called()
+        self.page.construct_gui()
+        self.assertEqual(
+            len(self.CONFIG),
+            mock_construct.call_count
+        )
+        mock_set.assert_called_once()
