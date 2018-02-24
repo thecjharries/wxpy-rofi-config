@@ -109,10 +109,8 @@ class ConstructDocsLabelUnitTests(ConfigPageTestCase):
 
     @patch('wxpy_rofi_config.gui.config_page.HidableAutoWrapStaticText')
     def test_calls(self, mock_hidable):
-        self.mock_boxsizer.assert_not_called()
         mock_hidable.assert_not_called()
         self.page.construct_docs_label('man', 'qqq')
-        self.mock_boxsizer.assert_called_once()
         mock_hidable.assert_called_once()
 
 
