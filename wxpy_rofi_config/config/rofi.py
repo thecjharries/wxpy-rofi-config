@@ -269,13 +269,16 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         output += "}\n"
         return output
 
-    def backup(self, source=None, destination=None):
+    def backup(self, source=None, destination=None, restore=False):
         """Backs up the provided config file"""
         if source is None:
             source = self.active_file
         if destination is None:
             destination = "%s.bak" % source
-        copyfile(source, destination)
+        if restore:
+            copyfile(destination, source)
+        else:
+            copyfile(source, destination)
 
     def write_config(self, path=None):
         """Writes the config to a file"""
