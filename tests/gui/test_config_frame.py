@@ -36,13 +36,30 @@ class ConfigFrameTestCase(TestCase):
         self.addCleanup(panel_patcher.stop)
 
     def construct_frame(self):
-        construct_config_patcher = patch(ConfigFrame, 'construct_config')
+        construct_config_patcher = patch.object(
+            ConfigFrame,
+            'construct_config'
+        )
         self.mock_construct_config = construct_config_patcher.start()
-        construct_gui_patcher = patch.object(ConfigFrame, 'construct_gui')
+        construct_gui_patcher = patch.object(
+            ConfigFrame,
+            'construct_gui'
+        )
         self.mock_construct_gui = construct_gui_patcher.start()
-        bind_events_patcher = patch(ConfigFrame, 'bind_events')
+        bind_events_patcher = patch.object(
+            ConfigFrame,
+            'bind_events'
+        )
         self.mock_bind_events = bind_events_patcher.start()
         self.frame = ConfigFrame(None)
         bind_events_patcher.stop()
         construct_gui_patcher.stop()
         construct_config_patcher.stop()
+
+
+class ConstructorUnitTests(ConfigFrameTestCase):
+
+    def test_calls(self):
+        self.mock_construct_config.assert_called_once()
+        self.mock_construct_gui.assert_called_once()
+        self.mock_bind_events.assert_called_once()
