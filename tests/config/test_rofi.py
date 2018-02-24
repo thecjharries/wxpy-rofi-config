@@ -23,6 +23,9 @@ class RofiTestCase(TestCase):
         copyfile_patcher = patch('wxpy_rofi_config.config.rofi.copyfile')
         self.mock_copyfile = copyfile_patcher.start()
         self.addCleanup(copyfile_patcher.stop)
+        stat_patcher = patch('wxpy_rofi_config.config.rofi.file_stat')
+        self.mock_stat = stat_patcher.start()
+        self.addCleanup(stat_patcher.stop)
         self.rofi = Rofi()
 
 
@@ -491,10 +494,12 @@ class BackupUnitTests(RofiTestCase):
 
 @patch('wxpy_rofi_config.config.rofi.open', return_value=MagicMock())
 @patch.object(Rofi, 'to_rasi')
-def test_write_config(mock_rasi, mock_open):
+@patch.object(Rofi, 'update_mtime')
+def test_write_config(mock_time, mock_rasi, mock_open):
     rofi = Rofi()
     rofi.write_config()
     mock_rasi.assert_called_once_with()
+    mock_time.assert_called_once_with()
 
 
 class SaveUnitTests(RofiTestCase):
@@ -537,6 +542,37 @@ class CanRestoreUnitTests(RofiTestCase):
     @patch('wxpy_rofi_config.config.rofi.file_cmp', return_value=True)
     def test_file_comparison(self, mock_cmp, mock_exists):
         self.assertFalse(self.rofi.can_restore())
+
+
+class GetMtimeUnitTests(RofiTestCase):
+
+    def test_call(self):
+        self.mock_stat.assert_not_called()
+        self.rofi.get_mtime()
+        self.mock_stat.assert_called_once_with(None)
+
+
+class UpdateMtimeUnitTests(RofiTestCase):
+    TIME = 2
+
+    @patch.object(Rofi, 'get_mtime', return_value=TIME)
+    def test_call(self, mock_time):
+        self.assertIsNone(self.rofi.last_mtime)
+        self.rofi.update_mtime()
+        self.assertEquals(
+            self.TIME,
+            self.rofi.last_mtime,
+        )
+
+
+class ProbablyModifiedUnitTests(RofiTestCase):
+    LAST = 2
+    CURRENT = 4
+
+    @patch.object(Rofi, 'get_mtime', return_value=CURRENT)
+    def test_call(self, mock_time):
+        self.rofi.last_mtime = self.LAST
+        self.assertTrue(self.rofi.probably_modified())
 
 
 @patch('wxpy_rofi_config.config.rofi.join')
