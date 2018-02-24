@@ -430,10 +430,31 @@ class BackupUnitTests(RofiTestCase):
 
 @patch('wxpy_rofi_config.config.rofi.open', return_value=MagicMock())
 @patch.object(Rofi, 'to_rasi')
-def test_save(mock_rasi, mock_open):
+def test_write_config(mock_rasi, mock_open):
     rofi = Rofi()
     rofi.write_config()
     mock_rasi.assert_called_once_with()
+
+
+class SaveUnitTests(RofiTestCase):
+
+    @patch.object(Rofi, 'backup')
+    @patch.object(Rofi, 'write_config')
+    def test_without_backup(self, mock_config, mock_backup):
+        mock_config.assert_not_called()
+        mock_backup.assert_not_called()
+        self.rofi.save(backup=False)
+        mock_config.assert_called_once_with(None)
+        mock_backup.assert_not_called()
+
+    @patch.object(Rofi, 'backup')
+    @patch.object(Rofi, 'write_config')
+    def test_with_backup(self, mock_config, mock_backup):
+        mock_config.assert_not_called()
+        mock_backup.assert_not_called()
+        self.rofi.save()
+        mock_config.assert_called_once_with(None)
+        mock_backup.assert_called_once_with(None, None)
 
 
 @patch('wxpy_rofi_config.config.rofi.join')
