@@ -321,3 +321,50 @@ class SaveUnitTests(ConfigFrameTestCase):
             mock_update.assert_called_once_with()
             mock_save.assert_called_once_with(backup=backup)
             mock_update.reset_mock()
+
+
+class UpdateEntryControlUnitTests(ConfigFrameTestCase):
+    KEY_NAME = 'qqq'
+    PRE = 9
+    VALUE = 10
+    LABEL = 12
+
+    SET_VALUE = MagicMock()
+    SET_LABEL = MagicMock()
+
+    def setUp(self):
+        ConfigFrameTestCase.setUp(self)
+        self.SET_VALUE.reset_mock()
+        self.SET_LABEL.reset_mock()
+
+    def test_with_value(self):
+        self.mock_findwindow.return_value = MagicMock(
+            spec=['SetValue'],
+            SetValue=self.SET_VALUE
+        )
+        self.SET_VALUE.assert_not_called()
+        self.SET_LABEL.assert_not_called()
+        self.frame.update_entry_control(
+            MagicMock(
+                key_name=self.KEY_NAME,
+                current=self.VALUE
+            )
+        )
+        self.SET_VALUE.assert_called_once_with(self.VALUE)
+        self.SET_LABEL.assert_not_called()
+
+    def test_with_label(self):
+        self.mock_findwindow.return_value = MagicMock(
+            spec=['SetLabel'],
+            SetLabel=self.SET_LABEL
+        )
+        self.SET_VALUE.assert_not_called()
+        self.SET_LABEL.assert_not_called()
+        self.frame.update_entry_control(
+            MagicMock(
+                key_name=self.KEY_NAME,
+                current=self.LABEL
+            )
+        )
+        self.SET_VALUE.assert_not_called()
+        self.SET_LABEL.assert_called_once_with(self.LABEL)
