@@ -13,6 +13,8 @@ from wxpy_rofi_config.gui import ConfigFrame
 class ConfigApp(App, InspectionMixin):
     """This class runs the main application"""
 
+    DEFAULT_TITLE = "rofi Configuration"
+
     frame = None
 
     def OnInit(self):  # pylint:disable=invalid-name
@@ -26,6 +28,6 @@ class ConfigApp(App, InspectionMixin):
 
     def construct_gui(self):
         """Constructs the primary GUI"""
-        self.frame = ConfigFrame(None, title="rofi Configuration")
+        self.frame = ConfigFrame(None, title=self.DEFAULT_TITLE)
         self.frame.Show()
         self.SetTopWindow(self.frame)
