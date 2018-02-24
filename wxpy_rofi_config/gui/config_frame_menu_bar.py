@@ -15,13 +15,14 @@ from wx import (
 from wx.lib.pubsub import pub
 
 
-class ConfigFrameMenuBar(MenuBar):
+class ConfigFrameMenuBar(MenuBar):  # pylint:disable=too-many-instance-attributes
     """ConfigFrameMenuBar collects menu construction and actions"""
     backup_on_menu_item = None
     exit_menu_item = None
     help_values_menu_item = None
     launch_menu_item = None
     man_values_menu_item = None
+    refresh_menu_item = None
     restore_menu_item = None
     save_menu_item = None
 
@@ -32,6 +33,10 @@ class ConfigFrameMenuBar(MenuBar):
     def construct_file_menu(self):
         """Constructs the file menu"""
         file_menu = Menu()
+        self.refresh_menu_item = file_menu.Append(
+            NewId(),
+            '&Refresh Config\tCtrl+r'
+        )
         self.restore_menu_item = file_menu.Append(
             NewId(),
             'Restore Backup Config'
