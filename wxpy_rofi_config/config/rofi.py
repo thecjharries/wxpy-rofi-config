@@ -238,7 +238,7 @@ class Rofi(object):
     def save(self, path=None):
         """Saves the config file"""
         if path is None:
-            path = self.create_default_path()
+            path = self.active_file
         with open(path, 'w') as rasi_file:
             rasi_file.write(self.to_rasi())
 
