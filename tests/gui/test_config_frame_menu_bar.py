@@ -63,3 +63,21 @@ class ConstructFileMenuUnitTests(ConfigFrameMenuBarTestCase):
         self.menu_bar.construct_file_menu()
         mock_append.assert_called_once()
         self.assertIsNotNone(self.menu_bar.exit_menu_item)
+
+
+class ConstructDocsMenuUnitTests(ConfigFrameMenuBarTestCase):
+
+    @patch.object(ConfigFrameMenuBar, 'Append')
+    def test_construction(self, mock_append):
+        self.mock_new_id.assert_not_called()
+        mock_append.assert_not_called()
+        self.assertIsNone(self.menu_bar.help_values_menu_item)
+        self.assertIsNone(self.menu_bar.man_values_menu_item)
+        self.menu_bar.construct_docs_menu()
+        self.assertEqual(
+            2,
+            self.mock_new_id.call_count
+        )
+        mock_append.assert_called_once()
+        self.assertIsNotNone(self.menu_bar.help_values_menu_item)
+        self.assertIsNotNone(self.menu_bar.man_values_menu_item)
