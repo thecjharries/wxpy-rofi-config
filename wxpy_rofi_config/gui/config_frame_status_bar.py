@@ -18,9 +18,9 @@ class ConfigFrameStatusBar(StatusBar):
         pub.subscribe(self.update, 'status_update')
         pub.subscribe(self.clear, 'status_clear')
 
-    def update(self, status):
+    def update(self, data):
         """Updates the status bar text"""
-        self.SetStatusText(status, 0)
+        self.SetStatusText(data, 0)
 
     def clear(self):
         """Clears the status text"""

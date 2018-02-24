@@ -42,6 +42,11 @@ class ConfigFrameTestCase(TestCase):
         boxsizer_patcher = patch('wxpy_rofi_config.gui.config_frame.BoxSizer')
         self.mock_boxsizer = boxsizer_patcher.start()
         self.addCleanup(boxsizer_patcher.stop)
+        findwindow_patcher = patch(
+            'wxpy_rofi_config.gui.config_frame.FindWindowByName'
+        )
+        self.mock_findwindow = findwindow_patcher.start()
+        self.addCleanup(findwindow_patcher.stop)
         frame_patcher = patch('wxpy_rofi_config.gui.config_frame.Frame')
         self.mock_frame = frame_patcher.start()
         self.addCleanup(frame_patcher.stop)
@@ -185,6 +190,101 @@ class BindEventsUnitTests(ConfigFrameTestCase):
         mock_bind.assert_not_called()
         self.frame.bind_events()
         self.assertEqual(
-            3,
+            4,
             mock_bind.call_count
         )
+
+
+class UpdateConfigEntryUnitTests(ConfigFrameTestCase):
+    KEY_NAME = 'qqq'
+    PRE = 9
+    VALUE = 10
+    LABEL = 12
+    CURRENT = 13
+
+    def setUp(self):
+        ConfigFrameTestCase.setUp(self)
+        self.frame.config = MagicMock(
+            config={
+                self.KEY_NAME: MagicMock(current=self.PRE)
+            }
+        )
+
+    def test_with_value(self):
+        self.mock_findwindow.return_value = MagicMock(
+            spec=['GetValue'],
+            GetValue=MagicMock(return_value=self.VALUE)
+        )
+        self.assertEqual(
+            self.PRE,
+            self.frame.config.config[self.KEY_NAME].current
+        )
+        self.frame.update_config_entry(self.KEY_NAME, MagicMock())
+        self.assertEqual(
+            self.VALUE,
+            self.frame.config.config[self.KEY_NAME].current
+        )
+
+    def test_with_label(self):
+        self.mock_findwindow.return_value = MagicMock(
+            spec=['GetLabel'],
+            GetLabel=MagicMock(return_value=self.LABEL)
+        )
+        self.assertEqual(
+            self.PRE,
+            self.frame.config.config[self.KEY_NAME].current
+        )
+        self.frame.update_config_entry(self.KEY_NAME, MagicMock())
+        self.assertEqual(
+            self.LABEL,
+            self.frame.config.config[self.KEY_NAME].current
+        )
+
+    def test_with_current(self):
+        self.mock_findwindow.return_value = MagicMock(spec=[])
+        self.assertEqual(
+            self.PRE,
+            self.frame.config.config[self.KEY_NAME].current
+        )
+        self.frame.update_config_entry(
+            self.KEY_NAME,
+            MagicMock(current=self.CURRENT)
+        )
+        self.assertEqual(
+            self.CURRENT,
+            self.frame.config.config[self.KEY_NAME].current
+        )
+
+
+class UpdateConfigUnitTests(ConfigFrameTestCase):
+    CONFIG = {
+        'one': 'one entry',
+        'two': 'two entry',
+        'three': 'three entry'
+    }
+
+    CALLS = [
+        call('three', 'three entry'),
+        call('two', 'two entry'),
+        call('one', 'one entry'),
+    ]
+
+    @patch.object(ConfigFrame, 'update_config_entry')
+    def test_calls(self, mock_update):
+        self.frame.config = MagicMock(config=self.CONFIG)
+        mock_update.assert_not_called()
+        self.frame.update_config()
+        mock_update.assert_has_calls(self.CALLS)
+
+
+class SaveUnitTests(ConfigFrameTestCase):
+
+    @patch.object(ConfigFrame, 'update_config')
+    def test_calls(self, mock_update):
+        mock_save = MagicMock()
+        self.frame.config = MagicMock(save=mock_save)
+        mock_update.assert_not_called()
+        mock_save.assert_not_called()
+        self.frame.save()
+        mock_update.assert_called_once_with()
+        mock_save.assert_called_once_with()
