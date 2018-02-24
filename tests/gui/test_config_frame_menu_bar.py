@@ -107,17 +107,14 @@ class ConstructGuiUnitTests(ConfigFrameMenuBarTestCase):
 
     @patch.object(ConfigFrameMenuBar, 'construct_file_menu')
     @patch.object(ConfigFrameMenuBar, 'construct_rofi_menu')
-    @patch.object(ConfigFrameMenuBar, 'construct_docs_menu')
     @patch.object(ConfigFrameMenuBar, 'construct_prefs_menu')
-    def test_calls(self, mock_prefs, mock_docs, mock_rofi, mock_file):
+    def test_calls(self, mock_prefs, mock_rofi, mock_file):
         mock_file.assert_not_called()
         mock_rofi.assert_not_called()
-        mock_docs.assert_not_called()
         mock_prefs.assert_not_called()
         self.menu_bar.construct_gui()
         mock_file.assert_called_once_with()
         mock_rofi.assert_called_once_with()
-        mock_docs.assert_called_once_with()
         mock_prefs.assert_called_once_with()
 
 
