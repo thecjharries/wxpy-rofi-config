@@ -297,6 +297,8 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         """Backs up the provided config file"""
         if source is None:
             source = self.active_file
+        if not exists(source):
+            return
         if destination is None:
             destination = "%s.bak" % source
         self.active_backup = destination
