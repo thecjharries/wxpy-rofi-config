@@ -58,6 +58,7 @@ class ConfigPageTestCase(TestCase):
         self.mock_construct_gui = construct_gui_patcher.start()
         self.page = ConfigPage(None, None)
         construct_gui_patcher.stop()
+        self.page.grid_sizer = MagicMock()
 
 
 class ConstructorUnitTests(ConfigPageTestCase):
@@ -70,10 +71,20 @@ class ConstructorUnitTests(ConfigPageTestCase):
 class ConstructHorizontalRuleUnitTests(ConfigPageTestCase):
 
     def test_calls(self):
-        self.page.grid_sizer = MagicMock()
         self.mock_staticline.assert_not_called()
         self.page.construct_horizontal_rule()
         self.assertEqual(
             2,
             self.mock_staticline.call_count
         )
+
+
+class ConstructDocsLabelUnitTests(ConfigPageTestCase):
+
+    @patch('wxpy_rofi_config.gui.config_page.HidableAutoWrapStaticText')
+    def test_calls(self, mock_hidable):
+        self.mock_boxsizer.assert_not_called()
+        mock_hidable.assert_not_called()
+        self.page.construct_docs_label('man', 'qqq')
+        self.mock_boxsizer.assert_called_once()
+        mock_hidable.assert_called_once()
