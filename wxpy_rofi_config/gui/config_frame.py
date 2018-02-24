@@ -137,6 +137,10 @@ class ConfigFrame(Frame):
         self.config.save(backup=self.menu_bar.backup_on_menu_item.IsChecked())
         pub.sendMessage('status_update', data='Saved!')
 
+    def toggle_restoration(self, event=None):  # pylint: disable=unused-argument
+        """Enables/disables the restore menu item"""
+        self.menu_bar.restore_menu_item.Enable(self.config.can_restore())
+
     @staticmethod
     def update_entry_control(entry):
         """Updates the control for a single config entry"""
