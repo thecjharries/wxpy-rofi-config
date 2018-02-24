@@ -1,5 +1,6 @@
 # pylint: disable=invalid-name
 # pylint: disable=missing-docstring
+# pylint: disable=no-member
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=unused-argument
 
@@ -118,10 +119,58 @@ class ConstructEntryLabelUnitTests(ConfigPageTestCase):
 
 class ConstructEntryControlUnitTests(ConfigPageTestCase):
 
+    CONTROLS = ['checkbox', 'spinctrl', 'textctrl']
+
+    TESTS = [
+        [
+            MagicMock(
+                var_type='string',
+                current='qqq'
+            ),
+            'textctrl'
+        ],
+        [
+            MagicMock(
+                var_type='key',
+                current='qqq'
+            ),
+            'textctrl'
+        ],
+        [
+            MagicMock(
+                var_type='number',
+                current=-1
+            ),
+            'spinctrl'
+        ],
+        [
+            MagicMock(
+                var_type='boolean',
+                current=False
+            ),
+            'checkbox'
+        ],
+        [
+            MagicMock(
+                var_type='qqq',
+                current='qqq'
+            ),
+            'textctrl'
+        ]
+    ]
+
     def test_calls(self):
-        self.mock_textctrl.assert_not_called()
-        self.page.construct_entry_control(MagicMock(current='qqq'))
-        self.mock_textctrl.assert_called_once()
+        for entry in self.TESTS:
+            for control in self.CONTROLS:
+                getattr(self, "mock_%s" % control).assert_not_called()
+            self.page.construct_entry_control(entry[0])
+            for control in self.CONTROLS:
+                mock = getattr(self, "mock_%s" % control)
+                if control == entry[1]:
+                    mock.assert_called_once()
+                else:
+                    mock.assert_not_called()
+                mock.reset_mock()
 
 
 class ConstructEntryRowUnitTests(ConfigPageTestCase):
