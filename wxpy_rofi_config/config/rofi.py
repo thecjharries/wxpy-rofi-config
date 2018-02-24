@@ -191,6 +191,16 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         if possible_config:
             self.parse_man_config(possible_config.group())
 
+    def parse_help_modi(self, modi_group):
+        """Parses out all available modi"""
+        for discovered_modi in finditer(
+                self.PATTERNS['HELP_MODI'],
+                modi_group
+        ):
+            modi = discovered_modi.group('modi')
+            if modi:
+                self.available_modi.append(modi)
+
     def parse_help_active_file(self, raw_help):
         """Parses help for the active config file"""
         possible_file = search(
