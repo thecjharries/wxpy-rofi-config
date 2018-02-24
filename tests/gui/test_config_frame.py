@@ -162,8 +162,10 @@ class ConstructGuiUnitTests(ConfigFrameTestCase):
     )
     @patch.object(ConfigFrame, 'SetStatusBar')
     @patch.object(ConfigFrame, 'construct_notebook')
+    @patch.object(ConfigFrame, 'toggle_restoration')
     def test_construction(  # pylint: disable=too-many-arguments
             self,
+            mock_restoration,
             mock_notebook,
             mock_set_status,
             mock_status,
@@ -176,6 +178,7 @@ class ConstructGuiUnitTests(ConfigFrameTestCase):
         mock_holder.attach_mock(mock_status, 'ConfigFrameStatusBar')
         mock_holder.attach_mock(mock_set_status, 'SetStatusBar')
         mock_holder.attach_mock(mock_notebook, 'construct_notebook')
+        mock_holder.attach_mock(mock_restoration, 'toggle_restoration')
         mock_holder.assert_not_called()
         self.frame.construct_gui()
         print(mock_holder.mock_calls)
@@ -185,7 +188,8 @@ class ConstructGuiUnitTests(ConfigFrameTestCase):
                 call.SetMenuBar(self.MENU_BAR),
                 call.ConfigFrameStatusBar(self.frame),
                 call.SetStatusBar(self.STATUS_BAR),
-                call.construct_notebook()
+                call.construct_notebook(),
+                call.toggle_restoration()
             ],
             True
         )
@@ -317,3 +321,128 @@ class SaveUnitTests(ConfigFrameTestCase):
             mock_update.assert_called_once_with()
             mock_save.assert_called_once_with(backup=backup)
             mock_update.reset_mock()
+
+
+class UpdateEntryControlUnitTests(ConfigFrameTestCase):
+    KEY_NAME = 'qqq'
+    PRE = 9
+    VALUE = 10
+    LABEL = 12
+
+    SET_VALUE = MagicMock()
+    SET_LABEL = MagicMock()
+
+    def setUp(self):
+        ConfigFrameTestCase.setUp(self)
+        self.SET_VALUE.reset_mock()
+        self.SET_LABEL.reset_mock()
+
+    def test_with_value(self):
+        self.mock_findwindow.return_value = MagicMock(
+            spec=['SetValue'],
+            SetValue=self.SET_VALUE
+        )
+        self.SET_VALUE.assert_not_called()
+        self.SET_LABEL.assert_not_called()
+        self.frame.update_entry_control(
+            MagicMock(
+                key_name=self.KEY_NAME,
+                current=self.VALUE
+            )
+        )
+        self.SET_VALUE.assert_called_once_with(self.VALUE)
+        self.SET_LABEL.assert_not_called()
+
+    def test_with_label(self):
+        self.mock_findwindow.return_value = MagicMock(
+            spec=['SetLabel'],
+            SetLabel=self.SET_LABEL
+        )
+        self.SET_VALUE.assert_not_called()
+        self.SET_LABEL.assert_not_called()
+        self.frame.update_entry_control(
+            MagicMock(
+                key_name=self.KEY_NAME,
+                current=self.LABEL
+            )
+        )
+        self.SET_VALUE.assert_not_called()
+        self.SET_LABEL.assert_called_once_with(self.LABEL)
+
+
+class UpdateControlsUnitTests(ConfigFrameTestCase):
+    CONFIG = OrderedDict()
+    CONFIG['one'] = 'one entry'
+    CONFIG['two'] = 'two entry'
+    CONFIG['three'] = 'three entry'
+
+    CALLS = [
+        call('one entry'),
+        call('two entry'),
+        call('three entry'),
+    ]
+
+    @patch.object(ConfigFrame, 'update_entry_control')
+    def test_calls(self, mock_update):
+        self.frame.config = MagicMock(config=self.CONFIG)
+        mock_update.assert_not_called()
+        self.frame.update_controls()
+        mock_update.assert_has_calls(self.CALLS)
+
+
+class RestoreUnitTests(ConfigFrameTestCase):
+
+    def setUp(self):
+        ConfigFrameTestCase.setUp(self)
+        self.mock_can_restore = MagicMock()
+        self.mock_backup = MagicMock()
+        self.frame.config = MagicMock(
+            can_restore=self.mock_can_restore,
+            backup=self.mock_backup,
+        )
+        construct_config_patcher = patch.object(
+            ConfigFrame,
+            'construct_config'
+        )
+        self.mock_construct_config = construct_config_patcher.start()
+        self.addCleanup(construct_config_patcher.stop)
+        update_controls_patcher = patch.object(
+            ConfigFrame,
+            'update_controls'
+        )
+        self.mock_update_controls = update_controls_patcher.start()
+        self.addCleanup(update_controls_patcher.stop)
+        toggle_restoration_patcher = patch.object(
+            ConfigFrame,
+            'toggle_restoration'
+        )
+        self.mock_toggle_restoration = toggle_restoration_patcher.start()
+        self.addCleanup(toggle_restoration_patcher.stop)
+
+    def test_without_restoration(self):
+        self.mock_can_restore.return_value = False
+        self.mock_can_restore.assert_not_called()
+        self.mock_backup.assert_not_called()
+        self.mock_construct_config.assert_not_called()
+        self.mock_update_controls.assert_not_called()
+        self.mock_toggle_restoration.assert_not_called()
+        self.frame.restore()
+        self.mock_can_restore.assert_called_once_with()
+        self.mock_backup.assert_not_called()
+        self.mock_construct_config.assert_not_called()
+        self.mock_update_controls.assert_not_called()
+        self.mock_toggle_restoration.assert_not_called()
+
+    def test_with_restoration(self):
+        self.mock_can_restore.return_value = True
+        self.mock_can_restore.assert_not_called()
+        self.mock_backup.assert_not_called()
+        self.mock_construct_config.assert_not_called()
+        self.mock_update_controls.assert_not_called()
+        self.mock_toggle_restoration.assert_not_called()
+        self.frame.restore()
+        self.mock_can_restore.assert_called_once_with()
+        self.mock_backup.assert_called_once_with(restore=True)
+        self.mock_construct_config.assert_called_once_with()
+        self.mock_update_controls.assert_called_once_with()
+        self.mock_toggle_restoration.assert_called_once_with()

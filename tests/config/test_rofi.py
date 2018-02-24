@@ -520,6 +520,25 @@ class SaveUnitTests(RofiTestCase):
         self.assertIsNone(self.rofi.active_backup)
 
 
+class CanRestoreUnitTests(RofiTestCase):
+
+    @patch('wxpy_rofi_config.config.rofi.exists', return_value=False)
+    def test_nonexistent_active(self, mock_exists):
+        self.assertFalse(self.rofi.can_restore())
+
+    @patch(
+        'wxpy_rofi_config.config.rofi.exists',
+        side_effect=lambda x: not x.endswith('bak')
+    )
+    def test_nonexistent_backup(self, mock_exists):
+        self.assertFalse(self.rofi.can_restore())
+
+    @patch('wxpy_rofi_config.config.rofi.exists', return_value=True)
+    @patch('wxpy_rofi_config.config.rofi.file_cmp', return_value=True)
+    def test_file_comparison(self, mock_cmp, mock_exists):
+        self.assertFalse(self.rofi.can_restore())
+
+
 @patch('wxpy_rofi_config.config.rofi.join')
 @patch('wxpy_rofi_config.config.rofi.expanduser')
 @patch(
