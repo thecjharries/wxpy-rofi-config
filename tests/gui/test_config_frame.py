@@ -323,6 +323,55 @@ class SaveUnitTests(ConfigFrameTestCase):
             mock_update.reset_mock()
 
 
+class RefreshConfigUnitTests(ConfigFrameTestCase):
+
+    PAGES = [10, 0, 1, 2]
+
+    def setUp(self):
+        pages = self.PAGES[0:]
+        ConfigFrameTestCase.setUp(self)
+        construct_config_patcher = patch.object(
+            ConfigFrame,
+            'construct_config'
+        )
+        self.mock_construct_config = construct_config_patcher.start()
+        self.addCleanup(construct_config_patcher.stop)
+        construct_tabs_patcher = patch.object(
+            ConfigFrame,
+            'construct_tabs'
+        )
+        self.mock_construct_tabs = construct_tabs_patcher.start()
+        self.addCleanup(construct_tabs_patcher.stop)
+        toggle_restoration_patcher = patch.object(
+            ConfigFrame,
+            'toggle_restoration'
+        )
+        self.mock_toggle_restoration = toggle_restoration_patcher.start()
+        self.addCleanup(toggle_restoration_patcher.stop)
+        self.mock_delete = MagicMock()
+        self.frame.notebook = MagicMock(
+            DeletePage=self.mock_delete,
+            GetPageCount=pages.pop,
+        )
+
+    def test_single_calls(self):
+        self.mock_construct_config.assert_not_called()
+        self.mock_construct_tabs.assert_not_called()
+        self.mock_toggle_restoration.assert_not_called()
+        self.frame.refresh_config()
+        self.mock_construct_config.assert_called_once_with()
+        self.mock_construct_tabs.assert_called_once_with()
+        self.mock_toggle_restoration.assert_called_once_with()
+
+    def test_delete_loop(self):
+        self.mock_delete.assert_not_called()
+        self.frame.refresh_config()
+        self.mock_delete.assert_has_calls([
+            call(0),
+            call(0),
+        ])
+
+
 class RestoreUnitTests(ConfigFrameTestCase):
 
     def setUp(self):
