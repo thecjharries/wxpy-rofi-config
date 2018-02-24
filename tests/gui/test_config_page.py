@@ -88,3 +88,13 @@ class ConstructDocsLabelUnitTests(ConfigPageTestCase):
         self.page.construct_docs_label('man', 'qqq')
         self.mock_boxsizer.assert_called_once()
         mock_hidable.assert_called_once()
+
+
+class ConstructEntryLabelUnitTests(ConfigPageTestCase):
+
+    def test_calls(self):
+        self.mock_boxsizer.assert_not_called()
+        self.mock_statictext.assert_not_called()
+        self.page.construct_entry_label('qqq')
+        self.mock_boxsizer.assert_called_once()
+        self.mock_statictext.assert_called_once()
