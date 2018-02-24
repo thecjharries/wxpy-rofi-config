@@ -39,8 +39,18 @@ class ModiLauncherTestCase(TestCase):
 
 class ConstructorUnitTests(ModiLauncherTestCase):
 
+    PROMPT = 'qqq'
+
     def test_calls(self):
         self.mock_runner.assert_called_once_with()
+
+    @patch.object(ModiLauncher, 'select_and_launch')
+    def test_prompt(self, mock_runner):
+        modi = ModiLauncher(None, prompt=self.PROMPT)
+        self.assertEquals(
+            modi.prompt,
+            self.PROMPT
+        )
 
 
 class SelectModiUnitTests(ModiLauncherTestCase):
