@@ -57,7 +57,6 @@ Once all of these are finished, I'll release `v1`. Until then, `v0` should be us
 |    100% | Save arbitrary `rofi` config |
 |     90% | Style UI |
 |    100% | Backup existing `rofi` config |
-|     10% | Validate `rofi` config (before/during/after save) |
 |    100% | Only save changed values (i.e. not the original `rofi` default) |
 |     90% | Fix sizing glitches (e.g. too much at top of scroll) |
 |    100% | Refresh config in place |
@@ -71,6 +70,7 @@ These are things I'd like to add, but probably won't be included in `v1`. If not
 | Progess | Feature |
 | ------: | ------- |
 |      0% | Publish on PyPi |
+|     10% | Validate `rofi` config (need a clever solution; when broken `rofi` ignores input) |
 |      0% | Improve docs show/hide speed |
 |      0% | Enumerate known values (e.g. `location`) |
 |      0% | Code known limits (e.g. `columns >= 1`) |
