@@ -20,6 +20,7 @@ class ConfigFrameMenuBar(MenuBar):
     backup_on_menu_item = None
     exit_menu_item = None
     help_values_menu_item = None
+    launch_menu_item = None
     man_values_menu_item = None
     save_menu_item = None
 
@@ -39,6 +40,16 @@ class ConfigFrameMenuBar(MenuBar):
             'E&xit\tCtrl+w'
         )
         self.Append(file_menu, '&File')
+
+    def construct_rofi_menu(self):
+        """Creates the Rofi menu"""
+        rofi_menu = Menu()
+        self.launch_menu_item = rofi_menu.Append(
+            NewId(),
+            '&Launch Modi\tCtrl+t',
+            'Launch any available modi'
+        )
+        self.Append(rofi_menu)
 
     def construct_docs_menu(self):
         """Constructs the docs menu"""
@@ -74,6 +85,7 @@ class ConfigFrameMenuBar(MenuBar):
     def construct_gui(self):
         """Construct the MenuBar GUI"""
         self.construct_file_menu()
+        self.construct_rofi_menu()
         self.construct_docs_menu()
         self.construct_prefs_menu()
 
