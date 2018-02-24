@@ -7,7 +7,7 @@
 from wx import (
     StatusBar,
 )
-from wx.lib.pubsub.pub import subscribe
+from pydispatch.dispatcher import Any, connect
 
 
 class ConfigFrameStatusBar(StatusBar):
@@ -15,8 +15,8 @@ class ConfigFrameStatusBar(StatusBar):
 
     def __init__(self, parent):
         StatusBar.__init__(self, parent)
-        subscribe(self.update, 'status_update')
-        subscribe(self.clear, 'status_clear')
+        connect(self.update, signal='status_update', sender=Any)
+        connect(self.clear, signal='status_clear', sender=Any)
 
     def update(self, data):
         """Updates the status bar text"""
