@@ -196,7 +196,7 @@ class ConfigFrame(Frame):  # pylint: disable=too-many-public-methods
         while self.notebook.GetPageCount() > 0:
             self.notebook.DeletePage(0)
         self.construct_tabs()
-        if current_page and current_page < self.notebook.GetPageCount():
+        if current_page >= 0 and current_page < self.notebook.GetPageCount():
             self.notebook.SetSelection(current_page)
         self.toggle_refresh()
         self.toggle_restoration()

@@ -358,6 +358,7 @@ class RefreshConfigUnitTests(ConfigFrameTestCase):
         self.addCleanup(toggle_refresh_patcher.stop)
         self.mock_delete = MagicMock()
         self.frame.notebook = MagicMock(
+            GetSelection=MagicMock(return_value=0),
             DeletePage=self.mock_delete,
             GetPageCount=pages.pop,
         )
@@ -374,6 +375,15 @@ class RefreshConfigUnitTests(ConfigFrameTestCase):
         self.mock_toggle_refresh.assert_called_once_with()
 
     def test_delete_loop(self):
+        self.mock_delete.assert_not_called()
+        self.frame.refresh_config()
+        self.mock_delete.assert_has_calls([
+            call(0),
+            call(0),
+        ])
+
+    def test_without_valid_selection(self):
+        self.frame.notebook.GetSelection = MagicMock(return_value=10)
         self.mock_delete.assert_not_called()
         self.frame.refresh_config()
         self.mock_delete.assert_has_calls([
