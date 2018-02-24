@@ -3,8 +3,9 @@
 """This file provides the Rofi class"""
 
 from collections import OrderedDict
+from filecmp import cmp as file_cmp
 from os import environ
-from os.path import expanduser, join
+from os.path import exists, expanduser, join
 from re import (
     compile as re_compile,
     DOTALL,
@@ -88,6 +89,7 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         self.config = OrderedDict()
         self.groups = []
         self.active_file = None
+        self.active_backup = None
         self.available_modi = []
 
     def assign_rasi_entry(self, key_value_match, destination='default'):
@@ -269,13 +271,17 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
         output += "}\n"
         return output
 
-    def backup(self, source=None, destination=None):
+    def backup(self, source=None, destination=None, restore=False):
         """Backs up the provided config file"""
         if source is None:
             source = self.active_file
         if destination is None:
             destination = "%s.bak" % source
-        copyfile(source, destination)
+        self.active_backup = destination
+        if restore:
+            copyfile(destination, source)
+        else:
+            copyfile(source, destination)
 
     def write_config(self, path=None):
         """Writes the config to a file"""
@@ -286,9 +292,24 @@ class Rofi(object):  # pylint: disable=too-many-public-methods
 
     def save(self, path=None, backup_path=None, backup=True):
         """Saves the config file"""
+        self.active_backup = None
         if backup:
             self.backup(path, backup_path)
         self.write_config(path)
+
+    def can_restore(self):
+        """Checks if the config can be restored"""
+        active = self.active_file
+        if active is None:
+            active = Rofi.create_default_path()
+        if not exists(active):
+            return False
+        backup = self.active_backup
+        if backup is None:
+            backup = "%s.bak" % active
+        if not exists(backup):
+            return False
+        return not file_cmp(active, backup)
 
     @staticmethod
     def create_default_path():

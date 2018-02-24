@@ -30,7 +30,7 @@ from wxpy_rofi_config.gui import (
 class ConfigFrame(Frame):
     """ConfigFrame is used as the primary app context"""
 
-    BOUND_ACTIONS = 5
+    BOUND_ACTIONS = 6
 
     config = None
     groups = None
@@ -82,9 +82,15 @@ class ConfigFrame(Frame):
         self.status_bar = ConfigFrameStatusBar(self)
         self.SetStatusBar(self.status_bar)
         self.construct_notebook()
+        self.toggle_restoration()
 
     def bind_events(self):
         """Binds events on ConfigFrame"""
+        self.Bind(
+            EVT_MENU,
+            self.restore,
+            self.menu_bar.restore_menu_item
+        )
         self.Bind(
             EVT_MENU,
             self.save,
@@ -136,3 +142,30 @@ class ConfigFrame(Frame):
         self.update_config()
         self.config.save(backup=self.menu_bar.backup_on_menu_item.IsChecked())
         pub.sendMessage('status_update', data='Saved!')
+        self.toggle_restoration()
+
+    def toggle_restoration(self, event=None):  # pylint: disable=unused-argument
+        """Enables/disables the restore menu item"""
+        self.menu_bar.restore_menu_item.Enable(self.config.can_restore())
+
+    @staticmethod
+    def update_entry_control(entry):
+        """Updates the control for a single config entry"""
+        widget = FindWindowByName(entry.key_name)
+        if hasattr(widget, 'SetValue'):
+            widget.SetValue(entry.current)
+        elif hasattr(widget, 'SetLabel'):
+            widget.SetLabel(entry.current)
+
+    def update_controls(self):
+        """Updates all the controls"""
+        for _, entry in self.config.config.items():
+            self.update_entry_control(entry)
+
+    def restore(self, event=None):  # pylint: disable=unused-argument
+        """Restores a previously backed up config"""
+        if self.config.can_restore():
+            self.config.backup(restore=True)
+            self.construct_config()
+            self.update_controls()
+            self.toggle_restoration()
