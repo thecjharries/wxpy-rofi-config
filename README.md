@@ -55,7 +55,7 @@ Once all of these are finished, I'll release `v1`. Until then, `v0` should be us
 |    100% | Save default `rofi` config |
 |    100% | Load arbitrary `rofi` config |
 |    100% | Save arbitrary `rofi` config |
-|     13% | Style UI |
+|     90% | Style UI |
 |    100% | Backup existing `rofi` config |
 |     10% | Validate `rofi` config (before/during/after save) |
 |    100% | Only save changed values (i.e. not the original `rofi` default) |
