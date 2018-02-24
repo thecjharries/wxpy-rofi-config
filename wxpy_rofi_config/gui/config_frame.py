@@ -122,5 +122,5 @@ class ConfigFrame(Frame):
     def save(self, event=None):  # pylint: disable=unused-argument
         """Saves the config file"""
         self.update_config()
-        self.config.save()
+        self.config.save(backup=self.menu_bar.backup_on_menu_item.IsChecked())
         pub.sendMessage('status_update', data='Saved!')

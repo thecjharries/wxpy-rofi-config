@@ -290,10 +290,19 @@ class SaveUnitTests(ConfigFrameTestCase):
 
     @patch.object(ConfigFrame, 'update_config')
     def test_calls(self, mock_update):
-        mock_save = MagicMock()
-        self.frame.config = MagicMock(save=mock_save)
-        mock_update.assert_not_called()
-        mock_save.assert_not_called()
-        self.frame.save()
-        mock_update.assert_called_once_with()
-        mock_save.assert_called_once_with()
+        for backup in [True, False]:
+            mock_save = MagicMock()
+            self.frame.config = MagicMock(save=mock_save)
+            self.frame.menu_bar = MagicMock(
+                backup_on_menu_item=MagicMock(
+                    IsChecked=MagicMock(
+                        return_value=backup
+                    )
+                )
+            )
+            mock_update.assert_not_called()
+            mock_save.assert_not_called()
+            self.frame.save()
+            mock_update.assert_called_once_with()
+            mock_save.assert_called_once_with(backup=backup)
+            mock_update.reset_mock()
