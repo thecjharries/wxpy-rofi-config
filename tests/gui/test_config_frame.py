@@ -129,3 +129,48 @@ class ConstructNotebookUnitTests(ConfigFrameTestCase):
         self.frame.construct_notebook()
         self.mock_notebook.assert_called_once()
         mock_tabs.assert_called_once()
+
+
+class ConstructGuiUnitTests(ConfigFrameTestCase):
+
+    MENU_BAR = MagicMock()
+    STATUS_BAR = MagicMock()
+
+    @patch(
+        'wxpy_rofi_config.gui.config_frame.ConfigFrameMenuBar',
+        return_value=MENU_BAR
+    )
+    @patch.object(ConfigFrame, 'SetMenuBar')
+    @patch(
+        'wxpy_rofi_config.gui.config_frame.ConfigFrameStatusBar',
+        return_value=STATUS_BAR
+    )
+    @patch.object(ConfigFrame, 'SetStatusBar')
+    @patch.object(ConfigFrame, 'construct_notebook')
+    def test_construction(  # pylint: disable=too-many-arguments
+            self,
+            mock_notebook,
+            mock_set_status,
+            mock_status,
+            mock_set_menu,
+            mock_menu,
+    ):
+        mock_holder = MagicMock()
+        mock_holder.attach_mock(mock_menu, 'ConfigFrameMenuBar')
+        mock_holder.attach_mock(mock_set_menu, 'SetMenuBar')
+        mock_holder.attach_mock(mock_status, 'ConfigFrameStatusBar')
+        mock_holder.attach_mock(mock_set_status, 'SetStatusBar')
+        mock_holder.attach_mock(mock_notebook, 'construct_notebook')
+        mock_holder.assert_not_called()
+        self.frame.construct_gui()
+        print(mock_holder.mock_calls)
+        mock_holder.assert_has_calls(
+            [
+                call.ConfigFrameMenuBar(),
+                call.SetMenuBar(self.MENU_BAR),
+                call.ConfigFrameStatusBar(self.frame),
+                call.SetStatusBar(self.STATUS_BAR),
+                call.construct_notebook()
+            ],
+            True
+        )
