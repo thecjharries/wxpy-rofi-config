@@ -49,7 +49,7 @@ class ConfigFrameMenuBar(MenuBar):
             '&Launch Modi\tCtrl+t',
             'Launch any available modi'
         )
-        self.Append(rofi_menu)
+        self.Append(rofi_menu, '&Rofi')
 
     def construct_docs_menu(self):
         """Constructs the docs menu"""
