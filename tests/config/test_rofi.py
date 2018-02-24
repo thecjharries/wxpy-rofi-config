@@ -20,6 +20,9 @@ class RofiTestCase(TestCase):
         del self.rofi
 
     def construct_rofi(self):
+        copyfile_patcher = patch('wxpy_rofi_config.config.rofi.copyfile')
+        self.mock_copyfile = copyfile_patcher.start()
+        self.addCleanup(copyfile_patcher.stop)
         self.rofi = Rofi()
 
 
@@ -400,12 +403,58 @@ class ToRasiUnitTests(RofiTestCase):
         )
 
 
+class BackupUnitTests(RofiTestCase):
+    ACTIVE_FILE = '/path/to/file'
+    ACTIVE_FILE_BAK = '/path/to/file.bak'
+    INPUT = [
+        [None, None],
+        ['qqq', None],
+        [None, 'zzz'],
+        ['qqq', 'zzz']
+    ]
+    RESULTS = [
+        [ACTIVE_FILE, ACTIVE_FILE_BAK],
+        ['qqq', 'qqq.bak'],
+        [ACTIVE_FILE, 'zzz'],
+        ['qqq', 'zzz']
+    ]
+
+    def test_results(self):
+        self.rofi.active_file = self.ACTIVE_FILE
+        for index in range(0, 4):
+            self.mock_copyfile.assert_not_called()
+            self.rofi.backup(*self.INPUT[index])
+            self.mock_copyfile.assert_called_once_with(*self.RESULTS[index])
+            self.mock_copyfile.reset_mock()
+
+
 @patch('wxpy_rofi_config.config.rofi.open', return_value=MagicMock())
 @patch.object(Rofi, 'to_rasi')
-def test_save(mock_rasi, mock_open):
+def test_write_config(mock_rasi, mock_open):
     rofi = Rofi()
-    rofi.save()
+    rofi.write_config()
     mock_rasi.assert_called_once_with()
+
+
+class SaveUnitTests(RofiTestCase):
+
+    @patch.object(Rofi, 'backup')
+    @patch.object(Rofi, 'write_config')
+    def test_without_backup(self, mock_config, mock_backup):
+        mock_config.assert_not_called()
+        mock_backup.assert_not_called()
+        self.rofi.save(backup=False)
+        mock_config.assert_called_once_with(None)
+        mock_backup.assert_not_called()
+
+    @patch.object(Rofi, 'backup')
+    @patch.object(Rofi, 'write_config')
+    def test_with_backup(self, mock_config, mock_backup):
+        mock_config.assert_not_called()
+        mock_backup.assert_not_called()
+        self.rofi.save()
+        mock_config.assert_called_once_with(None)
+        mock_backup.assert_called_once_with(None, None)
 
 
 @patch('wxpy_rofi_config.config.rofi.join')
